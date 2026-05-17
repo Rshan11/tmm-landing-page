@@ -12,7 +12,8 @@ const {
 } = Astro.props;
 
 const siteUrl = 'https://themasonrymodeler.com';
-const ogImage = `${siteUrl}/assets/pump-station-hero.png`;
+const ogImage = `${siteUrl}/assets/og-image.png`;
+const ogImageAlt = 'The Masonry Modeler — pump station render showing block-by-block masonry estimating';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -134,12 +135,16 @@ const jsonLd = {
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={ogImageAlt} />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:image:alt" content={ogImageAlt} />
 
   <!-- Canonical -->
   <link rel="canonical" href={siteUrl} />
