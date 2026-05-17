@@ -1,0 +1,153 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import PageCTA from '../components/PageCTA.astro';
+import FAQSection from '../components/FAQSection.astro';
+
+const title = 'Why Masonry Takeoffs Are Wrong (And How to Fix It) | The Masonry Modeler';
+const description = 'Masonry takeoff errors come from the same three places every time: lintels, corners, and half-block courses. TMM renders each one as you draw and counts what\'s actually there.';
+const canonical = 'https://themasonrymodeler.com/masonry-takeoff-accuracy';
+
+const faqItems = [
+  {
+    question: 'What causes most masonry takeoff errors?',
+    answer: 'Three things cause almost every repeating error: lintels (courses above and below don\'t land right), corners (corner blocks counted as stretchers), and non-modular heights (half-high courses missed or buried in waste). TMM handles all three by rendering the wall before counting it.',
+  },
+  {
+    question: 'How does TMM handle the lintel course problem?',
+    answer: 'The engine calculates how courses land above and below every opening, including bond beam continuity across the header. The bearing course and the bond step are rendered — not approximated. The lintel unit count comes from the actual opening width, not from a rule of thumb.',
+  },
+  {
+    question: 'What is the half-block zipper and why does it matter?',
+    answer: 'When a wall length doesn\'t divide evenly by 16 inches, every other course needs a cut block at one end to maintain running bond. This alternating pattern is the "zipper." Square-footage methods miss it entirely. TMM renders both course patterns and counts the cuts as separate line items.',
+  },
+  {
+    question: 'Can TMM eliminate the waste factor entirely?',
+    answer: 'The waste factor covers breakage and field cutting, not estimation error. TMM eliminates the estimation error component — wrong unit counts, missed unit types, misidentified corners. A small breakage allowance still makes sense. But padding for a bad count is different from breakage, and TMM removes the need for the former.',
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock />
+
+  <PageHero
+    kicker="Masonry Takeoff Accuracy · Three Problems"
+    headline="Why Masonry Takeoffs Are Wrong (And How to Fix It)"
+    lead="The same three problems cause almost every masonry takeoff error: lintels that don't land right, corners counted as stretchers, and half-block courses that appear on the job but not in the estimate."
+  />
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Problem 1: The Lintel</h2>
+      <p>
+        Every opening punches a hole in the running bond. The courses above and below have to land somewhere — and where they land depends on the opening width, the wall height above, and where the bond beam sits. Get any of those wrong and the count is wrong.
+      </p>
+      <p>
+        Most tools skip this calculation and let the estimator figure it out manually. TMM renders the bond across the opening. The bearing course is there. The lintel unit count comes from the actual opening width. The bond beam continuity is automatic.
+      </p>
+
+      <div class="code-diagram">
+        <div class="code-diagram-label">Lintel zone · opening 5'-4" wide</div>
+        <pre>
+<span class="dim">Course 9</span>   S    S    S    S    S    S    S    S    S
+<span class="highlight">Course 8</span>   BB   BB  <span class="highlight"> LT   LT   LT   LT </span>  BB   BB   BB   ← <span class="highlight">lintel + bond beam</span>
+<span class="dim">Course 7</span>   S    S  <span class="dim"> ░░░░░░░░░░░░░░ </span>  S    S    S
+<span class="dim">Course 6</span>   S    S  <span class="dim"> ░  OPENING  ░ </span>  S    S    S
+<span class="dim">Course 5</span>   S    S  <span class="dim"> ░░░░░░░░░░░░░░ </span>  S    S    S
+
+<span class="dim">           LT = lintel unit   BB = bond beam   S = stretcher</span>
+<span class="bright">           4 lintel units · counted from opening width, not estimated</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>Problem 2: The Corner</h2>
+      <p>
+        Corner blocks aren't stretchers. Outside corners need a unit with a finished face on two sides. Inside corners need a different geometry altogether. Both are different part numbers, different pricing, different lead times at some suppliers.
+      </p>
+      <p>
+        A square-footage takeoff applies 1.125 blocks per square foot and rounds up. The corner is in there somewhere — counted as a stretcher, priced as a stretcher, ordered as a stretcher. Then the crew runs out of corner blocks on day two.
+      </p>
+      <p>
+        TMM places corners by position. Every inside corner and every outside corner on every wall segment is identified when the wall is drawn. The count separates automatically. There's no post-processing step, no manual corner tally.
+      </p>
+
+      <div class="code-diagram">
+        <div class="code-diagram-label">Corner zone · outside corner · running bond</div>
+        <pre>
+<span class="dim">Wall A →</span>                          <span class="dim">↑ Wall B</span>
+Course 4  S    S    S    S   <span class="highlight"> OC </span>   S    S    S
+Course 3  S    S    S    S   <span class="highlight"> OC </span>   S    S    S
+Course 2  S    S    S    S   <span class="highlight"> OC </span>   S    S    S
+Course 1  S    S    S    S   <span class="highlight"> OC </span>   S    S    S
+
+<span class="dim">          S = stretcher    </span><span class="highlight">OC = outside corner (separate line item, every course)</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Problem 3: The Half-Block Zipper</h2>
+      <p>
+        Running bond means every other course offsets by 8 inches. When the wall length doesn't divide evenly by 16 inches, that offset doesn't resolve cleanly. One course ends with a full block at the wall end. The course above ends with a cut.
+      </p>
+      <p>
+        That pattern — full, cut, full, cut, alternating — is what masons call the zipper. It runs the full height of the wall at every non-modular end. Every cut block is a separate unit: a field cut (waste), or an ordered half-block (separate part number, cheaper than cutting).
+      </p>
+      <p>
+        A square-footage method absorbs this into the waste factor. TMM renders both course patterns and counts the cut positions explicitly. The mason can decide whether to order half-blocks or plan for field cutting — but either way, the count is right.
+      </p>
+
+      <div class="code-diagram">
+        <div class="code-diagram-label">Non-modular wall end · 280'-2" total · zipper at each segment end</div>
+        <pre>
+Wall end                                          <span class="highlight">← 2" leftover</span>
+Course 13  S    S    S    S    S    S    S   <span class="bright"> S  </span>  ← full block ends this course
+Course 12  S    S    S    S    S    S    S   <span class="highlight"> ½  </span>  ← half-block / cut ends this course
+Course 11  S    S    S    S    S    S    S   <span class="bright"> S  </span>  ← full block
+Course 10  S    S    S    S    S    S    S   <span class="highlight"> ½  </span>  ← half-block / cut
+Course  9  S    S    S    S    S    S    S   <span class="bright"> S  </span>  ← full block
+
+<span class="dim">           The zipper repeats every course pair for the full wall height.</span>
+<span class="highlight">           TMM counts both patterns. Half-blocks are their own line item.</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <FAQSection
+    items={faqItems}
+    sectionNum="FAQ"
+    label="Takeoff accuracy questions"
+    headline="What the foreman always asks."
+  />
+
+  <PageCTA
+    headline="Get the count right before the order goes in."
+    body="Render the wall, count every unit type, generate the takeoff. Founder pricing at $300/mo while seats last."
+  />
+</Layout>
