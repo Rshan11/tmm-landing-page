@@ -1,0 +1,60 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import Hero from '../components/Hero.astro';
+import SectionDivider from '../components/SectionDivider.astro';
+import ProofSection from '../components/ProofSection.astro';
+import RulesSection from '../components/RulesSection.astro';
+
+import cornerDetail from '../assets/corner-detail.png';
+---
+
+<Layout>
+  <MasonXMonogram />
+  <TitleBlock />
+  <Hero />
+
+  <SectionDivider number="02" label="The Lintel Test" />
+
+  <ProofSection
+    sectionNum="02"
+    sectionLabel="The detail nobody else gets right"
+    headlinePre="Look at the"
+    accentWord="lintel"
+    body1="Anyone can render a flat wall. The lintel is where the math breaks down
+      everywhere else — courses above the opening have to land right, the bond has to
+      step clean across the header, and the bearing courses have to interlock back into
+      the corner. No fudge. No fake."
+    body2="One screenshot. One real job. <em>Keep this image in mind.</em>"
+    masonxQuote="If the lintel doesn't render right, the takeoff doesn't render right. And then the order doesn't ship right."
+    image={cornerDetail}
+    imageAlt="CMU lintel at a running-bond corner — courses step clean across the header"
+    imageCaption="Lintel · corner · running bond"
+    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
+  />
+
+  <SectionDivider number="03" label="The Bond Beam Test" />
+
+  <ProofSection
+    sectionNum="03"
+    sectionLabel="The other detail nobody else gets right"
+    headlinePre="Now watch the"
+    accentWord="bond beam"
+    body1="Same screenshot. Look at the gray course running through the wall — bond beam —
+      and watch what happens when it hits the corner. It <em>wraps.</em> Continuous rebar
+      path, proper lap, the right development length. And the corner block still counts as
+      a corner block. Special unit. Separate line item."
+    body2="Most engines pick one. The math is right or the count is right. Not both."
+    masonxQuote="Rebar's continuous. Corner's still a corner. Takeoff sees both. Tell me where else that's happening."
+    image={cornerDetail}
+    imageAlt="Bond beam wrapping a CMU corner — continuous rebar path with proper development length"
+    imageCaption="Bond beam · wraps the corner"
+    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
+    reverse={true}
+  />
+
+  <SectionDivider number="04" label="The Rules · Encoded" />
+
+  <RulesSection />
+</Layout>

@@ -1,0 +1,66 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  sectionNum: string;      // "02" — displayed in the badge
+  sectionLabel: string;    // "The detail nobody else gets right"
+  headlinePre: string;     // "Look at the"
+  accentWord: string;      // "lintel"
+  body1: string;           // First paragraph (plain text or simple HTML)
+  body2?: string;          // Second paragraph (optional)
+  masonxQuote: string;     // Text after "MasonX: " (foreman voice)
+  image: ImageMetadata;    // Imported image asset
+  imageAlt: string;
+  imageCaption: string;    // e.g. "Lintel · corner · running bond"
+  imageCredit: string;     // e.g. "Powder River Masonry · MasonX"
+  reverse?: boolean;       // Flip to image-left, text-right layout
+}
+
+const {
+  sectionNum,
+  sectionLabel,
+  headlinePre,
+  accentWord,
+  body1,
+  body2,
+  masonxQuote,
+  image,
+  imageAlt,
+  imageCaption,
+  imageCredit,
+  reverse = false,
+} = Astro.props;
+---
+
+<section class="proof-section">
+  <div class:list={['proof-inner', { reverse }]}>
+    <div class="proof-text">
+      <div class="section-num" data-num={sectionNum}>{sectionLabel}</div>
+      <h2>{headlinePre} <span class="accent">{accentWord}</span>.</h2>
+      <p class="proof-body" set:html={body1} />
+      {body2 && <p class="proof-body" set:html={body2} />}
+      <div class="proof-mx-quote">
+        <span class="mx-mark inverted" aria-hidden="true">
+          <svg><use href="#mx-monogram"/></svg>
+        </span>
+        <span class="proof-mx-quote-text">
+          <strong>MasonX:</strong> {masonxQuote}
+        </span>
+      </div>
+    </div>
+
+    <div class="proof-image">
+      <Image
+        src={image}
+        alt={imageAlt}
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="proof-image-caption">
+        <span>{imageCaption}</span>
+        <span set:html={imageCredit} />
+      </div>
+    </div>
+  </div>
+</section>

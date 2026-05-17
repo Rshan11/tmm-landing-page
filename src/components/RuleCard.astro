@@ -1,0 +1,16 @@
+---
+interface Props {
+  num: string;    // "R-01"
+  stamp: string;  // "01 · CORNERS"
+  title: string;  // MasonX first-person quote
+  body: string;
+}
+const { num, stamp, title, body } = Astro.props;
+---
+
+<div class="rule-card">
+  <span class="rule-corner-mark">{num}</span>
+  <span class="rule-stamp">{stamp}</span>
+  <h3 class="rule-title">"{title}"</h3>
+  <p class="rule-body">{body}</p>
+</div>

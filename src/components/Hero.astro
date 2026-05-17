@@ -1,0 +1,62 @@
+---
+import { Image } from 'astro:assets';
+import heroImage from '../assets/pump-station-hero.png';
+
+interface Props {
+  waitlistHref?: string;
+}
+const { waitlistHref = '#waitlist' } = Astro.props;
+---
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-tag">Now taking founder seats · 10 only</div>
+      <h1>
+        Counting the pieces<br/>
+        takes <span class="accent">longer</span><br/>
+        than the <span class="underline">takeoff</span>.
+      </h1>
+      <p class="hero-sub">
+        From the first wall you place, TMM knows where the corners are and what kind
+        of block to lay. This masonry estimating software counts halves, cuts, bond beams,
+        lintels, and sills <strong>as you draw.</strong> You shouldn't have to tell it.
+      </p>
+      <a href={waitlistHref} class="hero-cta" id="waitlist">
+        Join the waitlist
+        <span class="hero-cta-arrow">→</span>
+      </a>
+      <div class="hero-pricing">
+        Founder pricing locked at <strong>$300/mo for life</strong> · 10 seats only
+      </div>
+    </div>
+
+    <div class="hero-render">
+      <div class="render-titlebar">
+        <span><span class="dot">◉</span> Pump Station · Live Render</span>
+        <span>MasonryX</span>
+      </div>
+      <div class="render-image">
+        <Image
+          src={heroImage}
+          alt="MasonryX live render of a pump station — corners, lintels, and bond beams counted automatically"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="render-stats">
+        <span>3 wall types · 14 rakes · 1 door</span>
+        <span><strong>8 min</strong> · blank canvas → takeoff</span>
+      </div>
+      <div class="render-mx-bubble">
+        <span class="mx-mark inverted" aria-hidden="true">
+          <svg><use href="#mx-monogram"/></svg>
+        </span>
+        <span class="render-mx-bubble-text">
+          <strong>MasonX:</strong> Look at the lintel. Bond steps clean across the
+          opening. That's how the wall actually gets built.
+        </span>
+      </div>
+    </div>
+  </div>
+</section>

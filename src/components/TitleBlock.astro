@@ -1,0 +1,30 @@
+---
+interface Props {
+  waitlistHref?: string;
+}
+const { waitlistHref = '#waitlist' } = Astro.props;
+---
+
+<header class="title-block">
+  <div class="title-block-inner">
+    <div class="tb-cell">
+      <div class="tb-brand">
+        <span class="mx-mark" style="--mx-size: 28px;">
+          <svg aria-hidden="true"><use href="#mx-monogram"/></svg>
+        </span>
+        <span class="tb-logo">TMM</span>
+      </div>
+    </div>
+    <div class="tb-cell">
+      <span class="tb-label">Project</span>
+      <span class="tb-value">The Masonry Modeler</span>
+    </div>
+    <div class="tb-cell">
+      <span class="tb-label">Sheet</span>
+      <span class="tb-value">A1.0 — Home</span>
+    </div>
+    <a href={waitlistHref} class="tb-cell tb-cta">
+      <span class="tb-value">Join Waitlist →</span>
+    </a>
+  </div>
+</header>

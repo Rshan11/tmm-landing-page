@@ -1,0 +1,159 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'The Masonry Modeler — masonry estimating software built block-by-block',
+  description = 'Masonry estimating software that renders every block — corners, lintels, bond beams. Built by a mason. Founder seats open at $300/mo.',
+} = Astro.props;
+
+const siteUrl = 'https://themasonrymodeler.com';
+const ogImage = `${siteUrl}/assets/pump-station-hero.png`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      name: 'The Masonry Modeler',
+      alternateName: 'TMM',
+      url: siteUrl,
+      description:
+        'Masonry estimating software that builds CMU takeoffs block-by-block — corners interlock, bond beams snap to rebar schedules, cuts never go under 4 inches.',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      offers: {
+        '@type': 'Offer',
+        price: '300',
+        priceCurrency: 'USD',
+        description: 'Founder pricing — $300/mo for life, 10 seats only',
+      },
+      featureList: [
+        'Automatic corner interlocking bond patterns',
+        'Lintel course rendering with proper bearing',
+        'Bond beam scheduling from structural rebar drawings',
+        'Half-high block detection and line-item breakout',
+        'Control joint placement at modular intervals',
+        'No-sliver cut enforcement (minimum 4 inches)',
+      ],
+    },
+    {
+      '@type': 'Organization',
+      name: 'The Masonry Modeler',
+      url: siteUrl,
+      description: 'Masonry estimating software built by a working mason',
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How does The Masonry Modeler handle CMU corner layouts?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Corners interlock by default — bond runs through on inside and outside corners. No butt joints unless you specify otherwise. The corner is what happens when the bond is right, not a special case bolted on top.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What happens to leftover block cuts at corners?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Leftover cuts are absorbed into the corner. The leg moves 8 inches every course — same as the bond — so you will not see a 4-inch cut sitting out in the field.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does The Masonry Modeler place control joints?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Control joints default to 24 feet 8 inches (296 inches = 18.5 blocks × 16 inches exactly) — the modular number, not a round 25 feet. Control joints are never auto-placed within 16 inches of a corner. You can drag to override.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How are bond beams and rebar handled in the takeoff?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Bond beams are driven by the rebar schedule from structural drawings, not a checkbox. Courses snap to schedule, development length extends past openings, and rebar weight is reported in pounds — not just linear feet.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Does The Masonry Modeler account for half-high block courses?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. When a wall height is not modular to 8 inches, The Masonry Modeler automatically generates the half-high course and breaks it out as its own line item — counted, weighted, and priced separately, not buried in a waste factor.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can The Masonry Modeler prevent sliver cuts in the layout?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Cuts under 4 inches are never produced. If the layout would force one, The Masonry Modeler absorbs it into adjacent joints or shifts the cut to the next valid position — by design.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How are 10-inch and 12-inch CMU corners handled?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: '10-inch and 12-inch corners are broken into 8-inch block plus face shell as separate line items — the way the supplier ships them and the way the crew lays them.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I override The Masonry Modeler automated layout decisions?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Click any block, change the type, and the takeoff updates immediately. Every automated rule is an overridable default. The software is right most of the time — but you are the mason.',
+          },
+        },
+      ],
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={siteUrl} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage} />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <!-- Canonical -->
+  <link rel="canonical" href={siteUrl} />
+
+  <!-- Google Fonts — font-display: swap applied via display=swap param -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</head>
+<body>
+  <slot />
+</body>
+</html>
