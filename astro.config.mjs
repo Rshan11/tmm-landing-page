@@ -1,10 +1,11 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://themasonrymodeler.com',
   output: 'static',
+  integrations: [sitemap()],
   image: {
-    // Use sharp for local image optimization
     service: { entrypoint: 'astro/assets/services/sharp' },
   },
 });
