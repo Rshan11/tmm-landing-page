@@ -1,0 +1,141 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import PageCTA from '../components/PageCTA.astro';
+import FAQSection from '../components/FAQSection.astro';
+
+const title = 'Exact CMU Block Count, Not Square Footage | The Masonry Modeler';
+const description = 'Most masonry software estimates by square foot. TMM counts every block — corners, bond beams, half-highs, cuts — as you draw. See the 88th pump station proof.';
+const canonical = 'https://themasonrymodeler.com/cmu-block-count';
+
+const faqItems = [
+  {
+    question: 'Why is a block-by-block count more accurate than square footage?',
+    answer: 'Square-footage takeoffs apply a factor — typically 1.125 blocks per square foot — then round up. That factor doesn\'t know about corners, openings, bond beams, or non-modular heights. Block-by-block counts each unit type individually, so the order matches what the crew actually lays.',
+  },
+  {
+    question: 'What does "non-modular" mean and why does it matter?',
+    answer: 'Non-modular means the wall height doesn\'t divide evenly by 8 inches. When that happens, the top or bottom course needs a half-high block — a different unit entirely, sourced separately and priced separately. Square-footage estimating buries this in waste. TMM counts it as its own line item.',
+  },
+  {
+    question: 'How long does it take to trace a building and get a block count?',
+    answer: 'The 88th Avenue pump station — 280 feet 2 inches of perimeter, 12 wall segments — took 3.7 minutes from blank canvas to a full block-by-block takeoff. Larger projects take proportionally longer, but the tracing step is fast because the engine counts as you draw.',
+  },
+  {
+    question: 'What block types does TMM count separately?',
+    answer: 'Standard stretchers, corner blocks (inside and outside), bond beam units, lintel units, half-high blocks, sill blocks, and cut pieces at non-modular wall ends. Each is a separate line item. No lumping, no rounding up into a waste factor.',
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock />
+
+  <PageHero
+    kicker="CMU Estimating · Block by Block"
+    headline="Exact CMU Block Count, Not Square Footage"
+    lead="Every CMU estimating method that starts with square footage ends with a factor. Factors are wrong. TMM renders the wall block-by-block — corners, bond beams, half-highs — and counts what's actually there."
+  />
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>The Square-Foot Method Has a Math Problem</h2>
+      <p>
+        The standard approach: multiply wall area by 1.125 blocks per square foot, add 5–10% waste. It's been the default for decades because it's fast. It's also wrong in the same ways every time.
+      </p>
+      <p>
+        Corners aren't blocks. They're special units — different face dimensions, different pricing, sourced differently. Every inside and outside corner pulls corner blocks from the count and puts them in a separate column. A square-footage takeoff doesn't know where the corners are. It can't — it never drew the wall.
+      </p>
+
+      <div class="comparison-block">
+        <div class="comparison-col">
+          <span class="comparison-label">Square-footage method</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>One number: total blocks</li>
+            <li>Corners buried in waste factor</li>
+            <li>Bond beams estimated, not scheduled</li>
+            <li>Half-highs invisible until the job</li>
+            <li>Cuts absorbed into rounding</li>
+          </ul>
+        </div>
+        <div class="comparison-col">
+          <span class="comparison-label">TMM block-by-block</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>Stretchers, corners, bond beam units — each separately</li>
+            <li>Inside and outside corners counted by position</li>
+            <li>Bond beams from the rebar schedule, not a guess</li>
+            <li>Half-high course as its own line item</li>
+            <li>Cuts flagged and counted</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>The 88th Avenue Pump Station</h2>
+      <p>
+        Real job. Real numbers. The 88th Avenue pump station has a 280-foot 2-inch perimeter broken into 12 wall segments. Rakes, a door, bond beam courses, non-modular height at the parapet.
+      </p>
+      <p>
+        Tracing it in TMM took 3.7 minutes. The block count came out automatically — not a square-footage estimate adjusted upward, but a rendered wall with every unit in its position.
+      </p>
+
+      <div class="stat-block">
+        <div class="stat-item">
+          <span class="stat-value">280'-2"</span>
+          <span class="stat-label">Wall perimeter</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">12</span>
+          <span class="stat-label">Wall segments</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">3.7 min</span>
+          <span class="stat-label">Blank canvas → takeoff</span>
+        </div>
+        <span class="stat-note">88th Ave pump station · traced in TMM · all numbers confirmed</span>
+      </div>
+
+      <p>
+        The takeoff separated stretchers, corner blocks, bond beam units, and the half-high parapet course. Not estimated. Counted.
+      </p>
+    </div>
+  </section>
+
+  <FAQSection
+    items={faqItems}
+    sectionNum="FAQ"
+    label="Block count questions"
+    headline="What the foreman always asks."
+  />
+
+  <PageCTA
+    headline="Count every block before the order goes in."
+    body="Trace the wall, get the count. Founder pricing at $300/mo while seats last."
+  />
+</Layout>
