@@ -1,0 +1,143 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import PageCTA from '../components/PageCTA.astro';
+import FAQSection from '../components/FAQSection.astro';
+
+const title = 'Bond Beam Scheduling From Your Rebar Schedule | The Masonry Modeler';
+const description = 'Bond beam courses set by rebar schedule, not guesswork. TMM reads the structural drawings, snaps courses to match, wraps corners, and reports rebar weight in pounds.';
+const canonical = 'https://themasonrymodeler.com/bond-beam-estimating';
+
+const faqItems = [
+  {
+    question: 'How does TMM place bond beam courses?',
+    answer: 'You enter the rebar schedule from the structural drawings — bar sizes, vertical spacing, lap requirements. TMM snaps bond beam courses to those elevations. Every course is tied to a specific rebar requirement, not placed by habit or rule of thumb.',
+  },
+  {
+    question: 'What happens at corners and openings?',
+    answer: 'Bond beam courses wrap corners continuously. Development length past openings is calculated automatically — no manual addition for lap splice extension. The corner block at a bond beam course is still counted as a corner block, separate line item, not absorbed into the bond beam unit count.',
+  },
+  {
+    question: 'Can the engineer\'s bond beam spacing be overridden?',
+    answer: 'Yes. Click any bond beam course and drag it to a different elevation, or change the course type entirely. The takeoff updates immediately. The rebar schedule stays as the default starting point; the mason controls every override.',
+  },
+  {
+    question: 'Does TMM report rebar weight or just linear feet?',
+    answer: 'Both. Rebar is reported in linear feet for scheduling and pounds for procurement. The weight calculation uses standard bar weights — #4 at 0.668 lb/ft, #5 at 1.043 lb/ft, and so on. Development length extensions are included in the total.',
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock />
+
+  <PageHero
+    kicker="Bond Beam Estimating · Rebar-Driven"
+    headline="Bond Beam Scheduling From Your Rebar Schedule"
+    lead="Most estimating tools place bond beams by habit — every other course, or wherever it looks right. TMM places them from the structural drawings. Rebar schedule in, bond beam courses out."
+  />
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Rebar Drives the Course, Not the Other Way Around</h2>
+      <p>
+        A bond beam course exists because there's horizontal rebar at that elevation. The rebar schedule comes from the structural engineer — bar size, spacing, development length requirements. That's the input. TMM reads it and places the courses.
+      </p>
+      <p>
+        When the course hits a corner, it wraps. The development length past the far side of an opening is automatic. The corner block is still a corner block. The bond beam unit is still a bond beam unit. Both counted separately, both on the takeoff.
+      </p>
+
+      <div class="code-diagram">
+        <div class="code-diagram-label">Wall elevation · bond beam courses shown</div>
+        <pre>
+<span class="bright">Course 13</span>  ┌─────────────────────────────────────────┐
+           │ S   S   S   S   S   S   S   S   S   S  │
+<span class="highlight">Course 12</span>  │<span class="highlight"> BB  BB  BB  BB  BB  BB  BB  BB  BB  BB </span>│  ← <span class="highlight">#5 horiz · @ 4'-0" o.c.</span>
+           │ S   S   S   S   S   S   S   S   S   S  │
+Course 11  │ S   S   S   S   S   S   S   S   S   S  │
+           │ S   S   S   S   S   S   S   S   S   S  │
+<span class="highlight">Course 10</span>  │<span class="highlight"> BB  BB  BB  BB  BB  BB  BB  BB  BB  BB </span>│  ← <span class="highlight">#5 horiz · @ 4'-0" o.c.</span>
+           │ S   S   S   S   S   S   S   S   S   S  │
+Course  9  │ S   S   S   S   S   S   S   S   S   S  │
+           │ S   S   S   S   S   S   S   S   S   S  │
+<span class="highlight">Course  8</span>  │<span class="highlight"> BB  BB  BB  BB  BB  BB  BB  BB  BB  BB </span>│  ← <span class="highlight">#5 horiz · @ 4'-0" o.c.</span>
+           └─────────────────────────────────────────┘
+<span class="dim">           S = stretcher   BB = bond beam unit   C = corner (counted separately)</span></pre>
+      </div>
+
+      <p>
+        The diagram above shows three bond beam courses on a standard 4-foot-on-center schedule. Every BB unit is counted. Every corner wrap is counted. Development length at openings is added automatically based on the bar size.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>What "Rebar Weight in Pounds" Actually Means</h2>
+      <p>
+        Most masonry takeoffs report rebar in linear feet. That's one step removed from what the supplier quotes and what the crew orders. TMM converts to pounds automatically using standard bar weights.
+      </p>
+      <p>
+        Development length extensions at openings and corners are included in the linear-foot total before conversion. The pounds number on the takeoff is the number that goes on the purchase order.
+      </p>
+
+      <div class="comparison-block">
+        <div class="comparison-col">
+          <span class="comparison-label">Manual bond beam takeoff</span>
+          <h3>What you produce</h3>
+          <ul>
+            <li>Course count by elevation guess</li>
+            <li>Linear feet — manual measurement</li>
+            <li>Development length added by hand</li>
+            <li>Corner wraps estimated or forgotten</li>
+            <li>Weight conversion done separately</li>
+          </ul>
+        </div>
+        <div class="comparison-col">
+          <span class="comparison-label">TMM rebar-driven scheduling</span>
+          <h3>What you produce</h3>
+          <ul>
+            <li>Courses set by structural rebar schedule</li>
+            <li>Linear feet from rendered wall dimensions</li>
+            <li>Development length automatic per bar size</li>
+            <li>Corner wraps counted, not estimated</li>
+            <li>Pounds on the takeoff, ready for P.O.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <FAQSection
+    items={faqItems}
+    sectionNum="FAQ"
+    label="Bond beam questions"
+    headline="What the foreman always asks."
+  />
+
+  <PageCTA
+    headline="Schedule the bond beams from the drawings."
+    body="Enter the rebar schedule, get the courses. Founder pricing at $300/mo while seats last."
+  />
+</Layout>
