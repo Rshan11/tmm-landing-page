@@ -4,11 +4,13 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
 }
 
 const {
   title = 'The Masonry Modeler — masonry estimating software built block-by-block',
   description = 'Masonry estimating software that renders every block — corners, lintels, bond beams. Built by a mason. Founder seats open at $300/mo.',
+  canonical = 'https://themasonrymodeler.com',
 } = Astro.props;
 
 const siteUrl = 'https://themasonrymodeler.com';
@@ -24,10 +26,15 @@ const ogImageAlt = 'The Masonry Modeler — pump station render showing block-by
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <meta name="author" content="Ryan Shanley, Powder River Masonry" />
+  <meta name="theme-color" content="#b8451a" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content={siteUrl} />
+  <meta property="og:url" content={canonical} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={ogImage} />
@@ -43,7 +50,7 @@ const ogImageAlt = 'The Masonry Modeler — pump station render showing block-by
   <meta name="twitter:image:alt" content={ogImageAlt} />
 
   <!-- Canonical -->
-  <link rel="canonical" href={siteUrl} />
+  <link rel="canonical" href={canonical} />
 
   <!-- Google Fonts — font-display: swap applied via display=swap param -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -97,78 +104,7 @@ const ogImageAlt = 'The Masonry Modeler — pump station render showing block-by
   }
   </script>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "How do corners work in The Masonry Modeler?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Corners interlock by default — inside and outside. The bond runs through the corner. No butt joints unless overridden. The corner is a consequence of the bond, not a special case bolted on top."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How does the engine handle non-modular leftover at corners?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Non-modular leftover absorbs into the corner. The leg moves 8 inches every course — same as the bond. No 4-inch cut exposed in the field."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is the default control joint spacing?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Control joints default to 24 feet 8 inches — 296 inches, which is 18.5 blocks times 16 inches exactly. This is the modular spacing. Drag to override. Control joints are never auto-placed within 16 inches of a corner."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How are bond beams placed?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Rebar drives bond beams. Set the rebar schedule from the structural drawings and courses snap to match. Development-length extension past openings is automatic. Weight is reported in pounds, not just linear feet."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Does the engine handle half-high courses?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. When a wall is not modular to 8 inches, the engine generates the half-high course at top or bottom and adds it as its own line item. Counted, weighted, and priced separately — not buried in a waste factor."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Will the engine produce cuts smaller than 4 inches?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "No. If a layout would force a cut under 4 inches, the engine absorbs the leftover into adjacent joints or shifts the cut to the next valid position. By design."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How are 10-inch and 12-inch CMU corners handled?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "10-inch and 12-inch CMU corners use an 8-inch block plus a face shell spacer — listed as separate takeoff line items, the way the supplier ships them and the way the crew lays them."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Can the mason override the engine?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. The engine is right about 90 percent of the time. The mason is right on the other 10 percent. Click any block, change the type, and the takeoff updates. One-click override."
-        }
-      }
-    ]
-  }
-  </script>
+  <slot name="head" />
 </head>
 <body>
   <slot />

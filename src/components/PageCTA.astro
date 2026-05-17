@@ -1,0 +1,21 @@
+---
+interface Props {
+  headline?: string;
+  body?: string;
+  ctaText?: string;
+  ctaHref?: string;
+}
+
+const {
+  headline = 'See it working on a real job.',
+  body = 'Trace a wall, count the blocks, generate the takeoff. Founder pricing at $300/mo while seats last.',
+  ctaText = 'Join the waitlist',
+  ctaHref = '/#waitlist',
+} = Astro.props;
+---
+
+<section class="page-cta-section">
+  <h2>{headline}</h2>
+  <p>{body}</p>
+  <a href={ctaHref} class="hero-cta">{ctaText}<span class="hero-cta-arrow">→</span></a>
+</section>

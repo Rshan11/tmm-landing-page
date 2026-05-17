@@ -6,11 +6,62 @@ import Hero from '../components/Hero.astro';
 import SectionDivider from '../components/SectionDivider.astro';
 import ProofSection from '../components/ProofSection.astro';
 import RulesSection from '../components/RulesSection.astro';
+import FAQSection from '../components/FAQSection.astro';
 
 import cornerDetail from '../assets/corner-detail.png';
+
+const faqItems = [
+  {
+    question: 'How do corners work in The Masonry Modeler?',
+    answer: 'Corners interlock by default — inside and outside. The bond runs through the corner. No butt joints unless overridden. The corner is a consequence of the bond, not a special case bolted on top.',
+  },
+  {
+    question: 'How does the engine handle non-modular leftover at corners?',
+    answer: 'Non-modular leftover absorbs into the corner. The leg moves 8 inches every course — same as the bond. No 4-inch cut exposed in the field.',
+  },
+  {
+    question: 'What is the default control joint spacing?',
+    answer: 'Control joints default to 24 feet 8 inches — 296 inches, which is 18.5 blocks times 16 inches exactly. This is the modular spacing. Drag to override. Control joints are never auto-placed within 16 inches of a corner.',
+  },
+  {
+    question: 'How are bond beams placed?',
+    answer: 'Rebar drives bond beams. Set the rebar schedule from the structural drawings and courses snap to match. Development-length extension past openings is automatic. Weight is reported in pounds, not just linear feet.',
+  },
+  {
+    question: 'Does the engine handle half-high courses?',
+    answer: 'Yes. When a wall is not modular to 8 inches, the engine generates the half-high course at top or bottom and adds it as its own line item. Counted, weighted, and priced separately — not buried in a waste factor.',
+  },
+  {
+    question: 'Will the engine produce cuts smaller than 4 inches?',
+    answer: 'No. If a layout would force a cut under 4 inches, the engine absorbs the leftover into adjacent joints or shifts the cut to the next valid position. By design.',
+  },
+  {
+    question: 'How are 10-inch and 12-inch CMU corners handled?',
+    answer: '10-inch and 12-inch CMU corners use an 8-inch block plus a face shell spacer — listed as separate takeoff line items, the way the supplier ships them and the way the crew lays them.',
+  },
+  {
+    question: 'Can the mason override the engine?',
+    answer: 'Yes. The engine is right about 90 percent of the time. The mason is right on the other 10 percent. Click any block, change the type, and the takeoff updates. One-click override.',
+  },
+];
 ---
 
 <Layout>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqItems.map(item => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer,
+        },
+      })),
+    })} />
+  </Fragment>
+
   <MasonXMonogram />
   <TitleBlock />
   <Hero />
@@ -57,4 +108,8 @@ import cornerDetail from '../assets/corner-detail.png';
   <SectionDivider number="04" label="The Rules · Encoded" />
 
   <RulesSection />
+
+  <SectionDivider number="05" label="Common Questions" />
+
+  <FAQSection items={faqItems} />
 </Layout>

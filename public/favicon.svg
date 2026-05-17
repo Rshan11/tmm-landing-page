@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 34">
+  <path fill="#b8451a" d="M4 24Q4 8 20 6Q36 8 36 24L32 24Q32 14 20 12Q8 14 8 24Z"/>
+  <rect fill="#b8451a" x="19" y="6" width="2" height="4" rx="1"/>
+  <path fill="#8a3413" d="M2 24L38 24L38 28Q38 30 36 30L4 30Q2 30 2 28Z"/>
+  <text fill="#f4f1e8" font-family="Arial,sans-serif" font-weight="700" font-size="11" x="20" y="22" text-anchor="middle">MX</text>
+</svg>
