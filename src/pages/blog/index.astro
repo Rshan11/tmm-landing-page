@@ -1,0 +1,46 @@
+---
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+
+const posts = [
+  {
+    num: '01',
+    title: "It's 2026. Why Doesn't Masonry Software Know What a Corner Is?",
+    excerpt: "I've been doing masonry takeoffs for years. I use spreadsheets and count everything by hand — because the tools that exist don't model masonry. They model rectangles.",
+    date: 'May 2026',
+    href: '/blog/why-i-built-this/',
+  },
+];
+---
+
+<Layout
+  title="Blog | The Masonry Modeler"
+  description="Field notes from building masonry estimating software. Written by a mason who got tired of doing exact piece counts by hand."
+  canonical="https://themasonrymodeler.com/blog/"
+>
+  <MasonXMonogram />
+  <TitleBlock sheet="B0 — Blog" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes</span>
+    <span class="scale-marks"></span>
+    <span>themasonrymodeler.com/blog</span>
+  </div>
+
+  <section class="blog-index-section">
+    <div class="blog-index-inner">
+      <h1>Field Notes</h1>
+      {posts.map(post => (
+        <a href={post.href} class="blog-post-card">
+          <span class="card-num">{post.num}</span>
+          <div class="card-content">
+            <div class="card-title">{post.title}</div>
+            <p class="card-excerpt">{post.excerpt}</p>
+            <div class="card-date">{post.date} · 5 min read</div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,184 @@
+---
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+---
+
+<Layout
+  title="Why I Built The Masonry Modeler | TMM Blog"
+  description="I've been doing masonry takeoffs for years. I use spreadsheets and count everything by hand — because the tools that exist don't model masonry geometry. So I built one that does."
+  canonical="https://themasonrymodeler.com/blog/why-i-built-this/"
+>
+  <MasonXMonogram />
+  <TitleBlock sheet="B1.1 — Why I Built This" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes · B1.1</span>
+    <span class="scale-marks"></span>
+    <span>Founder Story</span>
+  </div>
+
+  <section class="blog-post-hero">
+    <div class="blog-post-hero-inner">
+      <div class="post-kicker">Field Notes</div>
+      <h1>
+        It's 2026. Why Doesn't Masonry Software Know What a
+        <span class="accent">Corner</span> Is?
+      </h1>
+      <div class="post-meta">
+        <span><strong>Ryan Shanley</strong></span>
+        <span>May 2026</span>
+        <span>5 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="blog-post-body">
+
+    <p>
+      The Douglas Humane Society job is where it clicked for me.
+    </p>
+
+    <p>
+      I was doing the takeoff — wall by wall, opening by opening — and the software was moving fast.
+      Quantity list building up. Looks good. Then I get to the corners and nothing's right.
+    </p>
+
+    <p>
+      The bullnose halves aren't there. The corner units aren't listed. The software had counted
+      blocks like carpet — length times height — and called it done. It didn't know a corner existed.
+    </p>
+
+    <p>
+      That's when I understood what these tools actually are. They're not masonry software.
+      They're rectangle counters that happen to output a block count.
+    </p>
+
+    <h2>What the software thinks a wall is</h2>
+
+    <p>
+      Most construction estimating tools — even the ones marketed specifically for masonry —
+      use the same model under the hood: a wall is a rectangular field of units. Length divided
+      by unit size, height divided by unit size, multiply. Add a waste factor.
+    </p>
+
+    <p>
+      That's it. That's the whole engine.
+    </p>
+
+    <p>
+      A corner is not modeled. A corner is a place where two rectangular fields meet. The software
+      doesn't know that the bond has to run through it. It doesn't know that every other course,
+      one wall gains a block and the other loses one. It doesn't know that a 10-inch CMU corner
+      uses an 8-inch block plus a face shell spacer — a completely different unit that has to be
+      ordered separately.
+    </p>
+
+    <blockquote>
+      <p>
+        You should see some of the things I've tried. It's always a mess. The count comes out wrong,
+        the corner pieces are missing, and I end up in a spreadsheet doing it by hand anyway.
+      </p>
+    </blockquote>
+
+    <h2>The rake problem</h2>
+
+    <p>
+      Try to model a building with gable ends in one of these tools.
+    </p>
+
+    <p>
+      Here's the workflow I've actually used: place one wall all the way around the perimeter.
+      Then place a second wall at the height of the rake, with returns for the corners.
+      Then place two rake walls — one for each gable. Three separate wall placements,
+      manually stitched together, to represent one building.
+    </p>
+
+    <p>
+      And after all that, the takeoff is still wrong. The rake geometry isn't accounted for
+      correctly. The bond doesn't know it's stepping. The corner counts are still off.
+    </p>
+
+    <p>
+      So I do what I've always done: take the rough count from the software, open a spreadsheet,
+      and count everything by hand. Every corner piece. Every half unit. Every bond beam block.
+      Every cut. For a big job, that's days of work.
+    </p>
+
+    <p>
+      Then the drawings change.
+    </p>
+
+    <h2>What I actually wanted</h2>
+
+    <p>
+      I wanted a tool that modeled a masonry wall the way a mason thinks about it — not the way
+      a programmer thinks about rectangle grids.
+    </p>
+
+    <p>
+      A wall that knows what bond is. Corners that interlock by default, because that's how you
+      lay masonry. A building with rakes that gets entered once, not assembled from three
+      disconnected wall segments. Lintels that place in the right course — the bond beam course —
+      not wherever the software guesses.
+    </p>
+
+    <p>
+      And a takeoff that lists every unit as it will actually be ordered: corners, halves, lintel
+      blocks, bond beam blocks, bullnose, cuts — all counted, all priced. So I don't end up
+      back in a spreadsheet.
+    </p>
+
+    <p>
+      I looked for that for years. Nothing existed. Not for masonry specifically.
+      The tools that call themselves masonry tools are rectangle counters with a better-looking output.
+    </p>
+
+    <p>
+      So I built it.
+    </p>
+
+    <h2>What The Masonry Modeler actually does</h2>
+
+    <p>
+      The Masonry Modeler starts with bond. The engine knows the block size, the joint width,
+      the bond pattern. When you draw a corner, the bond runs through it — automatically.
+      Course by course, the leg shifts. The corner unit count is correct because the geometry
+      is correct.
+    </p>
+
+    <p>
+      Rakes are geometry, not workarounds. A wall with a gabled top gets entered as one wall
+      with a slope. The engine counts the full courses, the step courses, and the rakes.
+      No three-step assembly process.
+    </p>
+
+    <p>
+      Lintels snap to the right course because the engine knows where bond beam courses fall.
+      Development length past the opening is automatic.
+    </p>
+
+    <p>
+      The takeoff lists every unit as its own line item. Corners. Halves. Cuts over 4 inches.
+      (Under 4 inches, the engine absorbs them — it will never produce a cut that can't be
+      laid.) Bond beam blocks with rebar, counted in pounds, not just linear feet.
+    </p>
+
+    <p>
+      That's what I needed. That's what I built.
+    </p>
+
+    <p>
+      If you're still doing your exact piece counts by hand in a spreadsheet, I'd like to
+      show you something different.
+    </p>
+
+    <a href="/#waitlist" class="post-cta-inline">Join the waitlist →</a>
+
+  </article>
+
+  <div class="blog-post-footer">
+    <a href="/blog/" class="blog-back-link">← All posts</a>
+  </div>
+
+</Layout>

@@ -1,30 +1,40 @@
 ---
 interface Props {
   waitlistHref?: string;
+  sheet?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 }
-const { waitlistHref = '#waitlist' } = Astro.props;
+const {
+  waitlistHref = '#waitlist',
+  sheet = 'A1.0 — Home',
+  ctaLabel,
+  ctaHref,
+} = Astro.props;
+const finalCtaHref = ctaHref ?? waitlistHref;
+const finalCtaLabel = ctaLabel ?? 'Join Waitlist →';
 ---
 
 <header class="title-block">
   <div class="title-block-inner">
-    <div class="tb-cell">
+    <a href="/" class="tb-cell tb-brand-cell">
       <div class="tb-brand">
         <span class="mx-mark" style="--mx-size: 28px;">
           <svg role="img" aria-label="MasonX"><use href="#mx-monogram"/></svg>
         </span>
         <span class="tb-logo">TMM</span>
       </div>
-    </div>
+    </a>
     <div class="tb-cell">
       <span class="tb-label">Project</span>
       <span class="tb-value">The Masonry Modeler</span>
     </div>
     <div class="tb-cell">
       <span class="tb-label">Sheet</span>
-      <span class="tb-value">A1.0 — Home</span>
+      <span class="tb-value">{sheet}</span>
     </div>
-    <a href={waitlistHref} class="tb-cell tb-cta">
-      <span class="tb-value">Join Waitlist →</span>
+    <a href={finalCtaHref} class="tb-cell tb-cta">
+      <span class="tb-value">{finalCtaLabel}</span>
     </a>
   </div>
 </header>
