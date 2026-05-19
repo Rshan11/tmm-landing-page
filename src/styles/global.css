@@ -270,6 +270,43 @@ body {
   font-size: 18px;
 }
 
+.hero-waitlist-wrap {
+  max-width: 540px;
+}
+
+.hero-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border: 2px solid var(--ink);
+  background: var(--chalk);
+  padding: 4px;
+}
+
+.hero-form-input {
+  flex: 1 1 200px;
+  min-width: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 14px 12px;
+  color: var(--ink);
+}
+
+.hero-form-input::placeholder {
+  color: var(--mortar);
+}
+
+.hero-form-success {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--terracotta);
+  letter-spacing: 0.05em;
+  padding: 10px 0 0;
+}
+
 .hero-pricing {
   margin-top: 20px;
   font-family: 'JetBrains Mono', monospace;

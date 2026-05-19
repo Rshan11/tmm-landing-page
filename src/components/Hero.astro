@@ -23,10 +23,25 @@ const { waitlistHref = '#waitlist' } = Astro.props;
         of block to lay. This masonry estimating software counts halves, cuts, bond beams,
         lintels, and sills <strong>as you draw.</strong> You shouldn't have to tell it.
       </p>
-      <a href={waitlistHref} class="hero-cta" id="waitlist">
-        Join the waitlist
-        <span class="hero-cta-arrow">→</span>
-      </a>
+      <div id="waitlist" class="hero-waitlist-wrap">
+        <form class="hero-form" id="waitlist-form" action="https://formspree.io/f/mykvgeld" method="POST">
+          <input
+            type="email"
+            name="email"
+            class="hero-form-input"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          />
+          <button type="submit" class="hero-cta">
+            Join the waitlist
+            <span class="hero-cta-arrow">→</span>
+          </button>
+        </form>
+        <p class="hero-form-success" id="waitlist-success" style="display:none">
+          You're on the list. We'll be in touch.
+        </p>
+      </div>
       <div class="hero-pricing">
         Founder pricing locked at <strong>$300/mo for life</strong> · 10 seats only
       </div>
@@ -61,3 +76,35 @@ const { waitlistHref = '#waitlist' } = Astro.props;
     </div>
   </div>
 </section>
+
+<script>
+  const form = document.getElementById('waitlist-form') as HTMLFormElement;
+  const success = document.getElementById('waitlist-success') as HTMLElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button') as HTMLButtonElement;
+    const originalText = btn.innerHTML;
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+
+      if (res.ok) {
+        form.style.display = 'none';
+        success.style.display = 'block';
+      } else {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    } catch {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  });
+</script>
