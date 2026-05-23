@@ -80,6 +80,18 @@ const { waitlistHref = '#waitlist' } = Astro.props;
 <script>
   const form = document.getElementById('waitlist-form') as HTMLFormElement;
   const success = document.getElementById('waitlist-success') as HTMLElement;
+  const emailInput = form?.querySelector('input[type="email"]') as HTMLInputElement;
+
+  const focusEmail = () => {
+    if (location.hash === '#waitlist' && emailInput && form?.style.display !== 'none') {
+      emailInput.focus({ preventScroll: true });
+    }
+  };
+
+  if (location.hash === '#waitlist') {
+    window.addEventListener('load', () => setTimeout(focusEmail, 400));
+  }
+  window.addEventListener('hashchange', () => setTimeout(focusEmail, 400));
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
