@@ -153,11 +153,13 @@ Drop the new image in `src/assets/` and import it — Astro handles WebP/AVIF op
 6. Sitemap entry generates automatically on next `npm run build`.
 
 ## TitleBlock sheet numbers
-Drafting convention. Default `sheet="A1.0 — Home"`. Override per page:
-- Homepage: default
-- SEO pages: don't override (they use the home sheet number — keep the header consistent)
-- Blog index: `sheet="B0 — Blog"`
-- Blog posts: `sheet="B1.1 — Why I Built This"`, `B1.2 — …`
+Drafting convention. Default `sheet="A1.0 — Home"`. Override per page so the value shown matches the entry in the sheet-index dropdown:
+- Homepage: default (`A1.0 — Home`)
+- SEO landing pages: `A2.1`, `A2.2`, `A2.3`, …
+- Blog index: `B0 — Blog`
+- Blog posts: `B1.1`, `B1.2`, …
+
+When you add a new page, also add it to the `sheetIndex` array inside `TitleBlock.astro` so it appears in the header dropdown on every page. The dropdown auto-highlights the current page by matching `Astro.url.pathname`.
 
 ## Design language
 

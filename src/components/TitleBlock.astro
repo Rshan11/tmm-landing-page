@@ -13,6 +13,33 @@ const {
 } = Astro.props;
 const finalCtaHref = ctaHref ?? waitlistHref;
 const finalCtaLabel = ctaLabel ?? 'Join Waitlist →';
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const sheetIndex = [
+  {
+    group: 'Architectural',
+    entries: [
+      { num: 'A1.0', label: 'Home', href: '/' },
+      { num: 'A2.1', label: 'CMU Block Count', href: '/cmu-block-count/' },
+      { num: 'A2.2', label: 'Bond Beam Estimating', href: '/bond-beam-estimating/' },
+      { num: 'A2.3', label: 'Masonry Takeoff Accuracy', href: '/masonry-takeoff-accuracy/' },
+    ],
+  },
+  {
+    group: 'Field Notes',
+    entries: [
+      { num: 'B0',   label: 'All Posts',                  href: '/blog/' },
+      { num: 'B1.1', label: 'Why I Built This',           href: '/blog/why-i-built-this/' },
+      { num: 'B1.2', label: 'Software Sees the Corner',   href: '/blog/software-sees-the-corner/' },
+    ],
+  },
+];
+
+const isCurrent = (href: string) => {
+  const normalized = href.replace(/\/$/, '') || '/';
+  return normalized === currentPath;
+};
 ---
 
 <header class="title-block">
@@ -25,16 +52,76 @@ const finalCtaLabel = ctaLabel ?? 'Join Waitlist →';
         <span class="tb-logo">TMM</span>
       </div>
     </a>
-    <div class="tb-cell">
+    <div class="tb-cell tb-cell-project">
       <span class="tb-label">Project</span>
       <span class="tb-value">The Masonry Modeler</span>
     </div>
-    <div class="tb-cell">
+    <div class="tb-cell tb-cell-sheet">
       <span class="tb-label">Sheet</span>
       <span class="tb-value">{sheet}</span>
     </div>
+    <button
+      type="button"
+      class="tb-cell tb-menu"
+      id="tb-menu-trigger"
+      aria-expanded="false"
+      aria-controls="sheet-index"
+      aria-label="Open sheet index"
+    >
+      <span class="tb-label">Index</span>
+      <span class="tb-value">Sheets <span class="tb-menu-chevron" aria-hidden="true">▾</span></span>
+    </button>
     <a href={finalCtaHref} class="tb-cell tb-cta">
       <span class="tb-value">{finalCtaLabel}</span>
     </a>
   </div>
+
+  <nav class="sheet-index-panel" id="sheet-index" hidden aria-label="Sheet index">
+    <div class="sheet-index-inner">
+      {sheetIndex.map(group => (
+        <div class="sheet-index-group">
+          <div class="sheet-index-group-label">{group.group}</div>
+          {group.entries.map(entry => (
+            <a
+              href={entry.href}
+              class:list={['sheet-index-entry', { 'is-current': isCurrent(entry.href) }]}
+              aria-current={isCurrent(entry.href) ? 'page' : undefined}
+            >
+              <span class="sheet-num">{entry.num}</span>
+              <span class="sheet-label">{entry.label}</span>
+              <span class="sheet-arrow" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </div>
+      ))}
+    </div>
+  </nav>
 </header>
+
+<script>
+  const trigger = document.getElementById('tb-menu-trigger');
+  const panel = document.getElementById('sheet-index');
+
+  const setOpen = (open: boolean) => {
+    if (!panel || !trigger) return;
+    panel.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+  };
+
+  trigger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setOpen(!!panel?.hidden);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!panel || panel.hidden) return;
+    const target = e.target as Node;
+    if (!panel.contains(target) && target !== trigger && !trigger?.contains(target)) {
+      setOpen(false);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>
