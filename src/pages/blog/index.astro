@@ -3,6 +3,15 @@ import Layout from '../../components/Layout.astro';
 import MasonXMonogram from '../../components/MasonXMonogram.astro';
 import TitleBlock from '../../components/TitleBlock.astro';
 
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field Notes", "item": "https://themasonrymodeler.com/blog/" },
+  ],
+};
+
 const posts = [
   {
     num: '02',
@@ -26,6 +35,10 @@ const posts = [
   description="Field notes from building masonry estimating software. Written by a mason who got tired of doing exact piece counts by hand."
   canonical="https://themasonrymodeler.com/blog/"
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
   <MasonXMonogram />
   <TitleBlock sheet="B0 — Blog" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
 

@@ -2,13 +2,55 @@
 import Layout from '../../components/Layout.astro';
 import MasonXMonogram from '../../components/MasonXMonogram.astro';
 import TitleBlock from '../../components/TitleBlock.astro';
+
+const title = "Why I Built The Masonry Modeler | TMM Blog";
+const description = "I've been doing masonry takeoffs for years. I use spreadsheets and count everything by hand — because the tools that exist don't model masonry geometry. So I built one that does.";
+const canonical = "https://themasonrymodeler.com/blog/why-i-built-this/";
+
+const blogPostingSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "It's 2026. Why Doesn't Masonry Software Know What a Corner Is?",
+  "description": description,
+  "image": "https://themasonrymodeler.com/assets/og-image.png",
+  "datePublished": "2026-05-10",
+  "dateModified": "2026-05-10",
+  "author": {
+    "@type": "Person",
+    "name": "Ryan Shanley",
+    "jobTitle": "Founder",
+    "worksFor": { "@type": "Organization", "name": "Powder River Masonry" },
+    "url": "https://themasonrymodeler.com/blog/why-i-built-this/",
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field Notes", "item": "https://themasonrymodeler.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Why I Built This", "item": canonical },
+  ],
+};
 ---
 
 <Layout
-  title="Why I Built The Masonry Modeler | TMM Blog"
-  description="I've been doing masonry takeoffs for years. I use spreadsheets and count everything by hand — because the tools that exist don't model masonry geometry. So I built one that does."
-  canonical="https://themasonrymodeler.com/blog/why-i-built-this/"
+  title={title}
+  description={description}
+  canonical={canonical}
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
   <MasonXMonogram />
   <TitleBlock sheet="B1.1 — Why I Built This" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
 

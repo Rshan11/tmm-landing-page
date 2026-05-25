@@ -38,6 +38,33 @@ const schema = {
     "acceptedAnswer": { "@type": "Answer", "text": item.answer },
   })),
 };
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Schedule Bond Beams From a Rebar Schedule",
+  "description": "Place bond beam courses based on the structural rebar schedule instead of habit, so every course is tied to a specific rebar requirement and rebar weight is reported in pounds.",
+  "totalTime": "PT15M",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Read the structural rebar schedule",
+      "text": "Pull bar sizes, vertical spacing, and lap requirements directly from the structural drawings. This is the input that drives every bond beam course." },
+    { "@type": "HowToStep", "position": 2, "name": "Snap bond beam courses to rebar elevations",
+      "text": "Enter the schedule into the engine so each bond beam course is placed at the elevation called for by the rebar, not by rule of thumb or habit." },
+    { "@type": "HowToStep", "position": 3, "name": "Wrap corners and extend development length",
+      "text": "Let the engine carry bond beam courses continuously through corners and automatically extend rebar past openings by the required development length for the bar size." },
+    { "@type": "HowToStep", "position": 4, "name": "Convert rebar to pounds for procurement",
+      "text": "Report rebar in linear feet for scheduling and in pounds for the purchase order using standard bar weights — #4 at 0.668 lb/ft, #5 at 1.043 lb/ft, etc." },
+  ],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Bond Beam Estimating", "item": canonical },
+  ],
+};
 ---
 
 <Layout
@@ -47,6 +74,8 @@ const schema = {
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   </Fragment>
 
   <MasonXMonogram />

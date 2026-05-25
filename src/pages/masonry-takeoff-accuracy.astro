@@ -38,6 +38,33 @@ const schema = {
     "acceptedAnswer": { "@type": "Answer", "text": item.answer },
   })),
 };
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Fix the Three Most Common Masonry Takeoff Errors",
+  "description": "Three problems cause almost every masonry takeoff error: lintels that don't land right, corners counted as stretchers, and half-block courses missed. Render each one before counting.",
+  "totalTime": "PT20M",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Render the lintel course before counting it",
+      "text": "Calculate how courses land above and below every opening, including bond beam continuity across the header. The lintel unit count comes from the actual opening width, not a rule of thumb." },
+    { "@type": "HowToStep", "position": 2, "name": "Count corners as their own unit, not as stretchers",
+      "text": "Mark wall intersections as corners so corner blocks (including 10-inch and 12-inch corner-plus-face-shell assemblies) become separate line items on the takeoff." },
+    { "@type": "HowToStep", "position": 3, "name": "Catch non-modular heights and half-high courses",
+      "text": "When the wall height does not divide evenly by 8 inches, generate the half-high course at top or bottom as its own line item — counted, weighted, and priced separately." },
+    { "@type": "HowToStep", "position": 4, "name": "Replace estimation padding with a true breakage allowance",
+      "text": "Remove the waste factor that was covering missed unit types. Keep a small allowance for field breakage only, separated from the rendered unit counts." },
+  ],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Masonry Takeoff Accuracy", "item": canonical },
+  ],
+};
 ---
 
 <Layout
@@ -47,6 +74,8 @@ const schema = {
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   </Fragment>
 
   <MasonXMonogram />

@@ -1,0 +1,40 @@
+# The Masonry Modeler
+
+> Masonry estimating software that renders every block — corners, lintels, bond beams, halves, cuts — as you draw. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Currently in pre-launch; founder pricing $300/month for the first 10 seats.
+
+## Background
+
+The Masonry Modeler (TMM) is built by Ryan Shanley of Powder River Masonry. The thesis: a masonry wall is not a rectangular field of units to be divided and multiplied. It is a bonded assembly where corners interlock, bond beams wrap, lintels land on specific courses, and non-modular heights produce half-high courses that need their own SKU. Every existing tool treats masonry as a rectangle-counting problem. TMM models the bond first and counts the bond's consequences.
+
+## Core technical rules the engine enforces
+
+- Corners interlock by default; the bond runs through them, inside and outside
+- Non-modular leftover is absorbed into the corner — the leg moves 8 inches every course, same as the bond
+- Control joints default to 24 feet 8 inches (296 inches = 18.5 blocks × 16 inches exactly); never auto-placed within 16 inches of a corner
+- Bond beam courses are driven by the rebar schedule from the structural drawings, not by a checkbox
+- Half-high courses are generated and broken out as their own line item, not buried in a waste factor
+- The engine will never produce a cut under 4 inches — leftover gets absorbed into adjacent joints or the cut shifts to the next valid position
+- 10-inch and 12-inch CMU corners are listed as an 8-inch block plus a face shell spacer (separate line items, the way the supplier ships them)
+- Every block-by-block decision is overridable by the mason — one click changes the unit, takeoff updates immediately
+
+## Pages
+
+### Architectural (product / topic pages)
+- [Home](https://themasonrymodeler.com/): Product overview, hero render of the 88th Avenue pump station, founder waitlist
+- [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): Why block-by-block counting beats square-footage estimating with a factor
+- [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
+- [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them
+
+### Field Notes (blog)
+- [Blog Index](https://themasonrymodeler.com/blog/)
+- [Why I Built The Masonry Modeler](https://themasonrymodeler.com/blog/why-i-built-this/): Founder story — the Douglas Humane Society job where the rectangle-counter model became impossible to ignore
+- [The Software Sees the Corner. Why Am I Placing It?](https://themasonrymodeler.com/blog/software-sees-the-corner/): On automatic corner detection, the cost premium of corner SKUs, and the half-high-course miss
+
+## About the founder
+
+Ryan Shanley is the founder of Powder River Masonry and the builder of The Masonry Modeler. He does masonry takeoffs by hand in spreadsheets because the available estimating tools do not model masonry. TMM is the tool he wanted and could not find.
+
+## Contact
+
+- Website: https://themasonrymodeler.com/
+- Waitlist: https://themasonrymodeler.com/#waitlist
