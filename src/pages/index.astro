@@ -60,6 +60,22 @@ const faqItems = [
         },
       })),
     })} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Building a Pump Station in The Masonry Modeler",
+      "description": "Three-minute screen recording of a pump station traced and taken off in The Masonry Modeler. Walls, corners, lintels, bond beams, and the block-by-block takeoff — start to finish.",
+      "thumbnailUrl": ["https://i.ytimg.com/vi/m-fSK2uB924/maxresdefault.jpg"],
+      "uploadDate": "2026-05-25",
+      "duration": "PT3M",
+      "embedUrl": "https://www.youtube.com/embed/m-fSK2uB924",
+      "contentUrl": "https://youtu.be/m-fSK2uB924",
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Masonry Modeler",
+        "url": "https://themasonrymodeler.com/",
+      },
+    })} />
   </Fragment>
 
   <MasonXMonogram />
@@ -105,11 +121,30 @@ const faqItems = [
     reverse={true}
   />
 
-  <SectionDivider number="04" label="The Rules · Encoded" />
+  <SectionDivider number="04" label="The Build, End to End" />
+
+  <ProofSection
+    sectionNum="04"
+    sectionLabel="The whole thing, on camera"
+    headlinePre="Watch the"
+    accentWord="pump station"
+    body1="Three minutes. Blank canvas to bonded model — corners, bond beams, lintels,
+      the takeoff. Same building you've been looking at this whole page. No fast
+      cuts, no edits, no slide deck. The geometry happens as I draw."
+    body2="If you've ever sat in a takeoff meeting watching someone count blocks off a
+      printout, this is what you're replacing."
+    masonxQuote="Watch the lintel land. Watch the bond beam wrap the corner. That's the count, that's the order, that's the wall."
+    videoId="m-fSK2uB924"
+    videoTitle="Building a pump station in The Masonry Modeler"
+    imageCaption="Pump Station · trace → takeoff · 3 min"
+    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
+  />
+
+  <SectionDivider number="05" label="The Rules · Encoded" />
 
   <RulesSection />
 
-  <SectionDivider number="05" label="Common Questions" />
+  <SectionDivider number="06" label="Common Questions" />
 
-  <FAQSection items={faqItems} />
+  <FAQSection items={faqItems} sectionNum="06" />
 </Layout>

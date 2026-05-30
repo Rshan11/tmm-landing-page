@@ -65,6 +65,23 @@ const breadcrumbSchema = {
     { "@type": "ListItem", "position": 2, "name": "CMU Block Count", "item": canonical },
   ],
 };
+
+const videoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Building the 88th Avenue Pump Station in The Masonry Modeler",
+  "description": "Three-minute trace of the 88th Avenue pump station in TMM — block-by-block, with stretchers, corners, bond beam units, and the half-high parapet course counted as separate line items.",
+  "thumbnailUrl": ["https://i.ytimg.com/vi/m-fSK2uB924/maxresdefault.jpg"],
+  "uploadDate": "2026-05-25",
+  "duration": "PT3M",
+  "embedUrl": "https://www.youtube.com/embed/m-fSK2uB924",
+  "contentUrl": "https://youtu.be/m-fSK2uB924",
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+};
 ---
 
 <Layout
@@ -76,6 +93,7 @@ const breadcrumbSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
   </Fragment>
 
   <MasonXMonogram />
@@ -148,6 +166,21 @@ const breadcrumbSchema = {
           <span class="stat-label">Blank canvas → takeoff</span>
         </div>
         <span class="stat-note">88th Ave pump station · traced in TMM · all numbers confirmed</span>
+      </div>
+
+      <div class="video-frame on-dark">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/m-fSK2uB924"
+          title="Building the 88th Avenue pump station in The Masonry Modeler"
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        />
+        <div class="video-frame-caption">
+          <span>Pump Station · trace → takeoff · 3 min</span>
+          <span><strong>Powder River Masonry</strong> · MasonX</span>
+        </div>
       </div>
 
       <p>

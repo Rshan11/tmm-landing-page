@@ -65,6 +65,23 @@ const breadcrumbSchema = {
     { "@type": "ListItem", "position": 2, "name": "Masonry Takeoff Accuracy", "item": canonical },
   ],
 };
+
+const videoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Masonry Takeoff in The Masonry Modeler — Pump Station, Three Problems Solved",
+  "description": "Three-minute pump station trace in TMM showing the three repeating takeoff errors — lintels, corners, and half-block courses — handled correctly as the wall is rendered.",
+  "thumbnailUrl": ["https://i.ytimg.com/vi/m-fSK2uB924/maxresdefault.jpg"],
+  "uploadDate": "2026-05-25",
+  "duration": "PT3M",
+  "embedUrl": "https://www.youtube.com/embed/m-fSK2uB924",
+  "contentUrl": "https://youtu.be/m-fSK2uB924",
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+};
 ---
 
 <Layout
@@ -76,6 +93,7 @@ const breadcrumbSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
   </Fragment>
 
   <MasonXMonogram />
@@ -164,6 +182,30 @@ Course  9  S    S    S    S    S    S    S   <span class="bright"> S  </span>  �
 
 <span class="dim">           The zipper repeats every course pair for the full wall height.</span>
 <span class="highlight">           TMM counts both patterns. Half-blocks are their own line item.</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>All Three, On Camera</h2>
+      <p>
+        Three minutes. Blank canvas to a counted pump station. Watch the lintel land in the right course, the corner blocks count separately from the stretchers, and the half-high parapet break out as its own line item. The three problems above — solved as the wall draws.
+      </p>
+
+      <div class="video-frame on-dark">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/m-fSK2uB924"
+          title="Building a pump station in The Masonry Modeler — three takeoff problems solved as the wall is traced"
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        />
+        <div class="video-frame-caption">
+          <span>Pump Station · trace → takeoff · 3 min</span>
+          <span><strong>Powder River Masonry</strong> · MasonX</span>
+        </div>
       </div>
     </div>
   </section>

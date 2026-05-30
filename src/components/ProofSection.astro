@@ -10,8 +10,11 @@ interface Props {
   body1: string;           // First paragraph (plain text or simple HTML)
   body2?: string;          // Second paragraph (optional)
   masonxQuote: string;     // Text after "MasonX: " (foreman voice)
-  image: ImageMetadata;    // Imported image asset
-  imageAlt: string;
+  // Pass either an image OR a YouTube videoId — not both.
+  image?: ImageMetadata;
+  imageAlt?: string;
+  videoId?: string;        // YouTube video ID, e.g. "m-fSK2uB924"
+  videoTitle?: string;     // Used for iframe title attribute (accessibility)
   imageCaption: string;    // e.g. "Lintel · corner · running bond"
   imageCredit: string;     // e.g. "Powder River Masonry · MasonX"
   reverse?: boolean;       // Flip to image-left, text-right layout
@@ -27,6 +30,8 @@ const {
   masonxQuote,
   image,
   imageAlt,
+  videoId,
+  videoTitle,
   imageCaption,
   imageCredit,
   reverse = false,
@@ -50,13 +55,24 @@ const {
       </div>
     </div>
 
-    <div class="proof-image">
-      <Image
-        src={image}
-        alt={imageAlt}
-        loading="lazy"
-        decoding="async"
-      />
+    <div class:list={['proof-image', { 'is-video': !!videoId }]}>
+      {videoId ? (
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+          title={videoTitle ?? 'The Masonry Modeler video'}
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        />
+      ) : (
+        <Image
+          src={image!}
+          alt={imageAlt!}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
       <div class="proof-image-caption">
         <span>{imageCaption}</span>
         <span set:html={imageCredit} />

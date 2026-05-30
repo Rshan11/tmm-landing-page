@@ -17,6 +17,10 @@ The Masonry Modeler (TMM) is built by Ryan Shanley of Powder River Masonry. The 
 - 10-inch and 12-inch CMU corners are listed as an 8-inch block plus a face shell spacer (separate line items, the way the supplier ships them)
 - Every block-by-block decision is overridable by the mason — one click changes the unit, takeoff updates immediately
 
+## Video proof
+
+A three-minute screen recording of the 88th Avenue pump station being traced and taken off in The Masonry Modeler is embedded on the homepage, the CMU Block Count page, and the Masonry Takeoff Accuracy page. Hosted on YouTube: https://youtu.be/m-fSK2uB924
+
 ## Pages
 
 ### Architectural (product / topic pages)

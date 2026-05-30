@@ -708,12 +708,57 @@ body {
   background: #0e1828;
 }
 
-.proof-image img {
+.proof-image img,
+.proof-image iframe {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  border: 0;
 }
+
+.proof-image.is-video { aspect-ratio: 16 / 9; }
+
+/* Video frame for use on light page sections (SEO landing pages) */
+.video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 2px solid var(--ink);
+  box-shadow: 14px 14px 0 var(--terracotta);
+  overflow: hidden;
+  background: var(--ink);
+  margin: 32px 14px 32px 0;
+}
+
+.video-frame.on-dark { border-color: var(--chalk); }
+
+.video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.video-frame-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--ink);
+  color: var(--chalk);
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.video-frame-caption strong { color: var(--terracotta); }
 
 .proof-image-caption {
   position: absolute;
