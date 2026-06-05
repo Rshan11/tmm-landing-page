@@ -1,0 +1,165 @@
+---
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+---
+
+<Layout
+  title="The Corner Test | TMM Blog"
+  description="A one-minute test you can run on any masonry estimating software. The corner is the one place area math can't fake — here's how to read it."
+  canonical="https://themasonrymodeler.com/blog/the-corner-test/"
+>
+  <MasonXMonogram />
+  <TitleBlock sheet="B1.2 — The Corner Test" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes · B1.2</span>
+    <span class="scale-marks"></span>
+    <span>Buyer's Guide</span>
+  </div>
+
+  <section class="blog-post-hero">
+    <div class="blog-post-hero-inner">
+      <div class="post-kicker">Field Notes</div>
+      <h1>
+        The Corner Test: One Minute to Know If a Tool Actually Models
+        <span class="accent">Masonry</span>
+      </h1>
+      <div class="post-meta">
+        <span><strong>Ryan Shanley</strong></span>
+        <span>June 2026</span>
+        <span>4 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="blog-post-body">
+
+    <p>
+      Every masonry estimating software demo looks the same. Clean walls go up, the count
+      climbs, a number lands in a few seconds. Impressive. They all look impressive in the demo.
+    </p>
+
+    <p>
+      The corner is where they stop looking the same.
+    </p>
+
+    <p>
+      Here's a test you can run in about a minute, on whatever you're using right now. I call it
+      the corner test. It doesn't care what the marketing says. It tells you what the tool is
+      actually made of.
+    </p>
+
+    <h2>The test</h2>
+
+    <p>
+      Three checks. All of them on the output — the takeoff, the count, the list of units.
+      You don't need to know one thing about how the software works inside. That's the point.
+      You're not auditing the tool. You're reading what it hands you.
+    </p>
+
+    <p>
+      <strong>One. Draw an outside corner and look at the takeoff.</strong>
+      Does a corner unit show up as its own line — counted separate, ordered separate? Or did
+      the count just go up by a few more of the same block? A wall that turns a corner uses a
+      different piece there. If the takeoff doesn't list it, the tool doesn't know the corner
+      exists. It counted the corner like more wall.
+    </p>
+
+    <p>
+      <strong>Two. Stack two courses at that corner and compare them.</strong>
+      Does the count change from one course to the next? It should. Bond turns a corner — the
+      courses don't sit identical on top of each other, they shift. If every course at the
+      corner is a carbon copy, the bond isn't running through it. That's two walls parked next
+      to each other, not a wall that turns.
+    </p>
+
+    <p>
+      <strong>Three. Run a wall length that won't land on a clean block.</strong>
+      Give it a number that won't divide even. Now look: does it hand you a real cut — a sized
+      piece, listed — or does it just round the count and move on? And the better question:
+      does it refuse a cut too small to lay?
+    </p>
+
+    <blockquote>
+      <p>
+        I won't produce a cut under 4 inches. Ever. A tool that'll spit out a 2-inch cut has
+        never been on a wall. You can't set that piece. It's not a cut, it's a mistake the
+        software is handing to your crew.
+      </p>
+    </blockquote>
+
+    <h2>Why it's the corner</h2>
+
+    <p>
+      You could run those checks anywhere on a wall. Only the corner gives you a straight answer.
+    </p>
+
+    <p>
+      Out in the field of the wall — a long, flat run — length times height divided by block
+      size gets close enough. Area math isn't crazy out there. That's why the demo looks good.
+      The demo stays out in the flat.
+    </p>
+
+    <p>
+      The corner is the one place area math can't fake. A corner isn't area. It's where the bond
+      has to resolve — where the wall stops being a rectangle and actually turns. Pass the corner
+      test and you can trust the whole takeoff, because the hard part came out right. Fail it and
+      it doesn't matter how clean the rest looked. You're going back into a spreadsheet to fix
+      the corners by hand, same as always.
+    </p>
+
+    <h2>Why you can't add it later</h2>
+
+    <p>
+      Here's the part that matters if you're shopping. When a tool fails the corner test, it
+      can't be patched. A corner isn't a feature somebody forgot to switch on.
+    </p>
+
+    <p>
+      A masonry estimating tool either started from the coursing or it started from areas. If it
+      started from areas — a wall is length times height, fill in the blank — then the corner was
+      never in the model to begin with. You can't bolt a corner onto that. You'd have to throw it
+      out and start over from the coursing up. That's not an update. That's a different tool.
+    </p>
+
+    <p>
+      So the corner test isn't really testing the corner. It's testing the foundation. It tells
+      you, in about a minute, whether the thing was built by somebody who lays block or somebody
+      who counts rectangles.
+    </p>
+
+    <h2>What The Masonry Modeler does</h2>
+
+    <p>
+      The Masonry Modeler starts from the coursing. You draw the wall, it renders it the way it
+      gets laid — bond running through, corners closing — the moment you draw it. Not a render
+      you wait on. You draw it, it's there.
+    </p>
+
+    <p>
+      And the takeoff lists every unit the way you'll actually order it: corners on their own
+      line, halves, real cuts with their sizes, bond beam block, lintel block. Cuts too small to
+      lay never show up — it absorbs them, because a cut you can't set isn't a cut, it's a
+      callback.
+    </p>
+
+    <p>
+      Run the corner test on it. That's the only sales pitch I've got. The corner either closes
+      or it doesn't, and you'll know in a minute which one you're looking at.
+    </p>
+
+    <p>
+      If you've been fixing corners by hand in a spreadsheet, I'd like to show you what closing
+      them automatically looks like.
+    </p>
+
+    <a href="/#waitlist" class="post-cta-inline">Join the waitlist →</a>
+
+  </article>
+
+  <div class="blog-post-footer">
+    <a href="/blog/" class="blog-back-link">← All posts</a>
+  </div>
+
+</Layout>
