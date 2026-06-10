@@ -9,39 +9,46 @@ import RulesSection from '../components/RulesSection.astro';
 import FAQSection from '../components/FAQSection.astro';
 
 import cornerDetail from '../assets/corner-detail.png';
+// TODO: replace with new 88th elevation render showing recessed single-score panels
+// (see image shot list item 2 in CLAUDE.md). Using pump-station-hero as placeholder.
+import panelDetail from '../assets/pump-station-hero.png';
 
 const faqItems = [
   {
     question: 'How do corners work in The Masonry Modeler?',
-    answer: 'Corners interlock by default — inside and outside. The bond runs through the corner. No butt joints unless overridden. The corner is a consequence of the bond, not a special case bolted on top.',
+    answer: 'Corners interlock by default — inside and outside. The bond runs through the corner; the corner is a consequence of the bond, not a special case. Butt joints only on override.',
+  },
+  {
+    question: 'How does TMM handle recessed panels and face changes?',
+    answer: 'Face boundaries don\'t break bond. One wall line carries multiple face types and recess depths — splitface, single score, ground face — and the bond runs continuously through every transition. Each face type breaks out as its own takeoff line item.',
   },
   {
     question: 'How does the engine handle non-modular leftover at corners?',
-    answer: 'Non-modular leftover absorbs into the corner. The leg moves 8 inches every course — same as the bond. No 4-inch cut exposed in the field.',
+    answer: 'Non-modular leftover absorbs into the corner. The leg moves with the bond every course. No exposed 4-inch cut in the finished wall.',
   },
   {
     question: 'What is the default control joint spacing?',
-    answer: 'Control joints default to 24 feet 8 inches — 296 inches, which is 18.5 blocks times 16 inches exactly. This is the modular spacing. Drag to override. Control joints are never auto-placed within 16 inches of a corner.',
+    answer: '24 feet 8 inches — 296 inches, which is 18.5 blocks × 16 inches exactly. Drag to override. Joints are never auto-placed within 16 inches of a corner.',
   },
   {
     question: 'How are bond beams placed?',
-    answer: 'Rebar drives bond beams. Set the rebar schedule from the structural drawings and courses snap to match. Development-length extension past openings is automatic. Weight is reported in pounds, not just linear feet.',
+    answer: 'Rebar drives bond beams. Set the rebar schedule from the structural drawings and courses snap to match. Development-length extension past openings is automatic. Steel weight reported in pounds, not just linear feet.',
   },
   {
     question: 'Does the engine handle half-high courses?',
-    answer: 'Yes. When a wall is not modular to 8 inches, the engine generates the half-high course at top or bottom and adds it as its own line item. Counted, weighted, and priced separately — not buried in a waste factor.',
+    answer: 'Yes. Non-modular wall heights generate a half-high course at top or bottom as its own counted, weighted, priced line item.',
   },
   {
     question: 'Will the engine produce cuts smaller than 4 inches?',
-    answer: 'No. If a layout would force a cut under 4 inches, the engine absorbs the leftover into adjacent joints or shifts the cut to the next valid position. By design.',
+    answer: 'No. The engine absorbs the leftover into adjacent joints or shifts the cut to the next valid position. By design.',
   },
   {
     question: 'How are 10-inch and 12-inch CMU corners handled?',
-    answer: '10-inch and 12-inch CMU corners use an 8-inch block plus a face shell spacer — listed as separate takeoff line items, the way the supplier ships them and the way the crew lays them.',
+    answer: '8-inch corner block plus a face shell spacer — separate takeoff line items, matching how suppliers ship and crews lay them.',
   },
   {
     question: 'Can the mason override the engine?',
-    answer: 'Yes. The engine is right about 90 percent of the time. The mason is right on the other 10 percent. Click any block, change the type, and the takeoff updates. One-click override.',
+    answer: 'Yes. Click any block, change the type, the takeoff updates. The engine is right about 90 percent of the time; the mason is right the other 10 percent.',
   },
 ];
 ---
@@ -63,11 +70,11 @@ const faqItems = [
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "VideoObject",
-      "name": "Building a Pump Station in The Masonry Modeler",
-      "description": "Three-minute screen recording of a pump station traced and taken off in The Masonry Modeler. Walls, corners, lintels, bond beams, and the block-by-block takeoff — start to finish.",
+      "name": "Building the 88th Pump Station in The Masonry Modeler",
+      "description": "Under four minutes. Blank canvas to bonded pump station model in TMM — walls, corners, recessed panels, bond beams, lintels, and the block-by-block takeoff, start to finish.",
       "thumbnailUrl": ["https://i.ytimg.com/vi/m-fSK2uB924/maxresdefault.jpg"],
       "uploadDate": "2026-05-25",
-      "duration": "PT3M",
+      "duration": "PT4M",
       "embedUrl": "https://www.youtube.com/embed/m-fSK2uB924",
       "contentUrl": "https://youtu.be/m-fSK2uB924",
       "publisher": {
@@ -82,69 +89,77 @@ const faqItems = [
   <TitleBlock />
   <Hero />
 
-  <SectionDivider number="02" label="The Lintel Test" />
+  <SectionDivider number="02" label="The Panel Test" />
 
   <ProofSection
     sectionNum="02"
     sectionLabel="The detail nobody else gets right"
     headlinePre="Look at the"
-    accentWord="lintel"
-    body1="Anyone can render a flat wall. The lintel is where the math breaks down
-      everywhere else — courses above the opening have to land right, the bond has to
-      step clean across the header, and the bearing courses have to interlock back into
-      the corner. No fudge. No fake."
-    body2="One screenshot. One real job. <em>Keep this image in mind.</em>"
-    masonxQuote="If the lintel doesn't render right, the takeoff doesn't render right. And then the order doesn't ship right."
-    image={cornerDetail}
-    imageAlt="Closeup of lintel and bond beam wrap at a corner — courses step cleanly above the opening, bond beam runs continuously through the corner column"
-    imageCaption="Lintel · corner · running bond"
-    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
+    accentWord="panels"
+    body1="Architects love a recessed panel. Single score inside splitface, half-inch reveal, clean lines on the elevation. Estimating software hates them — because now one wall is three materials and the bond has to run through every transition without breaking."
+    body2="TMM treats the face change as what it is: paint, not structure. Bond runs through. Face type changes. Recess steps back. Three line items on the takeoff, one continuous wall on the screen — exactly how it gets laid."
+    masonxQuote="Face boundaries don't break bond. Anyone whose software puts a half at a panel edge has never stood on a scaffold."
+    image={panelDetail}
+    imageAlt="TMM render of the 88th pump station — recessed panel detail with bond running through the splitface to single-score transition — block-by-block masonry estimating"
+    imageCaption="Recessed panel · single score · bond runs through"
+    imageCredit="<strong>Powder River Masonry</strong> · TMM"
   />
 
-  <SectionDivider number="03" label="The Bond Beam Test" />
+  <SectionDivider number="03" label="The Lintel Test" />
 
   <ProofSection
     sectionNum="03"
     sectionLabel="The other detail nobody else gets right"
-    headlinePre="Now watch the"
-    accentWord="bond beam"
-    body1="Same screenshot. Look at the gray course running through the wall — bond beam —
-      and watch what happens when it hits the corner. It <em>wraps.</em> Continuous rebar
-      path, proper lap, the right development length. And the corner block still counts as
-      a corner block. Special unit. Separate line item."
-    body2="Most engines pick one. The math is right or the count is right. Not both."
-    masonxQuote="Rebar's continuous. Corner's still a corner. Takeoff sees both. Tell me where else that's happening."
+    headlinePre="Now look at the"
+    accentWord="lintel"
+    body1="Anyone can render a flat wall. The lintel is where every other engine quietly gives up — courses above the opening have to land, bond has to step clean across the header, and the bearing courses have to interlock back into the corner. No fudge. No fake. No <em>close enough.</em>"
+    body2="One screenshot. One real job. Keep it in mind the next time a vendor shows you a demo wall with no openings in it."
+    masonxQuote="If the lintel doesn't render right, the takeoff isn't right. And then the order doesn't ship right. And then it's your problem, not theirs."
     image={cornerDetail}
-    imageAlt="Closeup of lintel and bond beam wrap at a corner — courses step cleanly above the opening, bond beam runs continuously through the corner column"
-    imageCaption="Bond beam · wraps the corner"
-    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
+    imageAlt="TMM render of the 88th pump station — lintel and bond beam wrap at a corner, courses stepping cleanly above the opening — block-by-block masonry estimating"
+    imageCaption="Lintel · corner · running bond"
+    imageCredit="<strong>Powder River Masonry</strong> · TMM"
     reverse={true}
   />
 
-  <SectionDivider number="04" label="The Build, End to End" />
+  <SectionDivider number="04" label="The Bond Beam Test" />
 
   <ProofSection
     sectionNum="04"
+    sectionLabel="Same screenshot. Keep looking."
+    headlinePre="Now watch the"
+    accentWord="bond beam"
+    body1="The gray course running through the wall — bond beam. Watch what it does at the corner. It <em>wraps.</em> Continuous rebar path, proper lap, real development length. And the corner block is still a corner block — special unit, separate line item."
+    body2="Every other engine makes you pick: the math is right, or the count is right. That's not a trade-off. That's a bug they shipped and called a product."
+    masonxQuote="Rebar's continuous. Corner's still a corner. Takeoff sees both. Show me another engine doing that — I'll wait."
+    image={cornerDetail}
+    imageAlt="TMM render of the 88th pump station — bond beam wrapping continuously through the corner, special unit counted separately — block-by-block masonry estimating"
+    imageCaption="Bond beam · wraps the corner"
+    imageCredit="<strong>Powder River Masonry</strong> · TMM"
+  />
+
+  <SectionDivider number="05" label="The Build, End to End" />
+
+  <ProofSection
+    sectionNum="05"
     sectionLabel="The whole thing, on camera"
     headlinePre="Watch the"
     accentWord="pump station"
-    body1="Three minutes. Blank canvas to bonded model — corners, bond beams, lintels,
-      the takeoff. Same building you've been looking at this whole page. No fast
-      cuts, no edits, no slide deck. The geometry happens as I draw."
-    body2="If you've ever sat in a takeoff meeting watching someone count blocks off a
-      printout, this is what you're replacing."
-    masonxQuote="Watch the lintel land. Watch the bond beam wrap the corner. That's the count, that's the order, that's the wall."
+    body1="Under four minutes. Blank canvas to bonded model — corners, panels, bond beams, lintels, the takeoff. Same building you've been looking at this whole page. No fast cuts, no edits, no slide deck. The geometry happens as I draw."
+    body2="If you've ever sat in a takeoff meeting watching someone count blocks off a printout with a highlighter, this is the part of your week you're getting back."
+    masonxQuote="Watch the lintel land. Watch the bond beam wrap. Watch the panels recess. That's the count, that's the order, that's the wall."
     videoId="m-fSK2uB924"
-    videoTitle="Building a pump station in The Masonry Modeler"
-    imageCaption="Pump Station · trace → takeoff · 3 min"
-    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
+    videoTitle="Building the 88th pump station in The Masonry Modeler"
+    imageCaption="88th Pump Station · trace → takeoff"
+    imageCredit="<strong>Powder River Masonry</strong> · TMM"
+    reverse={true}
   />
 
-  <SectionDivider number="05" label="The Rules · Encoded" />
+  <SectionDivider number="06" label="The Rules · Encoded" />
 
   <RulesSection />
 
-  <SectionDivider number="06" label="Common Questions" />
+  <SectionDivider number="07" label="Common Questions" />
 
-  <FAQSection items={faqItems} sectionNum="06" />
+  <FAQSection items={faqItems} sectionNum="07" />
 </Layout>

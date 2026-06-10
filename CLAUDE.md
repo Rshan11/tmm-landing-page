@@ -58,7 +58,7 @@ generate-og.mjs                      ← one-shot Sharp script that composites t
 ## Page types
 
 ### Homepage (`pages/index.astro`)
-Composition only. Imports the components, defines `faqItems`, injects a FAQPage JSON-LD into Layout's `head` slot. Renders: `MasonXMonogram → TitleBlock → Hero → SectionDivider → ProofSection ×2 → SectionDivider → RulesSection → SectionDivider → FAQSection`.
+Composition only. Imports the components, defines `faqItems`, injects FAQPage + VideoObject JSON-LD into Layout's `head` slot. Renders: `MasonXMonogram → TitleBlock → Hero → 02 Panel Test → 03 Lintel Test → 04 Bond Beam Test → 05 The Build, End to End (video) → 06 Rules → 07 FAQ`. Section divider numbers (02–07) match the `sectionNum` prop on the corresponding ProofSection/FAQSection.
 
 ### SEO landing pages (`pages/<slug>.astro`)
 All three follow the same shape. Pattern:
@@ -237,12 +237,25 @@ Homepage `Hero.astro` posts to **Formspree** (`https://formspree.io/f/mykvgeld`)
 - **Quotable content matters** — AI engines synthesize answers from terse, factual lines. Keep MasonX voice tight and specific (named numbers, named units, no marketing softeners).
 
 ## Content rules
-- **Never name competitors.** Let renders prove the difference.
+- **Product is TMM. Character is MasonX. The word "MasonryX" does not exist** — never use it in alt text, captions, image filenames, render titlebars, or anywhere else. If you find one, fix it.
+- **Never name competitors.** Let renders prove the difference. Name the absurdity of the category ("estimating area when walls are made of blocks") instead of the company.
+- **CTA language is "Claim a founder seat"** (or "Claim a Seat" in tight header space), not "Join waitlist" — the scarcity pitch ($300/mo, 10 seats) and waitlist pitch pull against each other. Use the scarcity framing.
 - Rule card titles are MasonX first-person quotes. Keep that voice.
 - Proof section H2s follow "Look at the X" / "Now watch the Y" pattern.
 - Body copy uses Fraunces for warmth; JetBrains Mono only for numbers, labels, MasonX voice.
 - FAQ answers stay in MasonX voice — terse, foreman cadence, no marketing softeners.
 - SEO page titles: lead with the user-search phrasing, end with `| The Masonry Modeler`.
+- **Caption/credit pattern on renders:** `<strong>Powder River Masonry</strong> · TMM` (not MasonX, not MasonryX). MasonX appears in the *body voice*, the *quote bubble*, and the *rules signature* — not in image credits.
+
+## Voice anchors (MasonX)
+- Asserts, never explains. Contemptuous of the *category*, never of the mason.
+- Miller structure under the surface: mason is the hero, MasonX is the guide, the plan is "draw the wall," the stakes are "the order ships wrong and you eat it."
+- Sutherland edge on top: name the absurdity the industry tolerates.
+
+## Image shot list (TODO when new renders are captured)
+- **88th full elevation render** — recessed single-score panels reading as depth against the splitface field, at least one corner and the door visible. Replaces `src/assets/pump-station-hero.png` (hero image) when ready.
+- **88th panel transition closeup** — splitface → single score boundary, recess visible, bond visibly continuous across the line. Drops into Section 02 (`pages/index.astro` imports `panelDetail`); replace the `pump-station-hero.png` placeholder with the new file.
+- **88th takeoff screenshot** — actual material order / cut list output. Drop under Section 05 ("the build, end to end") as a "this is what comes out the other end" strip.
 
 ## Deployment notes
 - Cloudflare Pages serves `dist/` directly. `public/_headers` controls cache: hashed `/_astro/*` assets are `immutable, max-age=31536000`; everything else is `max-age=0, must-revalidate`.

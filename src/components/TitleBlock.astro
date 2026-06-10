@@ -12,7 +12,7 @@ const {
   ctaHref,
 } = Astro.props;
 const finalCtaHref = ctaHref ?? waitlistHref;
-const finalCtaLabel = ctaLabel ?? 'Join Waitlist →';
+const finalCtaLabel = ctaLabel ?? 'Claim a Seat →';
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 

@@ -13,15 +13,16 @@ const { waitlistHref = '#waitlist' } = Astro.props;
     <div class="hero-text">
       <div class="hero-tag">Now taking founder seats · 10 only</div>
       <h1>
-        Counting the pieces<br/>
-        takes <span class="accent">longer</span><br/>
-        than the <span class="underline">takeoff</span>.
+        Square footage is a<br/>
+        <span class="accent">lie</span> you tell your<br/>
+        <span class="underline">supplier</span>.
       </h1>
       <p class="hero-kicker">Masonry estimating software built block-by-block.</p>
       <p class="hero-sub">
-        From the first wall you place, TMM knows where the corners are and what kind
-        of block to lay. This masonry estimating software counts halves, cuts, bond beams,
-        lintels, and sills <strong>as you draw.</strong> You shouldn't have to tell it.
+        Every estimating tool on the market counts area. Walls are made of blocks.
+        TMM counts the blocks — corners, halves, cuts, bond beams, lintels, sills —
+        <strong>as you draw the wall.</strong> You don't tell it where the halves go.
+        It already knows.
       </p>
       <div id="waitlist" class="hero-waitlist-wrap">
         <form class="hero-form" id="waitlist-form" action="https://formspree.io/f/mykvgeld" method="POST">
@@ -34,12 +35,12 @@ const { waitlistHref = '#waitlist' } = Astro.props;
             autocomplete="email"
           />
           <button type="submit" class="hero-cta">
-            Join the waitlist
+            Claim a founder seat
             <span class="hero-cta-arrow">→</span>
           </button>
         </form>
         <p class="hero-form-success" id="waitlist-success" style="display:none">
-          You're on the list. We'll be in touch.
+          You're in line. We'll be in touch.
         </p>
       </div>
       <div class="hero-pricing">
@@ -49,28 +50,29 @@ const { waitlistHref = '#waitlist' } = Astro.props;
 
     <div class="hero-render">
       <div class="render-titlebar">
-        <span><span class="dot">◉</span> Pump Station · Live Render</span>
-        <span>MasonryX</span>
+        <span><span class="dot">◉</span> 88th Pump Station · Live Render</span>
+        <span>TMM</span>
       </div>
       <div class="render-image">
         <Image
           src={heroImage}
-          alt="MasonryX render of a pump station building showing rakes, bond beam course, and red corner blocks interlocking through running bond"
+          alt="TMM render of the 88th pump station — recessed single-score panels, bond beams, and interlocking corners, block by block"
           loading="eager"
           fetchpriority="high"
         />
       </div>
       <div class="render-stats">
-        <span>3 wall types · 14 rakes · 1 door</span>
-        <span><strong>8 min</strong> · blank canvas → takeoff</span>
+        <span>12 segments · 280 lf · recessed panels</span>
+        <span><strong>under 4 min</strong> · blank canvas → takeoff</span>
       </div>
       <div class="render-mx-bubble">
         <span class="mx-mark inverted" aria-hidden="true">
           <svg><use href="#mx-monogram"/></svg>
         </span>
         <span class="render-mx-bubble-text">
-          <strong>MasonX:</strong> Look at the lintel. Bond steps clean across the
-          opening. That's how the wall actually gets built.
+          <strong>MasonX:</strong> Recessed panels, single score, splitface — and the
+          bond runs straight through every face change. Count the increments yourself.
+          I'll wait.
         </span>
       </div>
     </div>
