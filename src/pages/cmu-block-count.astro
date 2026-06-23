@@ -21,7 +21,7 @@ const faqItems = [
   },
   {
     question: 'How long does it take to trace a building and get a block count?',
-    answer: 'The 88th Avenue pump station — 280 feet 2 inches of perimeter, 12 wall segments — took 3.7 minutes from blank canvas to a full block-by-block takeoff. Larger projects take proportionally longer, but the tracing step is fast because the engine counts as you draw.',
+    answer: 'The 88th Avenue pump station — 280 feet 2 inches of perimeter, 12 wall segments — took 3.7 minutes from blank canvas to a full block-by-block takeoff. Larger projects take proportionally longer, but the tracing step is fast because it counts as you draw.',
   },
   {
     question: 'What block types does TMM count separately?',
@@ -47,11 +47,11 @@ const howToSchema = {
   "totalTime": "PT10M",
   "step": [
     { "@type": "HowToStep", "position": 1, "name": "Trace the wall geometry",
-      "text": "Draw the building perimeter and openings to scale. The engine generates the bond pattern from the geometry, not from a square-footage assumption." },
+      "text": "Draw the building perimeter and openings to scale. The bond pattern is generated from the geometry, not from a square-footage assumption." },
     { "@type": "HowToStep", "position": 2, "name": "Identify unit types",
       "text": "Define stretchers, corner blocks, bond beam units, lintel units, half-high blocks, sill blocks, and cuts. Each is a separate SKU on the supplier's invoice and a separate line item on the takeoff." },
-    { "@type": "HowToStep", "position": 3, "name": "Let the engine count as you draw",
-      "text": "As walls are placed, the engine assigns the correct unit at each location — corners at intersections, half-highs at non-modular heights, bond beams at rebar elevations." },
+    { "@type": "HowToStep", "position": 3, "name": "Let it count as you draw",
+      "text": "As walls are placed, the correct unit is assigned at each location — corners at intersections, half-highs at non-modular heights, bond beams at rebar elevations." },
     { "@type": "HowToStep", "position": 4, "name": "Review the takeoff with separate line items",
       "text": "Check that each unit type has its own count with no lumping into a waste factor. The order goes to the supplier matching what the crew will actually lay." },
   ],

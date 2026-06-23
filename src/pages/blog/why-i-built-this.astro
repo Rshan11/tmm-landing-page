@@ -105,15 +105,14 @@ const breadcrumbSchema = {
     </p>
 
     <p>
-      That's it. That's the whole engine.
+      That's it. That's the whole model.
     </p>
 
     <p>
       A corner is not modeled. A corner is a place where two rectangular fields meet. The software
-      doesn't know that the bond has to run through it. It doesn't know that every other course,
-      one wall gains a block and the other loses one. It doesn't know that a 10-inch CMU corner
-      uses an 8-inch block plus a face shell spacer — a completely different unit that has to be
-      ordered separately.
+      doesn't know the bond has to run through it. It doesn't know the courses have to resolve
+      around the corner, or that a corner calls for different units entirely — special pieces that
+      get ordered separately and never show up when you count a wall like carpet.
     </p>
 
     <blockquote>
@@ -183,26 +182,26 @@ const breadcrumbSchema = {
     <h2>What The Masonry Modeler actually does</h2>
 
     <p>
-      The Masonry Modeler starts with bond. The engine knows the block size, the joint width,
+      The Masonry Modeler starts with bond. It knows the block size, the joint width,
       the bond pattern. When you draw a corner, the bond runs through it — automatically.
-      Course by course, the leg shifts. The corner unit count is correct because the geometry
+      The corner closes, and the corner unit count is correct because the geometry
       is correct.
     </p>
 
     <p>
       Rakes are geometry, not workarounds. A wall with a gabled top gets entered as one wall
-      with a slope. The engine counts the full courses, the step courses, and the rakes.
+      with a slope. It counts the full courses, the step courses, and the rakes.
       No three-step assembly process.
     </p>
 
     <p>
-      Lintels snap to the right course because the engine knows where bond beam courses fall.
+      Lintels snap to the right course because it knows where bond beam courses fall.
       Development length past the opening is automatic.
     </p>
 
     <p>
       The takeoff lists every unit as its own line item. Corners. Halves. Cuts over 4 inches.
-      (Under 4 inches, the engine absorbs them — it will never produce a cut that can't be
+      (Under 4 inches, it absorbs them — it will never produce a cut that can't be
       laid.) Bond beam blocks with rebar, counted in pounds, not just linear feet.
     </p>
 
