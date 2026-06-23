@@ -1,0 +1,220 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import PageCTA from '../components/PageCTA.astro';
+import FAQSection from '../components/FAQSection.astro';
+import gableImg from '../assets/shop-drawing-gable.png';
+import openingsImg from '../assets/shop-drawing-openings.png';
+
+const title = 'Masonry Shop Drawings, Drawn As You Build | The Masonry Modeler';
+const description = 'Masonry shop drawings shouldn\'t take days. TMM tags every CMU as you build and renders a submittal-ready, coursed elevation — openings, bond beams, finishes — automatically.';
+const canonical = 'https://themasonrymodeler.com/masonry-shop-drawings';
+
+const faqItems = [
+  {
+    question: 'What are masonry shop drawings?',
+    answer: 'A masonry shop drawing is the submittal a masonry contractor provides showing exactly how the wall gets built: course-by-course elevations, dimensions, opening locations, special shapes (corners, bond beam, lintel units), reinforcing placement, and control joints. It translates the architect\'s design intent into the unit-by-unit layout the crew lays and the supplier orders from.',
+  },
+  {
+    question: 'What does a CMU shop drawing have to show?',
+    answer: 'Sizes and profiles of units, full coursing shown as wall elevations, locations of special shapes, every opening with its dimensions, reinforcing and rebar coordinated with bond beams and lintels, and control joint locations. The Masonry Modeler renders all of it from the coursing — courses numbered, lifts marked, openings labeled, bond beam courses and control joints in their real positions.',
+  },
+  {
+    question: 'How long do masonry shop drawings take to produce?',
+    answer: 'Drawn by hand or sent to a detailing service, a set runs days — and a full redraw every time the plans change. Because TMM tags every unit as you build the wall, the coursed, labeled elevation comes out automatically the moment the geometry exists. The shop drawing isn\'t a separate job; it\'s a byproduct of building the wall.',
+  },
+  {
+    question: 'Can the drawings show architectural finishes like split face or ground face?',
+    answer: 'Yes. Every segment is taggable by finish — stretcher, single score, split face, ground face — so banded courses and accent bands show on the elevation in their actual positions, color-coded, and carry straight through to the count and the order. Tag the wall once and the finish lives on the drawing and in the takeoff.',
+  },
+  {
+    question: 'Can I set where the grout lifts fall?',
+    answer: 'Yes. Grout lifts are adjustable — set the lift heights to match the pour you\'re actually planning, and the lift lines move with them on the elevation. The drawing reflects how the wall gets built and grouted, not a fixed assumption, so the crew can plan their pours off the shop drawing itself.',
+  },
+  {
+    question: 'Do the shop drawings update when the design changes?',
+    answer: 'Yes. Change a wall height, swap a finish, move or resize an opening, and the elevation, coursing, labels, and counts redraw automatically. There is no re-detailing from scratch — the drawing is always a current reflection of the wall.',
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Produce Masonry Shop Drawings Automatically",
+  "description": "Generate a submittal-ready masonry shop drawing — coursed elevations with openings, special shapes, finishes, bond beams, and control joints — directly from the wall instead of hand-detailing it.",
+  "totalTime": "PT10M",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Trace the wall geometry",
+      "text": "Draw the building perimeter, heights, and rakes to scale. The coursing is generated from the geometry, so the elevation reflects the wall as it will actually be laid." },
+    { "@type": "HowToStep", "position": 2, "name": "Place the openings",
+      "text": "Drop in doors and windows at their dimensions. Each opening is labeled on the elevation with its size and course location, with the jamb units and lintel course resolved around it." },
+    { "@type": "HowToStep", "position": 3, "name": "Tag the units and finishes",
+      "text": "Tag segments by finish and type — stretcher, single score, split face, ground face, bond beam, special shapes. The tags color-code the elevation and flow into the count and order." },
+    { "@type": "HowToStep", "position": 4, "name": "Export the submittal-ready set",
+      "text": "The elevation comes out with courses numbered, lifts marked, openings labeled, bond beam courses and control joints in position — the coursed layout a shop-drawing submittal requires." },
+  ],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Masonry Shop Drawings", "item": canonical },
+  ],
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A2.4 — Masonry Shop Drawings" />
+
+  <PageHero
+    kicker="Shop Drawings · Coursed & Tagged"
+    headline="Masonry Shop Drawings, Drawn As You Build"
+    lead="A masonry shop drawing is a submittal requirement — coursing, openings, special shapes, reinforcing, finishes, laid out unit by unit. Done by hand it's days of detailing and a redraw every time the plans move. TMM tags every block as you build the wall, then renders the coursed, labeled elevation automatically."
+  />
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>The Shop Drawing Is a Bottleneck Nobody Owns</h2>
+      <p>
+        Every masonry submittal needs a shop drawing — the coursed elevation that proves the wall before a block gets laid. And on most jobs it's the slowest, most expensive piece of paper in the package.
+      </p>
+      <p>
+        You hand the architect's plans to a detailer or a service, wait days, and pay by the sheet. The person drawing your wall has probably never laid one. Then the plans change — a height, an opening, a finish band — and you're back in the queue waiting for a redraw. The drawing is always behind the job.
+      </p>
+
+      <div class="comparison-block">
+        <div class="comparison-col">
+          <span class="comparison-label">Hand-detailed / service</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>Days of turnaround, priced by the sheet</li>
+            <li>Drawn by someone who doesn't lay block</li>
+            <li>Coursing modeled from a drawing, not the wall</li>
+            <li>Full redraw every time the plans move</li>
+            <li>Drawing and takeoff live in separate files</li>
+          </ul>
+        </div>
+        <div class="comparison-col">
+          <span class="comparison-label">TMM, drawn as you build</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>Coursed elevation the moment the wall exists</li>
+            <li>Built by the mason who knows the wall</li>
+            <li>Coursing rendered from real block, corners and all</li>
+            <li>Change the wall — the drawing redraws itself</li>
+            <li>One model: drawing, count, and order in sync</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>Every Block Tagged, the Drawing Falls Out</h2>
+      <p>
+        TMM doesn't draw a picture of a wall. It renders the wall course by course — and because every segment is taggable, the drawing labels itself.
+      </p>
+
+      <figure class="drawing-figure">
+        <Image src={gableImg} alt="Rake wall masonry shop drawing rendered in The Masonry Modeler — gable elevation with numbered courses, grout lift lines, split face and ground face finish bands, and reinforcing shown in position" />
+        <figcaption>
+          <span>Rake wall rendered in TMM · courses numbered, lifts marked, finishes tagged</span>
+          <span><strong>Powder River Masonry</strong> · MasonX</span>
+        </figcaption>
+      </figure>
+      <p>
+        Courses are numbered up the elevation. Grout lifts are marked where you set them — adjust the lift heights and the lines move with the pour you're actually planning. Openings carry their size and location. Bond beam courses sit where the rebar schedule puts them. Control joints land in position. Finishes — stretcher, single score, split face, ground face — are tagged onto the segments, color-coded across the elevation in their real coursing positions. And the cut list comes out with it, so every cut piece is counted, not buried. All of it carried straight into the count and the order.
+      </p>
+
+      <div class="stat-block">
+        <div class="stat-item">
+          <span class="stat-value">Coursed</span>
+          <span class="stat-label">Numbered course-by-course elevation</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">Tagged</span>
+          <span class="stat-label">Finishes &amp; special shapes on every segment</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">Live</span>
+          <span class="stat-label">Redraws when the wall changes</span>
+        </div>
+        <span class="stat-note">Elevations rendered in TMM · openings, bond beams, control joints, finishes labeled automatically</span>
+      </div>
+
+      <figure class="drawing-figure">
+        <Image src={openingsImg} alt="Masonry shop drawing elevation rendered in The Masonry Modeler showing labeled door openings, numbered coursing, bond beam courses, control joints, and split face and ground face finish bands" />
+        <figcaption>
+          <span>Elevation rendered in TMM · openings labeled, bond beam courses, finishes tagged</span>
+          <span><strong>Powder River Masonry</strong> · MasonX</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        That's the whole point of tagging once: the shop drawing, the <a href="/masonry-takeoff-accuracy">block count</a>, and the supplier order are the same wall, not three documents you reconcile by hand. Change the finish band from split face to single score and it moves on the drawing and in the order at the same time.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>What the Elevation Shows</h2>
+      <p>
+        A submittal-ready masonry shop drawing has to show the wall the way it gets built, not the way it gets billed. TMM renders each piece:
+      </p>
+      <ul class="page-list">
+        <li><strong>Coursing</strong> — every course numbered up the wall, lifts marked, the bond running through corners.</li>
+        <li><strong>Openings</strong> — doors and windows labeled with size and course location, jambs and lintel course resolved around them.</li>
+        <li><strong>Special shapes</strong> — corners, bond beam, lintel, and sill units shown in position, not lumped into a field of rectangles.</li>
+        <li><strong>Adjustable grout lifts</strong> — set the lift heights to match your pour, and the lift lines move with them.</li>
+        <li><strong>Reinforcing</strong> — <a href="/bond-beam-estimating">bond beam courses placed from the rebar schedule</a>, coordinated with openings and lintels.</li>
+        <li><strong>Control joints</strong> — located on the elevation where they fall in the coursing.</li>
+        <li><strong>Finishes</strong> — split face, ground face, single score, and stretcher tagged and color-coded across the banding.</li>
+        <li><strong>Cut list</strong> — every cut piece counted alongside the <a href="/cmu-block-count">block-by-block takeoff</a>, not absorbed into a waste factor.</li>
+      </ul>
+
+      <p class="roadmap-note">
+        <strong>Coming in version 2:</strong> a full bond-drawing set, elevation by elevation, and a 3D model of the wall. Today the coursed, tagged elevation and its cut list come out automatically.
+      </p>
+    </div>
+  </section>
+
+  <FAQSection
+    items={faqItems}
+    sectionNum="FAQ"
+    label="Shop drawing questions"
+    headline="What the submittal always needs."
+  />
+
+  <PageCTA
+    headline="Build the wall once. Get the drawing, the count, and the order."
+    body="Trace the wall, tag the units, the shop drawing draws itself. Founder pricing at $300/mo while seats last."
+  />
+</Layout>

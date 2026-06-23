@@ -9,6 +9,7 @@ import RulesSection from '../components/RulesSection.astro';
 import FAQSection from '../components/FAQSection.astro';
 
 import cornerDetail from '../assets/corner-detail.png';
+import shopDrawingImg from '../assets/shop-drawing-openings.png';
 
 const faqItems = [
   {
@@ -140,11 +141,28 @@ const faqItems = [
     imageCredit="<strong>Powder River Masonry</strong> · MasonX"
   />
 
-  <SectionDivider number="05" label="The Rules · Encoded" />
+  <SectionDivider number="05" label="The Shop Drawing" />
+
+  <ProofSection
+    sectionNum="05"
+    sectionLabel="The submittal that draws itself"
+    headlinePre="Now read the"
+    accentWord="shop drawing"
+    body1="A shop drawing is the coursed elevation that proves the wall before a block gets laid — every opening, special shape, bond beam, and finish, labeled. Done by hand it's an afternoon in Bluebeam marking up a rendering. Here it's a byproduct of building the wall."
+    body2="Every block is tagged as you build, so the elevation labels itself — courses, lifts, openings, finishes, cuts. <a href='/masonry-shop-drawings'>See how masonry shop drawings draw themselves →</a>"
+    masonxQuote="I shouldn't be labeling a picture of my own wall. The wall already knows every block."
+    image={shopDrawingImg}
+    imageAlt="Masonry shop drawing elevation rendered in The Masonry Modeler — labeled door openings, numbered courses, bond beam courses, control joints, and split face and ground face finish bands"
+    imageCaption="Shop drawing · openings · bond beam · finishes"
+    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
+    reverse={true}
+  />
+
+  <SectionDivider number="06" label="The Rules · Encoded" />
 
   <RulesSection />
 
-  <SectionDivider number="06" label="Common Questions" />
+  <SectionDivider number="07" label="Common Questions" />
 
-  <FAQSection items={faqItems} sectionNum="06" />
+  <FAQSection items={faqItems} sectionNum="07" />
 </Layout>

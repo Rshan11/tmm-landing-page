@@ -1,0 +1,136 @@
+---
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+
+const title = "We All Label Shop Drawings in Bluebeam by Hand. Why? | TMM Blog";
+const description = "The masonry shop drawing workflow everyone uses: export the rendering, drop it in Bluebeam, label every opening and course by hand. The drawing should label itself.";
+const canonical = "https://themasonrymodeler.com/blog/bluebeam-shop-drawings/";
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <MasonXMonogram />
+  <TitleBlock sheet="B1.5 — Bluebeam Shop Drawings" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes · B1.5</span>
+    <span class="scale-marks"></span>
+    <span>Shop Drawings</span>
+  </div>
+
+  <section class="blog-post-hero">
+    <div class="blog-post-hero-inner">
+      <div class="post-kicker">Field Notes</div>
+      <h1>
+        We All Label Shop Drawings in Bluebeam by Hand.
+        <span class="accent">Why?</span>
+      </h1>
+      <div class="post-meta">
+        <span><strong>Ryan Shanley</strong></span>
+        <span>June 2026</span>
+        <span>4 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="blog-post-body">
+
+    <p>
+      Here's a workflow every masonry estimator knows by heart. You take the rendering of your
+      wall. You drop it into Bluebeam. And you start labeling — every opening, every course,
+      every joint, by hand.
+    </p>
+
+    <p>
+      It's the most normal thing in the world. It's also, when you stop and look at it,
+      completely backwards.
+    </p>
+
+    <h2>The markup nobody questions</h2>
+
+    <p>
+      The rendering already knows where the openings are. It drew them. The coursing is right
+      there on the screen — you can count it. The bond beam courses, the lifts, the control
+      joints, they're all in the picture.
+    </p>
+
+    <p>
+      But the labels don't come with it. So you export a picture, open Bluebeam, and spend an
+      afternoon typing back the information the model already had. Door 6 by 6-8. Course 13. CJ
+      here. You're not adding anything the wall didn't already know. You're transcribing.
+    </p>
+
+    <p>
+      Multiply that across every elevation on a real job. That's a day. Sometimes two. On
+      something the software could have handed you finished.
+    </p>
+
+    <h2>Why it's like this</h2>
+
+    <p>
+      The reason is simple once you see it: the thing that made the rendering was never built to
+      make a shop drawing. It made a picture of a wall. A nice one. But a picture isn't a
+      submittal.
+    </p>
+
+    <p>
+      So the work falls to you. You export the picture and annotate it by hand until it's a
+      document the architect will stamp. The markup is you finishing the tool's job — doing by
+      hand the part it didn't do.
+    </p>
+
+    <h2>Bluebeam isn't the problem</h2>
+
+    <p>
+      None of this is a knock on Bluebeam. Bluebeam's a great tool. For markup, RFIs,
+      coordinating across trades, redlining a set — it earns its place on every estimator's
+      screen.
+    </p>
+
+    <p>
+      The problem isn't the tool you're marking up in. It's that you're re-typing labels the
+      model already knew. Bluebeam should be where you coordinate the drawing — not where you
+      build it from scratch.
+    </p>
+
+    <h2>The drawing should label itself</h2>
+
+    <p>
+      Here's what I wanted instead. Tag every block as you build the wall — its finish, its type,
+      the opening it frames, the lift it sits in. Then the elevation comes out labeled. Courses
+      numbered. Openings called out. Bond beams and control joints in position. Finishes banded.
+      Submittal-ready, the moment the wall exists.
+    </p>
+
+    <p>
+      No export. No round trip. No afternoon transcribing. The drawing knows what it is because
+      every block told it.
+    </p>
+
+    <blockquote>
+      <p>
+        I shouldn't be marking up a picture of my own wall. The wall already knows every block.
+        The drawing should too.
+      </p>
+    </blockquote>
+
+    <p>
+      That's why <a href="/masonry-shop-drawings">masonry shop drawings</a> aren't a separate step
+      in The Masonry Modeler — they're a byproduct of building the wall. Tag it once, and the shop
+      drawing, the count, and the order are the same wall.
+    </p>
+
+    <p>
+      If you've got a Bluebeam session open right now labeling courses by hand, that's the
+      afternoon I'm trying to give you back.
+    </p>
+
+    <a href="/#waitlist" class="post-cta-inline">Join the waitlist →</a>
+
+  </article>
+
+  <div class="blog-post-footer">
+    <a href="/blog/" class="blog-back-link">← All posts</a>
+  </div>
+
+</Layout>
