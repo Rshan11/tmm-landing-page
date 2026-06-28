@@ -1,0 +1,116 @@
+---
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+
+const title = "Masonry Shop Drawings in SketchUp — and Why You Shouldn't Have To | TMM Blog";
+const description = "SketchUp draws boxes; it doesn't know coursing, bond, or special units. Here's why building masonry shop drawings in SketchUp by hand is so much work — and what should replace it.";
+const canonical = "https://themasonrymodeler.com/blog/masonry-shop-drawings-in-sketchup/";
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <MasonXMonogram />
+  <TitleBlock sheet="B1.7 — Shop Drawings in SketchUp" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes · B1.7</span>
+    <span class="scale-marks"></span>
+    <span>Shop Drawings</span>
+  </div>
+
+  <section class="blog-post-hero">
+    <div class="blog-post-hero-inner">
+      <div class="post-kicker">Field Notes</div>
+      <h1>
+        Drawing Masonry in SketchUp — When the Model Doesn't Know It's a
+        <span class="accent">Wall</span>
+      </h1>
+      <div class="post-meta">
+        <span><strong>Ryan Shanley</strong></span>
+        <span>June 2026</span>
+        <span>4 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="blog-post-body">
+
+    <p>
+      SketchUp is a great tool. I know guys who basically live in it. But watch somebody build a
+      masonry shop drawing in SketchUp and you see the problem in about thirty seconds: they're
+      drawing boxes. SketchUp doesn't know it's a wall.
+    </p>
+
+    <h2>It draws geometry, not masonry</h2>
+
+    <p>
+      A box in SketchUp is a box whether it's a CMU, a countertop, or a kitchen cabinet. The model
+      has no idea what a course is. It doesn't know what bond is, that a corner needs a different
+      unit than the field, that the wall has to land on an 8-inch module, or that an opening cuts
+      the coursing a certain way. SketchUp will draw anything — which is exactly why it knows
+      nothing about masonry specifically.
+    </p>
+
+    <p>
+      So you supply all of it. By hand. Block by block. Every unit is geometry you place and align
+      yourself, and the model takes your word for it because it can't tell a stretcher from a sill.
+    </p>
+
+    <h2>The grind nobody should be doing</h2>
+
+    <p>
+      Here's where the hours go. You build the wall box by box. Then the height changes — and
+      nothing re-courses. SketchUp doesn't shift the bond or recut the top course, because it never
+      knew there was a bond. You redo it by hand. An opening moves? You re-cut the boxes around it
+      yourself. A finish band changes? You re-color geometry one face at a time.
+    </p>
+
+    <p>
+      And when you're finally done, you've got a nice picture of a wall — but no takeoff that knows
+      a corner from a half, because SketchUp was counting shapes, not masonry. So you're back to
+      counting by hand off your own model.
+    </p>
+
+    <blockquote>
+      <p>
+        SketchUp will draw you a wall. It won't lay you one. The difference is every block that has
+        to be right — and that's the part it leaves to you.
+      </p>
+    </blockquote>
+
+    <h2>The model should know it's masonry</h2>
+
+    <p>
+      None of this is a knock on SketchUp. It's a great general modeler. It's just built to draw
+      anything, and a shop drawing isn't anything — it's a coursed masonry wall that has to be
+      right, course by course, before you're allowed to lay it.
+    </p>
+
+    <p>
+      So build it in something that knows that. When the wall is laid course by course in a model
+      that understands bond, the shop drawing and the takeoff fall out of it together — coursing
+      numbered, corners closing, special units in place, halves and cuts counted, finishes banded.
+      You're not modeling boxes and counting them after. You're laying a wall, and the drawing is
+      already done.
+    </p>
+
+    <p>
+      That's the whole idea behind <a href="/masonry-shop-drawings">masonry shop drawings</a> in
+      The Masonry Modeler: the model knows it's masonry, so you build the wall once and the
+      submittal draws itself.
+    </p>
+
+    <p>
+      If you're hand-building shop drawings in SketchUp before you can lay a block, that's the part
+      I'm trying to take off your plate.
+    </p>
+
+    <a href="/#waitlist" class="post-cta-inline">Join the waitlist →</a>
+
+  </article>
+
+  <div class="blog-post-footer">
+    <a href="/blog/" class="blog-back-link">← All posts</a>
+  </div>
+
+</Layout>
