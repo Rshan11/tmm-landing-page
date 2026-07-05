@@ -1,0 +1,230 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import PageCTA from '../components/PageCTA.astro';
+import FAQSection from '../components/FAQSection.astro';
+
+const title = 'Masonry Shop Drawings, Auto-Generated | The Masonry Modeler';
+const description = 'Every commercial job needs shop drawings. TMM generates them from the block-by-block model you already traced — labeled, dimensioned, with rebar and face types.';
+const canonical = 'https://themasonrymodeler.com/masonry-shop-drawings/';
+
+const faqItems = [
+  {
+    question: 'What are masonry shop drawings and why does the GC ask for them?',
+    answer: 'Shop drawings are the elevation and layout drawings a masonry sub produces for the GC or engineer to review and stamp before mobilization. They show coursing, block layout, corner blocks, bond beam locations, control joints, face-type callouts, and rebar. Without approved shop drawings, no block goes on-site. Takeoffs are internal; shop drawings are external. Every commercial masonry job needs both.',
+  },
+  {
+    question: 'Can TMM generate the shop drawings I submit to the GC?',
+    answer: 'The block-by-block model TMM builds for the takeoff already contains every piece of information the shop drawing needs — every block, every corner, every course, every bond beam, every face type, every cut. The shop drawing is a 2D elevation view of that same model with labels and callouts added. Same data, different projection.',
+  },
+  {
+    question: 'Do the shop drawings show face types and pattern changes?',
+    answer: 'Yes. Face types — splitface, single score, ground face, painted — are overlaid on the traced model as a layer, and each face zone renders with its own hatch pattern on the drawing. Recessed panels show as a depth callout. Face boundaries do not break bond, so the drawing shows the same continuous bond you actually lay.',
+  },
+  {
+    question: 'How does the rebar get on the drawings?',
+    answer: 'Bond beam courses are already placed from the structural rebar schedule. On the shop drawing, each bond beam course is labeled with its bar size and lap, and the vertical bars called out by the schedule appear at their coursing intervals. The rebar callouts on the drawing match the takeoff pound count exactly, because both come from the same schedule.',
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Generate Masonry Shop Drawings From a Traced Model",
+  "description": "Produce the elevation views and callouts a GC or engineer will stamp — from the same block-by-block model that produced the takeoff.",
+  "totalTime": "PT15M",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Trace the walls",
+      "text": "Draw the building perimeter, openings, and heights in TMM. The engine generates the block-by-block bond pattern, corners, bond beams, and half-high courses automatically." },
+    { "@type": "HowToStep", "position": 2, "name": "Overlay face types",
+      "text": "Assign face types to each wall zone — splitface, single score, ground face, painted, recessed panels. The bond runs continuously through every transition; each face zone becomes a separate takeoff line item and a separate hatch pattern on the shop drawing." },
+    { "@type": "HowToStep", "position": 3, "name": "Generate the 2D elevation with labeled parts",
+      "text": "Export the elevation view. The engine labels corner blocks, bond beam courses, half-high courses, and cuts. Dimensions come from the traced geometry. Control joint callouts land at the correct spacing." },
+    { "@type": "HowToStep", "position": 4, "name": "Add rebar callouts",
+      "text": "The bond beam schedule already drives placement; the shop drawing labels each course with bar size, lap, and development length. Vertical bars appear at their coursing. Rebar pound totals match the takeoff." },
+  ],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Masonry Shop Drawings", "item": canonical },
+  ],
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A2.4 — Masonry Shop Drawings" />
+
+  <PageHero
+    kicker="Shop Drawings · From the Traced Model"
+    headline="Masonry Shop Drawings From the Same Model as Your Takeoff"
+    lead="Every commercial masonry job needs shop drawings. Most masons pay a drafting firm two to ten thousand dollars per project to produce them. TMM generates them from the block-by-block model you already traced — same walls, same corners, same bond, plus face types, part labels, dimensions, and rebar."
+  />
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>The Deliverable Nobody Talks About</h2>
+      <p>
+        Ask any mason what happens before the first block goes on-site: shop drawings. Elevation views, block layout, coursing, bond patterns, control joint locations, dimensions, rebar callouts, face-type callouts. The GC or engineer reviews and stamps them. Corrections come back. Resubmit. Wait. Then the crew shows up.
+      </p>
+      <p>
+        Every masonry estimating software on the market treats this as somebody else's problem. Takeoff on one side, shop drawings on the other, and a drafting firm in the middle charging you thousands per project for something that's already in your model.
+      </p>
+      <p>
+        Because it <em>is</em> in your model. Every block position, every face type, every corner, every bond beam, every cut. The takeoff is a text version of the shop drawing. TMM already renders both. What's missing is the 2D projection with the labels a GC will stamp.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>One Model, Two Outputs</h2>
+      <p>
+        The pitch: trace the wall once. Get both.
+      </p>
+
+      <div class="comparison-block">
+        <div class="comparison-col">
+          <span class="comparison-label">The takeoff</span>
+          <h3>What comes out</h3>
+          <ul>
+            <li>Stretchers, corners, bond beam units, halves, cuts</li>
+            <li>Face-type quantities by zone</li>
+            <li>Rebar in linear feet and pounds</li>
+            <li>Control joint count and spacing</li>
+            <li>Priced line items for the order</li>
+          </ul>
+        </div>
+        <div class="comparison-col">
+          <span class="comparison-label">The shop drawing</span>
+          <h3>What comes out</h3>
+          <ul>
+            <li>Elevation views at scale</li>
+            <li>Block layout with visible bond</li>
+            <li>Face-type hatch patterns per zone</li>
+            <li>Corner, bond beam, half-high, and cut callouts</li>
+            <li>Rebar sizes, laps, and development lengths</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>
+        Same trace. Same data. Two deliverables. The takeoff goes to your supplier; the shop drawing goes to the GC.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>The 88th Avenue Pump Station</h2>
+      <p>
+        Real job. Real shop drawings. The 88th Avenue pump station is a live TMM proof — 280 lf of perimeter, 12 wall segments, recessed single-score panels, bond beams driven by the structural rebar schedule. The traced model that produced the block-by-block takeoff is the same model that produces the shop drawing.
+      </p>
+
+      {/* TODO: swap placeholder(s) below with actual 88th shop drawing screenshots
+          when available. Target images:
+          - 88th approved shop drawing (the "target output" the GC stamped)
+          - TMM-generated elevation view of the same wall (side-by-side proof)
+      */}
+      <div class="stat-block">
+        <div class="stat-item">
+          <span class="stat-value">$2K–$10K</span>
+          <span class="stat-label">Typical drafting firm cost per project</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">$300/mo</span>
+          <span class="stat-label">TMM · unlimited projects</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">Same model</span>
+          <span class="stat-label">Shop drawing + takeoff, one trace</span>
+        </div>
+        <span class="stat-note">Founder pricing while seats last · 10 seats total</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>What Ends Up On the Drawing</h2>
+      <p>
+        A masonry shop drawing has to be specific enough that the GC's reviewer can stamp it and the crew can lay from it. TMM renders every item on the checklist because the model already knows about all of them.
+      </p>
+
+      <div class="code-diagram">
+        <div class="code-diagram-label">Elevation callouts · TMM shop drawing output</div>
+        <pre>
+<span class="bright">┌───────────────────────────────────────────────────────────┐</span>
+│  <span class="highlight">EL. 12'-0"</span>                                              │
+│  ═══════════════════════════════════════════════════════  │  ← <span class="highlight">bond beam · #5 @ 4'-0"</span>
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │  ← <span class="dim">splitface field</span>
+│  ▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓  │  ← <span class="highlight">recessed panel · single score</span>
+│  ▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓  │
+│  ▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓  │
+│  ═══════════════════════════════════════════════════════  │  ← <span class="highlight">bond beam · #5 @ 4'-0"</span>
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│  <span class="highlight">CJ</span>                          <span class="highlight">CJ</span>                          <span class="highlight">CJ</span>  │  ← <span class="highlight">control joints · 24'-8" o.c.</span>
+│  <span class="highlight">◤</span>▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓<span class="highlight">◥</span>  │  ← <span class="highlight">corner blocks · every course</span>
+<span class="bright">└───────────────────────────────────────────────────────────┘</span>
+<span class="dim">           ▓ splitface     ░ single score (recessed)     ═ bond beam     CJ control joint</span></pre>
+      </div>
+
+      <p>
+        Every callout, every hatch, every dimension is generated from the traced model. Nothing drawn by hand. Nothing traced from a PDF. Nothing paid out to a drafting firm at $150 an hour.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Why This Matters More Than the Takeoff</h2>
+      <p>
+        A takeoff is internal. If the count is off by five percent, you eat it or the mason eats it. Either way, the job still runs.
+      </p>
+      <p>
+        A shop drawing is external. If it comes back with corrections, the GC delays your mobilization. Every day is money — not just for you, but for the electrical sub sitting on-site waiting for wall. Missed shop drawing deadlines cost more than bad takeoffs. Every mason knows it. Nobody sells software that fixes it.
+      </p>
+      <p>
+        TMM fixes both from the same trace. That's the pitch.
+      </p>
+    </div>
+  </section>
+
+  <FAQSection
+    items={faqItems}
+    sectionNum="FAQ"
+    label="Shop drawings questions"
+    headline="What the GC always asks."
+  />
+
+  <PageCTA
+    headline="Trace once. Ship both."
+    body="Takeoff to your supplier. Shop drawing to the GC. Same model. Founder pricing at $300/mo while seats last."
+  />
+</Layout>

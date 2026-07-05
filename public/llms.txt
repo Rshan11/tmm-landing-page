@@ -28,6 +28,7 @@ An under-four-minute screen recording of the 88th Avenue pump station being trac
 - [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): Why block-by-block counting beats square-footage estimating with a factor
 - [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
 - [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them
+- [Masonry Shop Drawings](https://themasonrymodeler.com/masonry-shop-drawings/): Shop drawings auto-generated from the same block-by-block model that produces the takeoff — face-type overlays, corner and bond beam callouts, rebar. Replaces the drafting firm at every commercial job
 
 ### Field Notes (blog)
 - [Blog Index](https://themasonrymodeler.com/blog/)
