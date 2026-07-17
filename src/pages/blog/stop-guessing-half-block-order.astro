@@ -1,0 +1,205 @@
+---
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+
+const title = "Stop Guessing Your Half Block Order | TMM Blog";
+const description = "The 20% rule works until it doesn't. Today's projects mix bullnose, split-face, colors, and multiple widths — and 'halves' isn't one line item anymore.";
+const canonical = "https://themasonrymodeler.com/blog/stop-guessing-half-block-order/";
+
+const blogPostingSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Stop Guessing Your Half Block Order",
+  "description": description,
+  "image": "https://themasonrymodeler.com/assets/og-image.png",
+  "datePublished": "2026-07-17",
+  "dateModified": "2026-07-17",
+  "author": {
+    "@type": "Person",
+    "name": "Ryan Shanley",
+    "jobTitle": "Founder",
+    "worksFor": { "@type": "Organization", "name": "Powder River Masonry" },
+    "url": "https://themasonrymodeler.com/blog/stop-guessing-half-block-order/",
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field Notes", "item": "https://themasonrymodeler.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Stop Guessing Your Half Block Order", "item": canonical },
+  ],
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="B1.5 — Stop Guessing Your Half Block Order" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes · B1.5</span>
+    <span class="scale-marks"></span>
+    <span>The Order</span>
+  </div>
+
+  <section class="blog-post-hero">
+    <div class="blog-post-hero-inner">
+      <div class="post-kicker">Field Notes</div>
+      <h1>
+        Stop Guessing Your Half
+        <span class="accent">Block Order</span>
+      </h1>
+      <div class="post-meta">
+        <span><strong>Ryan Shanley</strong></span>
+        <span>July 2026</span>
+        <span>4 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="blog-post-body">
+
+    <p>
+      If you've estimated masonry for very long, you've probably used the same rule of thumb most
+      of us have. Count your stretchers. Add about 20% for halves and corners. Order the block.
+    </p>
+
+    <p>
+      For decades, that worked reasonably well. But commercial masonry projects have changed.
+    </p>
+
+    <h2>The 20% rule was never really counting halves</h2>
+
+    <p>
+      The extra 20% wasn't based on an exact calculation. It was an allowance that usually covered
+      regular half blocks, corners, waste, and a few field changes. On a straightforward project,
+      you were probably close enough.
+    </p>
+
+    <p>
+      The problem is today's projects aren't always straightforward.
+    </p>
+
+    <h2>Not all half blocks are the same</h2>
+
+    <p>
+      Walk through a set of drawings today and you might need regular halves, bullnose halves,
+      double bullnose, split-face versions, multiple block widths, multiple colors. Now your
+      supplier isn't asking, <em>"How many half blocks do you need?"</em> They're asking:
+    </p>
+
+    <blockquote>
+      <p>
+        How many 8-inch split-face bullnose halves? How many double bullnose? How many smooth
+        regular halves?
+      </p>
+    </blockquote>
+
+    <p>
+      Those aren't interchangeable. Order the wrong units and you're making another phone call.
+    </p>
+
+    <h2>The actual list of halves you might need on one job</h2>
+
+    <p>
+      This is what "20% for halves" is really trying to cover. Every one of these is a separate
+      SKU that ships on its own pallet:
+    </p>
+
+    <p><strong>By profile.</strong></p>
+
+    <ul>
+      <li><strong>Regular half</strong> — smooth face, no bullnose. Interior conditions, non-exposed ends.</li>
+      <li><strong>Bullnose half (single)</strong> — one corner rounded. Exposed wall ends, top of parapets, corners next to openings.</li>
+      <li><strong>Double bullnose half</strong> — both ends rounded. End of a return wall, free-standing walls, anywhere both sides are visible.</li>
+      <li><strong>Return / jamb half</strong> — one end finished for the jamb condition at doors and windows.</li>
+    </ul>
+
+    <p><strong>By finish.</strong> Every profile above can come in any of these:</p>
+
+    <ul>
+      <li>Smooth</li>
+      <li>Split-face</li>
+      <li>Ground face (polished / burnished)</li>
+      <li>Scored (single, double, or triple score)</li>
+      <li>Any specialty finish the architect specified — glazed, honed, custom</li>
+    </ul>
+
+    <p><strong>By width.</strong></p>
+
+    <ul>
+      <li>4" nominal (bond course, veneer)</li>
+      <li>6" nominal</li>
+      <li>8" nominal (standard)</li>
+      <li>10" nominal</li>
+      <li>12" nominal</li>
+    </ul>
+
+    <p><strong>Then multiply by color.</strong> A single job with a banded elevation might have
+    three colors running through the wall — each color gets its own version of every SKU above.</p>
+
+    <p>
+      Do the math. Four profiles × five finishes × five widths × three colors = 300 possible
+      combinations. Even a modest specialty project shakes out to 20 or 30 distinct SKUs when you
+      actually count. A 20% allowance doesn't tell you which 20% you're ordering.
+    </p>
+
+    <h2>The real cost isn't the block</h2>
+
+    <p>
+      A half block isn't expensive. Waiting three weeks for a special order is. Paying freight
+      to rush a pallet is. Having a crew standing around because one specialty unit is missing is.
+      That's where estimating mistakes become expensive.
+    </p>
+
+    <h2>Why this matters</h2>
+
+    <p>
+      Most estimating software still treats specialty units as percentages. It doesn't understand
+      why a half block exists. It doesn't know about exposed wall ends, bullnose corners, bond
+      patterns, window returns, door jambs, or free-standing walls. It just adds an allowance.
+    </p>
+
+    <h2>There's a better way</h2>
+
+    <p>
+      At The Masonry Modeler we don't estimate specialty units with percentages. The software
+      looks at the actual wall geometry. It knows where the wall begins and ends. It knows where
+      openings occur. It understands bond patterns and exposed corners. From that, it determines
+      exactly where regular halves, bullnose halves, and other specialty units belong.
+    </p>
+
+    <p>
+      That's a very different approach than adding 20%. The goal isn't to replace the estimator's
+      judgment — it's to eliminate one more thing you have to guess. The
+      <a href="/cmu-block-count">block-by-block CMU count</a> becomes a real list of SKUs, sorted
+      the way the supplier ships them.
+    </p>
+
+    <a href="/#waitlist" class="post-cta-inline">Join the waitlist →</a>
+
+  </article>
+
+  <div class="blog-post-footer">
+    <a href="/blog/" class="blog-back-link">← All posts</a>
+  </div>
+
+</Layout>
