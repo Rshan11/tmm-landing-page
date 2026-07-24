@@ -1,17 +1,76 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../components/Layout.astro';
 import MasonXMonogram from '../components/MasonXMonogram.astro';
 import TitleBlock from '../components/TitleBlock.astro';
 import PageHero from '../components/PageHero.astro';
 import PageCTA from '../components/PageCTA.astro';
 import FAQSection from '../components/FAQSection.astro';
-import gableImg from '../assets/shop-drawing-gable.png';
-import openingsImg from '../assets/shop-drawing-openings.png';
+
+import sheet01 from '../assets/sheets/sheet-01-plan.png';
+import sheet02 from '../assets/sheets/sheet-02-elevation-a.png';
+import sheet03 from '../assets/sheets/sheet-03-elevation-b.png';
+import sheet04 from '../assets/sheets/sheet-04-elevation-c.png';
+import sheet05 from '../assets/sheets/sheet-05-elevation-d.png';
+import sheet06 from '../assets/sheets/sheet-06-elevation-e.png';
+import sheet07 from '../assets/sheets/sheet-07-elevation-f.png';
+import sheet08 from '../assets/sheets/sheet-08-rebar-dowel-layout.png';
+import sheet09 from '../assets/sheets/sheet-09-steel-bar-list.png';
 
 const title = 'Masonry Shop Drawings, Drawn As You Build | The Masonry Modeler';
-const description = 'Masonry shop drawings shouldn\'t take days. TMM tags every CMU as you build and renders a submittal-ready, coursed elevation — openings, bond beams, finishes — automatically.';
+const description = 'Masonry shop drawings, drawn as you build. TMM renders coursed, tagged elevations — openings, bond beams, finishes — plus the steel bar list.';
 const canonical = 'https://themasonrymodeler.com/masonry-shop-drawings';
+
+const samplePdf = '/assets/themasonrymodeler-shop-drawings-sample-15th-pod.pdf';
+
+// The 15th pod set — nine sheets, one trace.
+const sheets = [
+  {
+    num: 'A01', short: 'Plan', img: sheet01,
+    alt: 'Masonry shop drawing sheet A01 — foundation plan of the 15th pod, walls dimensioned face-of-wall with elevation call-outs A through F keyed around the perimeter.',
+  },
+  {
+    num: 'A02', short: 'Elevation A', img: sheet02,
+    alt: 'Masonry shop drawing sheet A02 — Elevation A, an 11\'-1" wall with a legend color-coding every unit as corner, half, cut, or bond beam, courses numbered C1–C15 with grout lift lines and vertical reinforcing shown in position.',
+  },
+  {
+    num: 'A03', short: 'Elevation B', img: sheet03,
+    alt: 'Masonry shop drawing sheet A03 — Elevation B, a 22\'-3" wall in running bond with corner and cut units tagged, two bond beam courses, and vertical bars called out #5 @ 48" on center.',
+  },
+  {
+    num: 'A04', short: 'Elevation C', img: sheet04,
+    alt: 'Masonry shop drawing sheet A04 — Elevation C, a 30\'-8" wall showing the split face to ground face finish transition, onyx below and glacier white above, with bond beam courses and vertical reinforcing.',
+  },
+  {
+    num: 'A05', short: 'Elevation D', img: sheet05,
+    alt: 'Masonry shop drawing sheet A05 — Elevation D, a 28\'-0" gable end wall with rake coursing stepping up both slopes, a door opening with a (2) #5 lintel, split face to ground face finish transition, corner units, bond beam courses, vertical reinforcing, and a control joint carried through the peak, courses numbered C1–C21 over three grout lifts.',
+  },
+  {
+    num: 'A06', short: 'Elevation E', img: sheet06,
+    alt: 'Masonry shop drawing sheet A06 — Elevation E, a 30\'-8" wall with a door opening and lintel, split face to ground face finish transition, bond beam courses, and vertical reinforcing in position.',
+  },
+  {
+    num: 'A07', short: 'Elevation F', img: sheet07,
+    alt: 'Masonry shop drawing sheet A07 — Elevation F, a 28\'-0" gable end wall with rake coursing, an offset door opening with a (2) #5 lintel, split face to ground face finishes, bond beam courses, and vertical reinforcing.',
+  },
+  {
+    num: 'A08', short: 'Rebar / Dowel Layout', img: sheet08,
+    alt: 'Masonry shop drawing sheet A08 — rebar and dowel layout plan, vertical reinforcing at #5 @ 48" on center with dowels and bond beam steel located around the building perimeter.',
+  },
+  {
+    num: 'A09', short: 'Steel Bar List', img: sheet09,
+    alt: 'Masonry shop drawing sheet A09 — steel bar list, 285 bars totaling 2,031.4 linear feet broken out by mark with size, shape code, cut length, and quantity.',
+  },
+];
+
+// Full-size webp for the "open full sheet" link on each thumbnail (same pipeline as the on-page images).
+const fullSheets = await Promise.all(
+  sheets.map((s) => getImage({ src: s.img, width: 1600, format: 'webp' }))
+);
+const heroSheet = sheets[4]; // Elevation D
+const legendSheet = sheets[1]; // Elevation A
+const barListSheet = sheets[8]; // A09
+const rebarSheet = sheets[7]; // A08
 
 const faqItems = [
   {
@@ -29,6 +88,10 @@ const faqItems = [
   {
     question: 'Can the drawings show architectural finishes like split face or ground face?',
     answer: 'Yes. Every segment is taggable by finish — stretcher, single score, split face, ground face — so banded courses and accent bands show on the elevation in their actual positions, color-coded, and carry straight through to the count and the order. Tag the wall once and the finish lives on the drawing and in the takeoff.',
+  },
+  {
+    question: 'Does the set include a rebar bar list?',
+    answer: 'Yes. The same model that lays out the coursing produces a steel bar list — every bar counted by mark and cut length, with a rebar and dowel layout sheet. Straight vertical and horizontal reinforcing, dowels, bond beam steel, lintel and rake bars are in scope. Pilaster hoops and bent bar are excluded — coordinate those with the rebar detailer.',
   },
   {
     question: 'Can I set where the grout lifts fall?',
@@ -54,7 +117,7 @@ const howToSchema = {
   "@context": "https://schema.org",
   "@type": "HowTo",
   "name": "How to Produce Masonry Shop Drawings Automatically",
-  "description": "Generate a submittal-ready masonry shop drawing — coursed elevations with openings, special shapes, finishes, bond beams, and control joints — directly from the wall instead of hand-detailing it.",
+  "description": "Generate a submittal-ready masonry shop drawing — coursed elevations with openings, special shapes, finishes, bond beams, and control joints, plus a steel bar list — directly from the wall instead of hand-detailing it.",
   "totalTime": "PT10M",
   "step": [
     { "@type": "HowToStep", "position": 1, "name": "Trace the wall geometry",
@@ -64,7 +127,7 @@ const howToSchema = {
     { "@type": "HowToStep", "position": 3, "name": "Tag the units and finishes",
       "text": "Tag segments by finish and type — stretcher, single score, split face, ground face, bond beam, special shapes. The tags color-code the elevation and flow into the count and order." },
     { "@type": "HowToStep", "position": 4, "name": "Export the submittal-ready set",
-      "text": "The elevation comes out with courses numbered, lifts marked, openings labeled, bond beam courses and control joints in position — the coursed layout a shop-drawing submittal requires." },
+      "text": "The set comes out with courses numbered, lifts marked, openings labeled, bond beam courses and control joints in position, plus a rebar layout and a steel bar list — the coursed layout a shop-drawing submittal requires." },
   ],
 };
 
@@ -95,7 +158,7 @@ const breadcrumbSchema = {
   <PageHero
     kicker="Shop Drawings · Coursed & Tagged"
     headline="Masonry Shop Drawings, Drawn As You Build"
-    lead="A masonry shop drawing is a submittal requirement — coursing, openings, special shapes, reinforcing, finishes, laid out unit by unit. Done by hand it's days of detailing and a redraw every time the plans move. TMM tags every block as you build the wall, then renders the coursed, labeled elevation automatically."
+    lead="A masonry shop drawing is a submittal requirement — coursing, openings, special shapes, reinforcing, finishes, laid out unit by unit. Done by hand it's days of detailing and a redraw every time the plans move. TMM tags every block as you build the wall, then renders the coursed, labeled elevation — and the steel bar list — automatically."
   />
 
   <section class="page-section">
@@ -128,7 +191,7 @@ const breadcrumbSchema = {
             <li>Built by the mason who knows the wall</li>
             <li>Coursing rendered from real block, corners and all</li>
             <li>Change the wall — the drawing redraws itself</li>
-            <li>One model: drawing, count, and order in sync</li>
+            <li>One model: drawing, count, order, and bar list in sync</li>
           </ul>
         </div>
       </div>
@@ -139,16 +202,23 @@ const breadcrumbSchema = {
     <div class="page-section-inner">
       <h2>Every Block Tagged, the Drawing Falls Out</h2>
       <p>
-        TMM doesn't draw a picture of a wall. It renders the wall course by course — and because every segment is taggable, the drawing labels itself.
+        TMM doesn't draw a picture of a wall. It renders the wall course by course — and because every segment is taggable, the drawing labels itself. This is Elevation D from the 15th pod set: a 28-foot gable end, rake coursing stepping up both slopes, a door with its lintel, split face carrying up into ground face, and a control joint run clean through the peak.
       </p>
 
-      <figure class="drawing-figure">
-        <Image src={gableImg} alt="Rake wall masonry shop drawing rendered in The Masonry Modeler — gable elevation with numbered courses, grout lift lines, split face and ground face finish bands, and reinforcing shown in position" />
+      <figure class="drawing-figure drawing-figure-hero">
+        <Image
+          src={heroSheet.img}
+          alt={heroSheet.alt}
+          widths={[800, 1200, 1640]}
+          sizes="(max-width: 900px) 92vw, 820px"
+          loading="lazy"
+        />
         <figcaption>
-          <span>Rake wall rendered in TMM · courses numbered, lifts marked, finishes tagged</span>
-          <span><strong>Powder River Masonry</strong> · MasonX</span>
+          <span>Elevation D · gable · rake coursing · split face → ground face · CJ through the peak</span>
+          <span><strong>Powder River Masonry</strong> · MasonX · Sheet A05</span>
         </figcaption>
       </figure>
+
       <p>
         Courses are numbered up the elevation. Grout lifts are marked where you set them — adjust the lift heights and the lines move with the pour you're actually planning. Openings carry their size and location. Bond beam courses sit where the rebar schedule puts them. Control joints land in position. Finishes — stretcher, single score, split face, ground face — are tagged onto the segments, color-coded across the elevation in their real coursing positions. And the cut list comes out with it, so every cut piece is counted, not buried. All of it carried straight into the count and the order.
       </p>
@@ -169,17 +239,153 @@ const breadcrumbSchema = {
         <span class="stat-note">Elevations rendered in TMM · openings, bond beams, control joints, finishes labeled automatically</span>
       </div>
 
+      <p>
+        The proof that the units are typed, not drawn, is the legend. On Elevation A, every block is color-coded — <strong>corner, half, cut, bond beam</strong> — because the model knows what each unit is before it hits the elevation. That's not markup added over a picture; it's the wall reporting itself.
+      </p>
+
       <figure class="drawing-figure">
-        <Image src={openingsImg} alt="Masonry shop drawing elevation rendered in The Masonry Modeler showing labeled door openings, numbered coursing, bond beam courses, control joints, and split face and ground face finish bands" />
+        <Image
+          src={legendSheet.img}
+          alt={legendSheet.alt}
+          widths={[800, 1200, 1640]}
+          sizes="(max-width: 900px) 92vw, 820px"
+          loading="lazy"
+        />
         <figcaption>
-          <span>Elevation rendered in TMM · openings labeled, bond beam courses, finishes tagged</span>
-          <span><strong>Powder River Masonry</strong> · MasonX</span>
+          <span>Elevation A · legend keys every unit — corner / half / cut / bond beam</span>
+          <span><strong>Powder River Masonry</strong> · MasonX · Sheet A02</span>
         </figcaption>
       </figure>
 
       <p>
         That's the whole point of tagging once: the shop drawing, the <a href="/masonry-takeoff-accuracy">block count</a>, and the supplier order are the same wall, not three documents you reconcile by hand. Change the finish band from split face to single score and it moves on the drawing and in the order at the same time.
       </p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner sheet-index-wide">
+      <h2>Nine Sheets, One Trace</h2>
+      <p>
+        This is the full 15th pod set as it comes out of the model — plan, six elevations, a rebar and dowel layout, and a steel bar list. One trace of the wall produced every sheet. No re-entry, no second file to reconcile.
+      </p>
+
+      <div class="sheet-strip">
+        {sheets.map((sheet, i) => (
+          <a
+            class="sheet-thumb"
+            href={fullSheets[i].src}
+            target="_blank"
+            rel="noopener"
+            aria-label={`Open sheet ${sheet.num} — ${sheet.short} — full size`}
+          >
+            <span class="sheet-thumb-frame">
+              <Image
+                src={sheet.img}
+                alt={sheet.alt}
+                widths={[320, 640]}
+                sizes="(max-width: 700px) 44vw, 220px"
+                loading="lazy"
+              />
+            </span>
+            <span class="sheet-thumb-meta">
+              <span class="sheet-thumb-num">{sheet.num}</span>
+              <span class="sheet-thumb-title">{sheet.short}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+      <p class="sheet-strip-caption">Nine sheets, one trace, no re-entry.</p>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>The Steel Comes Out With It</h2>
+      <p>
+        The same model that lays out the coursing counts the steel. The 15th pod set carries a steel bar list — <strong>285 bars, 2,031.4 linear feet</strong> — broken out by mark: bond beam, corner, lintel, rake, lift 1 verts, lift 2 verts, and rake verts. Shape codes ride along too — corner-bend and peak-bend — and every discrete cut length is counted separately.
+      </p>
+      <p>
+        That's not linear feet with a waste factor thrown on top. It's a bar list you can hand to the supplier and order from.
+      </p>
+
+      <div class="stat-block">
+        <div class="stat-item">
+          <span class="stat-value">285</span>
+          <span class="stat-label">Bars, counted by mark &amp; cut length</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">2,031.4</span>
+          <span class="stat-label">Linear feet — discrete, not a waste factor</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">7</span>
+          <span class="stat-label">Marks · corner-bend &amp; peak-bend shape codes</span>
+        </div>
+        <span class="stat-note">Steel bar list rendered from the same model as the coursing · Sheet A09</span>
+      </div>
+
+      <figure class="drawing-figure">
+        <Image
+          src={barListSheet.img}
+          alt={barListSheet.alt}
+          widths={[800, 1200, 1640]}
+          sizes="(max-width: 900px) 92vw, 820px"
+          loading="lazy"
+        />
+        <figcaption>
+          <span>Steel bar list · 285 bars · 2,031.4 LF · by mark, size, shape, cut length, qty</span>
+          <span><strong>Powder River Masonry</strong> · MasonX · Sheet A09</span>
+        </figcaption>
+      </figure>
+
+      <figure class="drawing-figure">
+        <Image
+          src={rebarSheet.img}
+          alt={rebarSheet.alt}
+          widths={[800, 1200, 1640]}
+          sizes="(max-width: 900px) 92vw, 820px"
+          loading="lazy"
+        />
+        <figcaption>
+          <span>Rebar &amp; dowel layout · #5 @ 48" O.C. vert · dowels and bond beam steel located</span>
+          <span><strong>Powder River Masonry</strong> · MasonX · Sheet A08</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        Here's the gap the industry lives with: detailing services that model the masonry generally leave rebar quantities out of scope, and rebar detailers produce a bar schedule but not the coursing. You end up buying two sets of drawings that don't talk to each other. Here the same model produces both — the coursed elevations and the bar list, off one trace.
+      </p>
+
+      <p class="scope-note">
+        <strong>Scope:</strong> straight vertical and horizontal reinforcing, dowels, bond beam steel, lintel and rake bars. Pilaster hoops and bent bar are excluded — coordinate those with the rebar detailer.
+      </p>
+
+      <div class="sample-download on-dark">
+        <div class="sample-download-copy">
+          <span class="sample-download-kicker">Sample set · 15th pod</span>
+          <p>See the whole thing — all nine sheets, plan through bar list.</p>
+        </div>
+        <form class="sample-form" action="https://formspree.io/f/mykvgeld" method="POST">
+          <input type="hidden" name="source" value="sample-download" />
+          <input
+            type="email"
+            name="email"
+            class="hero-form-input"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+            aria-label="Email for the sample set download"
+          />
+          <button type="submit" class="hero-cta">
+            Download the full sample set (9 sheets)
+            <span class="hero-cta-arrow">↓</span>
+          </button>
+        </form>
+        <p class="sample-form-success" hidden>
+          Sent. <a class="sample-download-link" href={samplePdf} download>Download the sample set (9 sheets, PDF)</a> — it should start automatically.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -198,10 +404,11 @@ const breadcrumbSchema = {
         <li><strong>Control joints</strong> — located on the elevation where they fall in the coursing.</li>
         <li><strong>Finishes</strong> — split face, ground face, single score, and stretcher tagged and color-coded across the banding.</li>
         <li><strong>Cut list</strong> — every cut piece counted alongside the <a href="/cmu-block-count">block-by-block takeoff</a>, not absorbed into a waste factor.</li>
+        <li><strong>Steel bar list</strong> — every bar counted by mark and cut length, with a rebar and dowel layout sheet.</li>
       </ul>
 
       <p class="roadmap-note">
-        <strong>Coming in version 2:</strong> a full bond-drawing set, elevation by elevation, and a 3D model of the wall. Today the coursed, tagged elevation and its cut list come out automatically.
+        <strong>Coming in version 2:</strong> a full bond-drawing set, elevation by elevation, and a 3D model of the wall. Today the coursed, tagged elevations, the cut list, and the steel bar list come out automatically.
       </p>
     </div>
   </section>
@@ -213,8 +420,100 @@ const breadcrumbSchema = {
     headline="What the submittal always needs."
   />
 
+  <section class="page-section closing-actions">
+    <div class="page-section-inner">
+      <div class="action-grid">
+        <div class="action-card">
+          <span class="action-kicker">Got a submittal due</span>
+          <h3>Have a job now? Send me your elevations and I'll run a sheet.</h3>
+          <p>
+            A submittal's due and you need coursed elevations, not a software trial. Send the drawings and the wall info — heights, block sizes, finishes — and I'll turn a sheet around.
+          </p>
+          <a
+            class="hero-cta"
+            href="mailto:ryan@powderrivermasonry.com?subject=Shop%20drawing%20request&body=Attach%20your%20elevations%20here.%20Give%20me%20the%20wall%20heights%2C%20block%20sizes%2C%20and%20finishes%2C%20and%20I%27ll%20run%20a%20sheet."
+          >
+            Send your elevations
+            <span class="hero-cta-arrow">→</span>
+          </a>
+        </div>
+
+        <div class="action-card">
+          <span class="action-kicker">See it first</span>
+          <h3>Want the full set to look at?</h3>
+          <p>
+            Grab the 15th pod set — all nine sheets, plan through steel bar list — and see exactly what comes out of one trace.
+          </p>
+          <div class="sample-download">
+            <form class="sample-form" action="https://formspree.io/f/mykvgeld" method="POST">
+              <input type="hidden" name="source" value="sample-download" />
+              <input
+                type="email"
+                name="email"
+                class="hero-form-input"
+                placeholder="your@email.com"
+                required
+                autocomplete="email"
+                aria-label="Email for the sample set download"
+              />
+              <button type="submit" class="hero-cta">
+                Download the full sample set (9 sheets)
+                <span class="hero-cta-arrow">↓</span>
+              </button>
+            </form>
+            <p class="sample-form-success" hidden>
+              Sent. <a class="sample-download-link" href={samplePdf} download>Download the sample set (9 sheets, PDF)</a> — it should start automatically.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <PageCTA
-    headline="Build the wall once. Get the drawing, the count, and the order."
+    headline="Build the wall once. Get the drawing, the count, the order, and the bar list."
     body="Trace the wall, tag the units, the shop drawing draws itself. Founder pricing at $300/mo while seats last."
   />
 </Layout>
+
+<script>
+  const forms = document.querySelectorAll<HTMLFormElement>('.sample-form');
+
+  forms.forEach((form) => {
+    const wrap = form.closest('.sample-download');
+    const success = wrap?.querySelector('.sample-form-success') as HTMLElement | null;
+    const link = success?.querySelector('.sample-download-link') as HTMLAnchorElement | null;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button') as HTMLButtonElement;
+      const originalText = btn.innerHTML;
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+
+      const reveal = () => {
+        form.style.display = 'none';
+        if (success) success.hidden = false;
+        // Kick off the download so the sheet arrives immediately.
+        if (link) link.click();
+      };
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        if (res.ok) {
+          reveal();
+        } else {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      } catch {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

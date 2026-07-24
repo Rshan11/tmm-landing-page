@@ -24,6 +24,7 @@ const sheetIndex = [
       { num: 'A2.1', label: 'CMU Block Count', href: '/cmu-block-count/' },
       { num: 'A2.2', label: 'Bond Beam Estimating', href: '/bond-beam-estimating/' },
       { num: 'A2.3', label: 'Masonry Takeoff Accuracy', href: '/masonry-takeoff-accuracy/' },
+      { num: 'A2.4', label: 'Masonry Shop Drawings', href: '/masonry-shop-drawings/' },
     ],
   },
   {
@@ -60,6 +61,14 @@ const isCurrent = (href: string) => {
       <span class="tb-label">Sheet</span>
       <span class="tb-value">{sheet}</span>
     </div>
+    <a
+      href="/masonry-shop-drawings/"
+      class:list={['tb-cell', 'tb-nav', { 'is-active': isCurrent('/masonry-shop-drawings/') }]}
+      aria-current={isCurrent('/masonry-shop-drawings/') ? 'page' : undefined}
+    >
+      <span class="tb-label">Sheets</span>
+      <span class="tb-value">Shop Drawings</span>
+    </a>
     <button
       type="button"
       class="tb-cell tb-menu"
