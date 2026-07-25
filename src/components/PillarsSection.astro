@@ -1,0 +1,84 @@
+---
+// "Why the number is right" — three pillars, each backed by a small
+// mono data readout (piece tally / arithmetic / sheet metadata).
+//
+// Reuses: .page-section / .page-section-dark / .page-section-inner /
+// .section-num. New layout classes (pillars-*, section-*) live in the
+// scratch CSS file (02-showcase.css).
+interface DataRow {
+  label: string;
+  value: string;
+  accent?: boolean;
+}
+
+interface Pillar {
+  title: string;
+  body: string; // may contain a single trusted inline <a> — rendered with set:html
+  rows: DataRow[];
+}
+
+interface Props {
+  sectionNum?: string;
+}
+
+const { sectionNum = '03' } = Astro.props;
+
+const pillars: Pillar[] = [
+  {
+    title: 'Lays the bond, counts the pieces',
+    body: 'Corners interlock course by course. Bond beams wrap. Lintels land on coursing. Rakes cut where the roof cuts them. No cut under 4" — the engine makes it work the way a foreman would.',
+    rows: [
+      { label: 'Stretcher', value: '4,520 ea' },
+      { label: 'Corner', value: '334 ea' },
+      { label: 'Bond beam', value: '1,203 ea' },
+      { label: 'Rake cuts — listed by dimension', value: '87 ea', accent: true },
+    ],
+  },
+  {
+    title: 'Shows the math',
+    body: 'Every dollar traces: pieces → lay rates → mason-days → crew cost → bid. Click any line and the arithmetic opens right there. When the GC pushes back, you’re not defending a hunch.',
+    rows: [
+      { label: '4,304 field + 190 cut parents', value: '÷ 400/day' },
+      { label: '= 11.2 mason-days × crew $2,340', value: '$26,208' },
+      { label: 'OH 20% → profit 10% →', value: '$34,595', accent: true },
+    ],
+  },
+  {
+    title: 'The bid becomes the paper',
+    body: 'Generates full <a href="/masonry-shop-drawings">masonry shop drawings</a> — keyed elevations, placing sets, piece counts per sheet — from the same model that priced the job. Win it, then hand the field the drawings. One model, start to finish.',
+    rows: [
+      { label: 'SHEET E-3 · ELEV B', value: '1/4" = 1\'-0"' },
+      { label: 'PIECES — THIS SHEET', value: '✓', accent: true },
+      { label: 'U.N.O. tags · jamb callouts · cut list', value: 'auto' },
+    ],
+  },
+];
+---
+
+<section class="page-section page-section-dark pillars-section" id="built">
+  <div class="page-section-inner section-wide">
+    <div class="section-num" data-num={sectionNum}>Why the number is right</div>
+    <h2>Right on the walls that break other tools.</h2>
+    <p class="section-lede">Square walls are easy — anything prices those. Bids are won and lost
+      on the ugly ones: gables and rakes, steps, arched openings, brick over block, corner
+      returns. TMM lays the actual bond through all of it, so the pieces, the cuts, and the grout
+      are counted — not factored.</p>
+
+    <div class="pillars-grid">
+      {pillars.map((pillar) => (
+        <div class="pillar-card">
+          <h3>{pillar.title}</h3>
+          <p set:html={pillar.body} />
+          <div class="pillar-data">
+            {pillar.rows.map((row) => (
+              <div class="pillar-data-row">
+                <span>{row.label}</span>
+                <span class:list={[{ 'pillar-data-accent': row.accent }]}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,35 @@
+---
+// Homepage closer — reuses the .page-cta-section pattern (ink bg, centered,
+// big Oswald headline) established by PageCTA.astro, plus a simple site
+// footer bundled in the same component (see build report for why).
+interface Props {
+  headline?: string;
+  body?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+}
+
+const {
+  headline = "Bid it the way you'll build it.",
+  body = "Ten founder seats. When they're gone, they're gone — and the price never touches them again.",
+  ctaHref = '/#waitlist',
+  ctaLabel = 'Join the waitlist',
+} = Astro.props;
+
+const year = 2026;
+---
+
+<section class="page-cta-section">
+  <h2>{headline}</h2>
+  <p>{body}</p>
+  <a href={ctaHref} class="hero-cta">{ctaLabel}<span class="hero-cta-arrow">→</span></a>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span class="site-footer-brand">The Masonry Modeler &middot; Powder River Masonry</span>
+    <span class="site-footer-spacer"></span>
+    <a class="site-footer-link" href="https://pm4subs.com" target="_blank" rel="noopener">PM4Subs</a>
+    <span class="site-footer-copy">&copy; {year}</span>
+  </div>
+</footer>

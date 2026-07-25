@@ -1,0 +1,27 @@
+---
+// PM4Subs sibling-product cross-sell — a tight, visually subordinate band.
+// Not a headline section: no h2, no section-num badge.
+interface Props {
+  heading?: string;
+  body?: string;
+  href?: string;
+  linkLabel?: string;
+}
+
+const {
+  heading = "Win it with TMM. Run it with PM4Subs.",
+  body = 'From the same shop: PM4Subs closes the paperwork gap after the award — change orders, field photos, spec answers. The bid side and the build side, built by the same contractor.',
+  href = 'https://pm4subs.com',
+  linkLabel = 'pm4subs.com →',
+} = Astro.props;
+---
+
+<div class="suite-strip">
+  <div class="suite-strip-inner">
+    <div class="suite-strip-copy">
+      <div class="suite-strip-heading">{heading}</div>
+      <p>{body}</p>
+    </div>
+    <a class="suite-strip-link" href={href} target="_blank" rel="noopener">{linkLabel}</a>
+  </div>
+</div>

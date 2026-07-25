@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import heroImage from '../assets/pump-station-hero.png';
+import planViewImage from '../assets/product/tmm-plan-view.jpg';
 
 interface Props {
   waitlistHref?: string;
@@ -11,68 +11,63 @@ const { waitlistHref = '#waitlist' } = Astro.props;
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-tag">Now taking founder seats · 10 only</div>
+      <div class="hero-tag">Masonry estimating &amp; shop drawings</div>
       <h1>
-        Counting the pieces<br/>
-        takes <span class="accent">longer</span><br/>
-        than the <span class="underline">takeoff</span>.
+        It doesn't estimate the wall.<br/>
+        <span class="accent">It builds it.</span>
       </h1>
-      <p class="hero-kicker">Masonry estimating software built block-by-block.</p>
       <p class="hero-sub">
-        Trace the wall once. Bid from it, order from it, and draw the submittal from it.
-        From the first wall you place, TMM knows where the corners are and what kind
-        of block to lay. This masonry estimating software counts halves, cuts, bond beams,
-        lintels, and sills <strong>as you draw.</strong> You shouldn't have to tell it.
+        The Masonry Modeler is masonry estimating software that doesn't estimate at all.
+        Trace your walls on the print. TMM lays the bond — <strong>every block, every cut,
+        every bar</strong> — the way your crew will lay it. The count isn't a factor times
+        square feet. It's the wall. <strong>Then it prints the shop drawings.</strong>
       </p>
-      <div id="waitlist" class="hero-waitlist-wrap">
-        <form class="hero-form" id="waitlist-form" action="https://formspree.io/f/mykvgeld" method="POST">
-          <input
-            type="email"
-            name="email"
-            class="hero-form-input"
-            placeholder="your@email.com"
-            required
-            autocomplete="email"
-          />
-          <button type="submit" class="hero-cta">
-            Join the waitlist
-            <span class="hero-cta-arrow">→</span>
-          </button>
-        </form>
-        <p class="hero-form-success" id="waitlist-success" style="display:none">
-          You're on the list. We'll be in touch.
-        </p>
+      <div class="hero-actions">
+        <div id="waitlist" class="hero-waitlist-wrap">
+          <form class="hero-form" id="waitlist-form" action="https://formspree.io/f/mykvgeld" method="POST">
+            <input
+              type="email"
+              name="email"
+              class="hero-form-input"
+              placeholder="your@email.com"
+              required
+              autocomplete="email"
+            />
+            <button type="submit" class="hero-cta">
+              Join the waitlist
+              <span class="hero-cta-arrow">→</span>
+            </button>
+          </form>
+          <p class="hero-form-success" id="waitlist-success" style="display:none">
+            You're on the list. We'll be in touch.
+          </p>
+        </div>
+        <a class="hero-cta-secondary" href="#see-it">
+          See a hard wall done right
+          <span class="hero-cta-arrow">→</span>
+        </a>
       </div>
       <div class="hero-pricing">
-        Founder pricing locked at <strong>$300/mo for life</strong> · 10 seats only
+        Founder seats: <strong>$300/mo locked for life</strong> · 10 available
       </div>
     </div>
 
     <div class="hero-render">
       <div class="render-titlebar">
-        <span><span class="dot">◉</span> Pump Station · Live Render</span>
-        <span>MasonryX</span>
+        <span><span class="dot">◉</span> Plan View · Live Trace</span>
+        <span>TMM</span>
       </div>
       <div class="render-image">
         <Image
-          src={heroImage}
-          alt="MasonryX render of a pump station building showing rakes, bond beam course, and red corner blocks interlocking through running bond"
+          src={planViewImage}
+          alt="The Masonry Modeler plan view: an architect's floor plan loaded as a print with walls traced over it in blue, 8-inch CMU wall type selected, and live segment stats"
           loading="eager"
           fetchpriority="high"
         />
       </div>
       <div class="render-stats">
-        <span>3 wall types · 14 rakes · 1 door</span>
-        <span><strong>8 min</strong> · blank canvas → takeoff</span>
-      </div>
-      <div class="render-mx-bubble">
-        <span class="mx-mark inverted" aria-hidden="true">
-          <svg><use href="#mx-monogram"/></svg>
-        </span>
-        <span class="render-mx-bubble-text">
-          <strong>MasonX:</strong> Look at the lintel. Bond steps clean across the
-          opening. That's how the wall actually gets built.
-        </span>
+        <span>8" CMU · 10 lines · 14 segments</span>
+        <span><strong>189'-4"</strong> traced</span>
       </div>
     </div>
   </div>

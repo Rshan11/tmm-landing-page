@@ -1,0 +1,99 @@
+---
+// "See it" — real product screenshots + the pump-station walkthrough video.
+// No mockups: every image here is an actual screenshot from the live app.
+//
+// Reuses global.css patterns: .page-section / .page-section-inner /
+// .section-num / .video-frame / .video-frame-caption / .drawing-figure.
+// New layout classes (showcase-*, section-*) live in the scratch CSS file
+// (02-showcase.css) that the lead merges into global.css.
+import { Image } from 'astro:assets';
+import planView from '../assets/product/tmm-plan-view.jpg';
+import view3d from '../assets/product/tmm-3d-view.jpg';
+
+interface Props {
+  sectionNum?: string;
+}
+
+const { sectionNum = '02' } = Astro.props;
+---
+
+<section class="page-section showcase-section" id="see-it">
+  <div class="page-section-inner section-wide">
+    <div class="section-num" data-num={sectionNum}>See it</div>
+    <h2>Real prints. Real block. Real colors.</h2>
+    <p class="section-lede">Screenshots straight from the program — no mockups, no CAD-gray. The
+      palette is what the wall will actually look like, because you pick block and brick the way
+      you pick them at the yard.</p>
+
+    <div class="showcase-video">
+      <div class="video-frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/m-fSK2uB924"
+          title="Building a pump station in The Masonry Modeler — trace to takeoff"
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+      <div class="showcase-video-caption">
+        <strong>Watch: pump station — trace → takeoff in 3 minutes.</strong>
+        One print, ten walls, an exact count. No cuts skipped, no factor fudged.
+      </div>
+    </div>
+
+    <div class="showcase-shots">
+      <figure class="drawing-figure showcase-shot-wide">
+        <Image
+          src={planView}
+          alt="TMM plan view — the Landmark Apartments architect's floor plan loaded as a print with
+            walls traced over it in blue, an 8-inch CMU wall type set in the left toolbar, and live
+            stats reading 10 lines, 14 segments, 189 feet 4 inches"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>
+          <span><strong>Trace on your print.</strong> Left hand on D-S-C-E, right hand on the
+            mouse. Dimensions land as you draw; the count updates as you trace.</span>
+        </figcaption>
+      </figure>
+
+      <figure class="drawing-figure showcase-shot">
+        <Image
+          src={view3d}
+          alt="TMM 3D view — CMU and brick walls standing up out of the flat floor plan in realistic
+            brick-red and block-gray, with openings and ties in place and the plan ghosted underneath"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>
+          <span><strong>The walls stand up out of your plan.</strong> One click to 3D — real brick
+            red, real block gray, openings and ties where they belong.</span>
+        </figcaption>
+      </figure>
+
+      <!--
+        Third figure intentionally omitted. The approved copy calls for a
+        takeoff/material-order screenshot ("The takeoff reads like your bid"),
+        but no such screenshot exists yet — the handoff's takeoff.jpg is
+        byte-identical to 3d-view.jpg. Per positioning rule #3 (real
+        artifacts only, never substitute), we do not fabricate a placeholder
+        graphic here.
+
+        .showcase-shots is a 2-column grid (.showcase-shot-wide spans both
+        columns); once a real takeoff screenshot exists, drop it in as:
+
+          <figure class="drawing-figure showcase-shot">
+            <Image src={takeoffView} alt="..." loading="lazy" decoding="async" />
+            <figcaption>
+              <span><strong>The takeoff reads like your bid</strong> — because it is. Every line
+                priced, every quantity traceable to pieces and mason-days.</span>
+            </figcaption>
+          </figure>
+
+        — it will take the empty second column next to the 3D view with no
+        other changes.
+      -->
+    </div>
+  </div>
+</section>

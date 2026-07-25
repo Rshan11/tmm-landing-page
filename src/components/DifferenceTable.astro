@@ -1,0 +1,73 @@
+---
+// The difference — SF x factor takeoff vs. The Masonry Modeler.
+// Positioning rule: the left column is the OLD MANUAL METHOD, never a
+// competitor. "SF × factor takeoff" is the only permitted foil.
+interface Row {
+  label: string;
+  factor: string;
+  tmm: string; // may contain simple <strong> markup — approved copy bolds a lead phrase
+}
+
+interface Props {
+  sectionNum?: string;
+  label?: string;
+}
+
+const { sectionNum = '08', label = 'The difference' } = Astro.props;
+
+const rows: Row[] = [
+  {
+    label: 'Where the count comes from',
+    factor: 'Area times a rule of thumb',
+    tmm: '<strong>The wall itself</strong> — bond laid block by block',
+  },
+  {
+    label: 'Gables, steps, arches, brick-over-block',
+    factor: 'Fudge factors — and change orders later',
+    tmm: '<strong>Where it shines</strong> — cuts listed by dimension',
+  },
+  {
+    label: 'Can you see the math?',
+    factor: 'A number appears',
+    tmm: '<strong>Every line opens</strong> into its own derivation',
+  },
+  {
+    label: 'After you win',
+    factor: 'Start over in CAD',
+    tmm: '<strong>Shop drawings &amp; placing sets</strong> from the same model',
+  },
+  {
+    label: 'Set up rates & crews',
+    factor: 'Every job, every spreadsheet, every time',
+    tmm: '<strong>Once.</strong> Your crews and rates follow you to every job',
+  },
+];
+---
+
+<section class="diff-section" id="difference">
+  <div class="diff-inner">
+    <div class="section-num" data-num={sectionNum}>{label}</div>
+    <h2>Two ways to get a number. <span class="accent">One</span> you can stake a bid on.</h2>
+
+    <div class="diff-table-wrap">
+      <table class="diff-table">
+        <thead>
+          <tr>
+            <th scope="col"><span class="diff-caption-sr">Comparison</span></th>
+            <th scope="col">SF &times; factor takeoff</th>
+            <th scope="col" class="diff-th-tmm">The Masonry Modeler</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <th scope="row">{row.label}</th>
+              <td class="diff-td-factor" data-col="SF × factor takeoff">{row.factor}</td>
+              <td class="diff-td-tmm" data-col="The Masonry Modeler" set:html={row.tmm} />
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

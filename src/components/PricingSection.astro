@@ -1,0 +1,77 @@
+---
+// Founder pricing — two cards. Card A (founder seat) is the highlighted/
+// primary card; Card B is the plain "what a seat covers" card.
+//
+// NOTE: `seatsAvailable` is a known open item from the handoff — "10
+// available" was hardcoded in the reference. It's wired as a prop here
+// (default 10) so the true remaining count is a one-line change later.
+// The lead paragraph's "Ten seats..." and FinalCTA's "Ten founder seats..."
+// are separate approved-copy strings, not derived from this prop — flagged
+// in the build report in case those should be kept in sync too.
+interface Props {
+  sectionNum?: string;
+  label?: string;
+  seatsAvailable?: number;
+  ctaHref?: string;
+  ctaLabel?: string;
+}
+
+const {
+  sectionNum = '09',
+  label = 'Pricing',
+  seatsAvailable = 10,
+  ctaHref = '/#waitlist',
+  ctaLabel = 'Join the waitlist',
+} = Astro.props;
+
+const founderFeatures = [
+  'Full modeler: CMU, brick veneer, stone, ugly walls included',
+  'Takeoff, bid & add-alternates with visible math',
+  'Shop drawings, keyed elevations & placing sets',
+  'Your crews, rates & regions on every project',
+  'Direct line to the founder — your walls shape the roadmap',
+];
+
+const coverageFeatures = [
+  'Unlimited projects & walls',
+  'Every update, included — the roadmap ships weekly',
+  "Your feedback becomes features: founders' walls get built first",
+  'No per-report fees, no export fees, no surprise tiers',
+];
+---
+
+<section class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-num" data-num={sectionNum}>{label}</div>
+    <h2>Founder pricing. Locked for life.</h2>
+    <p class="pricing-lead">
+      Ten seats at the founder price, and it never rises while your seat is active.
+      When they're gone, the list price takes over — founders keep theirs forever.
+    </p>
+
+    <div class="pricing-cards">
+      <div class="pricing-card pricing-card-hot">
+        <div class="pricing-card-head">Founder seat &mdash; {seatsAvailable} available</div>
+        <div class="pricing-amount">$300<span>/mo &middot; locked for life</span></div>
+        <ul class="pricing-list">
+          {founderFeatures.map((item) => <li>{item}</li>)}
+        </ul>
+        <p class="pricing-note">
+          Price never rises while your seat is active. <strong>You're buying it from the contractor who bids with it.</strong>
+        </p>
+        <a href={ctaHref} class="hero-cta pricing-cta">{ctaLabel}<span class="hero-cta-arrow">→</span></a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-card-head">What a seat covers</div>
+        <div class="pricing-amount">Everything<span> &mdash; one seat, whole model</span></div>
+        <ul class="pricing-list">
+          {coverageFeatures.map((item) => <li>{item}</li>)}
+        </ul>
+        <p class="pricing-note">
+          Bid one mid-size CMU job with it and the seat has paid for the year.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

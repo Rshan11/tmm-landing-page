@@ -1,0 +1,23 @@
+---
+interface Props {
+  line1?: string;
+  line2?: string;
+}
+const {
+  line1 = 'Built at Powder River Masonry — and bidding our own work with it every week.',
+  line2 = "Written by a mason contractor, not a software company that met one.",
+} = Astro.props;
+---
+
+<div class="proof-strip">
+  <div class="proof-strip-inner">
+    <span class="mx-mark inverted" aria-hidden="true">
+      <svg><use href="#mx-monogram"/></svg>
+    </span>
+    <p class="proof-strip-text">
+      <strong>{line1}</strong>
+      <span class="proof-strip-sep">·</span>
+      {line2}
+    </p>
+  </div>
+</div>
