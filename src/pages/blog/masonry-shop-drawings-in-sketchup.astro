@@ -3,12 +3,50 @@ import Layout from '../../components/Layout.astro';
 import MasonXMonogram from '../../components/MasonXMonogram.astro';
 import TitleBlock from '../../components/TitleBlock.astro';
 
-const title = "Masonry Shop Drawings in SketchUp — and Why You Shouldn't Have To | TMM Blog";
-const description = "SketchUp draws boxes; it doesn't know coursing, bond, or special units. Here's why building masonry shop drawings in SketchUp by hand is so much work — and what should replace it.";
+const title = "Masonry Shop Drawings in SketchUp — and Why You Shouldn't | TMM Blog";
+const description = "SketchUp draws boxes — it doesn't know coursing, bond, or special units. Why masonry shop drawings in SketchUp are so much hand work, and what replaces it.";
 const canonical = "https://themasonrymodeler.com/blog/masonry-shop-drawings-in-sketchup/";
+
+const blogPostingSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Masonry Shop Drawings in SketchUp — and Why You Shouldn't Have To",
+  "description": description,
+  "image": "https://themasonrymodeler.com/assets/og-image.png",
+  "datePublished": "2026-06-27",
+  "dateModified": "2026-06-27",
+  "author": {
+    "@type": "Person",
+    "name": "Ryan Shanley",
+    "jobTitle": "Founder",
+    "worksFor": { "@type": "Organization", "name": "Powder River Masonry" },
+    "url": canonical,
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field Notes", "item": "https://themasonrymodeler.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Shop Drawings in SketchUp", "item": canonical },
+  ],
+};
 ---
 
 <Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
   <MasonXMonogram />
   <TitleBlock sheet="B1.7 — Shop Drawings in SketchUp" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
 

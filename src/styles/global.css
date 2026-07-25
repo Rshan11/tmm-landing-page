@@ -141,6 +141,8 @@ body {
   border-top: none;
   box-shadow: 8px 8px 0 var(--ink);
   z-index: 99;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
 }
 .sheet-index-panel[hidden] { display: none; }
 

@@ -4,16 +4,54 @@ import MasonXMonogram from '../../components/MasonXMonogram.astro';
 import TitleBlock from '../../components/TitleBlock.astro';
 
 const title = "We All Label Shop Drawings in Bluebeam by Hand. Why? | TMM Blog";
-const description = "The masonry shop drawing workflow everyone uses: export the rendering, drop it in Bluebeam, label every opening and course by hand. The drawing should label itself.";
+const description = "The shop drawing workflow everyone uses: export the render, drop it in Bluebeam, label every opening and course by hand. The drawing should label itself.";
 const canonical = "https://themasonrymodeler.com/blog/bluebeam-shop-drawings/";
+
+const blogPostingSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "We All Label Shop Drawings in Bluebeam by Hand. Why?",
+  "description": description,
+  "image": "https://themasonrymodeler.com/assets/og-image.png",
+  "datePublished": "2026-06-22",
+  "dateModified": "2026-06-22",
+  "author": {
+    "@type": "Person",
+    "name": "Ryan Shanley",
+    "jobTitle": "Founder",
+    "worksFor": { "@type": "Organization", "name": "Powder River Masonry" },
+    "url": canonical,
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field Notes", "item": "https://themasonrymodeler.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Bluebeam Shop Drawings", "item": canonical },
+  ],
+};
 ---
 
 <Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
   <MasonXMonogram />
-  <TitleBlock sheet="B1.5 — Bluebeam Shop Drawings" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+  <TitleBlock sheet="B1.8 — Bluebeam Shop Drawings" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
 
   <div class="section-divider">
-    <span>Field Notes · B1.5</span>
+    <span>Field Notes · B1.8</span>
     <span class="scale-marks"></span>
     <span>Shop Drawings</span>
   </div>
