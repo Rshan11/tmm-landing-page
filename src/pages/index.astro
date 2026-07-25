@@ -3,13 +3,20 @@ import Layout from '../components/Layout.astro';
 import MasonXMonogram from '../components/MasonXMonogram.astro';
 import TitleBlock from '../components/TitleBlock.astro';
 import Hero from '../components/Hero.astro';
+import ProofStrip from '../components/ProofStrip.astro';
 import SectionDivider from '../components/SectionDivider.astro';
-import ProofSection from '../components/ProofSection.astro';
-import RulesSection from '../components/RulesSection.astro';
+import SeeItSection from '../components/SeeItSection.astro';
+import PillarsSection from '../components/PillarsSection.astro';
+import SheetMoment from '../components/SheetMoment.astro';
+import DifferenceTable from '../components/DifferenceTable.astro';
+import SuiteStrip from '../components/SuiteStrip.astro';
+import PricingSection from '../components/PricingSection.astro';
 import FAQSection from '../components/FAQSection.astro';
+import FinalCTA from '../components/FinalCTA.astro';
 
-import cornerDetail from '../assets/corner-detail.png';
-import shopDrawingImg from '../assets/shop-drawing-openings.png';
+const title = 'Masonry Estimating Software & Shop Drawings | The Masonry Modeler';
+const description = 'Masonry estimating software that lays the bond block by block — CMU and brick takeoff with visible math, and shop drawings from the same model.';
+const canonical = 'https://themasonrymodeler.com/';
 
 const faqItems = [
   {
@@ -45,124 +52,65 @@ const faqItems = [
     answer: 'Yes. It is right about 90 percent of the time. The mason is right on the other 10 percent. Click any block, change the type, and the takeoff updates. One-click override.',
   },
 ];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+
+const videoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Building a Pump Station in The Masonry Modeler",
+  "description": "Three-minute screen recording of a pump station traced and taken off in The Masonry Modeler. Walls, corners, lintels, bond beams, and the block-by-block takeoff — start to finish.",
+  "thumbnailUrl": ["https://i.ytimg.com/vi/m-fSK2uB924/maxresdefault.jpg"],
+  "uploadDate": "2026-05-25",
+  "duration": "PT3M",
+  "embedUrl": "https://www.youtube.com/embed/m-fSK2uB924",
+  "contentUrl": "https://youtu.be/m-fSK2uB924",
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+};
 ---
 
-<Layout>
+<Layout title={title} description={description} canonical={canonical}>
   <Fragment slot="head">
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": faqItems.map(item => ({
-        "@type": "Question",
-        "name": item.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": item.answer,
-        },
-      })),
-    })} />
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "VideoObject",
-      "name": "Building a Pump Station in The Masonry Modeler",
-      "description": "Three-minute screen recording of a pump station traced and taken off in The Masonry Modeler. Walls, corners, lintels, bond beams, and the block-by-block takeoff — start to finish.",
-      "thumbnailUrl": ["https://i.ytimg.com/vi/m-fSK2uB924/maxresdefault.jpg"],
-      "uploadDate": "2026-05-25",
-      "duration": "PT3M",
-      "embedUrl": "https://www.youtube.com/embed/m-fSK2uB924",
-      "contentUrl": "https://youtu.be/m-fSK2uB924",
-      "publisher": {
-        "@type": "Organization",
-        "name": "The Masonry Modeler",
-        "url": "https://themasonrymodeler.com/",
-      },
-    })} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
   </Fragment>
 
   <MasonXMonogram />
   <TitleBlock />
+
   <Hero />
+  <ProofStrip />
 
-  <SectionDivider number="02" label="The Lintel Test" />
+  <SectionDivider number="02" label="See It Work" />
+  <SeeItSection sectionNum="02" />
 
-  <ProofSection
-    sectionNum="02"
-    sectionLabel="The detail nobody else gets right"
-    headlinePre="Look at the"
-    accentWord="lintel"
-    body1="Anyone can render a flat wall. The lintel is where the math breaks down
-      everywhere else — courses above the opening have to land right, the bond has to
-      step clean across the header, and the bearing courses have to interlock back into
-      the corner. No fudge. No fake."
-    body2="One screenshot. One real job. <em>Keep this image in mind.</em>"
-    masonxQuote="If the lintel doesn't render right, the takeoff doesn't render right. And then the order doesn't ship right."
-    image={cornerDetail}
-    imageAlt="Closeup of lintel and bond beam wrap at a corner — courses step cleanly above the opening, bond beam runs continuously through the corner column"
-    imageCaption="Lintel · corner · running bond"
-    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
-  />
+  <SectionDivider number="03" label="Why The Number Is Right" />
+  <PillarsSection sectionNum="03" />
 
-  <SectionDivider number="03" label="The Bond Beam Test" />
+  <SectionDivider number="04" label="The Shop Drawing" />
+  <SheetMoment sectionNum="04" />
 
-  <ProofSection
-    sectionNum="03"
-    sectionLabel="The other detail nobody else gets right"
-    headlinePre="Now watch the"
-    accentWord="bond beam"
-    body1="Same screenshot. Look at the gray course running through the wall — bond beam —
-      and watch what happens when it hits the corner. It <em>wraps.</em> Continuous rebar
-      path, proper lap, the right development length. And the corner block still counts as
-      a corner block. Special unit. Separate line item."
-    body2="Most engines pick one. The math is right or the count is right. Not both."
-    masonxQuote="Rebar's continuous. Corner's still a corner. Takeoff sees both. Tell me where else that's happening."
-    image={cornerDetail}
-    imageAlt="Closeup of lintel and bond beam wrap at a corner — courses step cleanly above the opening, bond beam runs continuously through the corner column"
-    imageCaption="Bond beam · wraps the corner"
-    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
-    reverse={true}
-  />
+  <SectionDivider number="05" label="The Difference" />
+  <DifferenceTable sectionNum="05" />
+  <SuiteStrip />
 
-  <SectionDivider number="04" label="The Build, End to End" />
-
-  <ProofSection
-    sectionNum="04"
-    sectionLabel="The whole thing, on camera"
-    headlinePre="Watch the"
-    accentWord="pump station"
-    body1="Three minutes. Blank canvas to bonded model — corners, bond beams, lintels,
-      the takeoff. Same building you've been looking at this whole page. No fast
-      cuts, no edits, no slide deck. The geometry happens as I draw."
-    body2="If you've ever sat in a takeoff meeting watching someone count blocks off a
-      printout, this is what you're replacing."
-    masonxQuote="Watch the lintel land. Watch the bond beam wrap the corner. That's the count, that's the order, that's the wall."
-    videoId="m-fSK2uB924"
-    videoTitle="Building a pump station in The Masonry Modeler"
-    imageCaption="Pump Station · trace → takeoff · 3 min"
-    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
-  />
-
-  <SectionDivider number="05" label="The Shop Drawing" />
-
-  <ProofSection
-    sectionNum="05"
-    sectionLabel="The submittal that draws itself"
-    headlinePre="Now read the"
-    accentWord="shop drawing"
-    body1="A shop drawing is the coursed elevation that proves the wall before a block gets laid — every opening, special shape, bond beam, and finish, labeled. Done by hand it's an afternoon in Bluebeam marking up a rendering. Here it's a byproduct of building the wall."
-    body2="Every block is tagged as you build, so the elevation labels itself — courses, lifts, openings, finishes, cuts. <a href='/masonry-shop-drawings'>See how masonry shop drawings draw themselves →</a>"
-    masonxQuote="I shouldn't be labeling a picture of my own wall. The wall already knows every block."
-    image={shopDrawingImg}
-    imageAlt="Masonry shop drawing elevation rendered in The Masonry Modeler — labeled door openings, numbered courses, bond beam courses, control joints, and split face and ground face finish bands"
-    imageCaption="Shop drawing · openings · bond beam · finishes"
-    imageCredit="<strong>Powder River Masonry</strong> · MasonX"
-    reverse={true}
-  />
-
-  <SectionDivider number="06" label="The Rules · Encoded" />
-
-  <RulesSection />
+  <SectionDivider number="06" label="Founder Pricing" />
+  <PricingSection sectionNum="06" />
 
   <SectionDivider number="07" label="Common Questions" />
-
   <FAQSection items={faqItems} sectionNum="07" />
+
+  <FinalCTA />
 </Layout>

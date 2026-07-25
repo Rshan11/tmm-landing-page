@@ -24,11 +24,11 @@ const overlay = `
     x="40" y="${H - 52}"
     font-family="'Arial Black', 'Arial Bold', Arial, sans-serif"
     font-weight="900"
-    font-size="34"
+    font-size="38"
     letter-spacing="-0.5"
     fill="#f4f1e8"
     text-anchor="start"
-  >COUNTING THE PIECES TAKES LONGER THAN THE TAKEOFF.</text>
+  >IT DOESN'T ESTIMATE THE WALL. IT BUILDS IT.</text>
 
   <!-- Sub-label: JetBrains Mono style -->
   <text
@@ -77,7 +77,7 @@ const overlay = `
 // ── Compose ───────────────────────────────────────────────────────────────────
 const overlayBuf = Buffer.from(overlay);
 
-await sharp('src/assets/pump-station-hero.png')
+await sharp('src/assets/product/tmm-plan-view.jpg')
   .resize(W, H, { fit: 'cover', position: 'centre' })
   .composite([{ input: overlayBuf, top: 0, left: 0 }])
   .png({ quality: 90 })

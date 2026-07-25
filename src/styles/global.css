@@ -472,82 +472,8 @@ body {
   overflow: hidden;
 }
 
-.render-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Corner detail inset — small zoom for rule R-01 */
-.render-inset {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32%;
-  aspect-ratio: 4 / 3;
-  border: 2px solid var(--chalk);
-  box-shadow: 4px 4px 0 var(--terracotta);
-  overflow: hidden;
-  z-index: 7;
-}
-
-.render-inset img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.render-inset-label {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--ink);
-  color: var(--chalk);
-  padding: 4px 8px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  text-align: center;
-}
-
-/* MasonX speech bubble overlay on render */
-.render-mx-bubble {
-  position: absolute;
-  bottom: 56px;
-  left: 16px;
-  background: var(--ink);
-  color: var(--chalk);
-  padding: 10px 14px;
-  max-width: 240px;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  z-index: 8;
-  border-left: 3px solid var(--terracotta);
-}
-
-.render-mx-bubble .mx-mark {
-  --mx-size: 24px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.render-mx-bubble-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  line-height: 1.5;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.render-mx-bubble-text strong {
-  color: var(--terracotta);
-  font-weight: 700;
-}
+/* .render-image img — superseded in the LANDING REDRAFT block at the bottom
+   (real app screenshots are 16:9 and must not be cropped by object-fit: cover) */
 
 .render-stats {
   position: absolute;
@@ -1815,4 +1741,815 @@ body {
   .tb-cell { padding: 8px 7px; }
   .tb-logo { font-size: 15px; }
   .tb-brand .mx-mark { --mx-size: 20px; }
+}
+
+/* ============================================================
+   LANDING REDRAFT (2026-07-25)
+   Homepage rebuild from handoff/2026-07-24-landing-redraft.
+   Each block below carries its own responsive rules, so these
+   sit after the shared RESPONSIVE section on purpose.
+   ============================================================ */
+
+/* ============================================================
+   BUILDER 1 — Hero rewrite + Powder River proof strip
+   Scratch CSS for the lead to merge into src/styles/global.css.
+   Sections below are marked NEW or OVERRIDE.
+   ============================================================ */
+
+/* ============ HERO — NEW: primary/secondary CTA row ============ */
+/* Wraps the waitlist form (unchanged) and the new secondary link so
+   they sit on one row on wide screens and stack cleanly when tight. */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+/* The waitlist wrap no longer needs its own bottom margin — the row
+   gap above handles spacing to the secondary CTA / founder line. */
+.hero-actions .hero-waitlist-wrap {
+  margin-bottom: 0;
+}
+
+/* ============ HERO — NEW: secondary (ghost) CTA ============ */
+.hero-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  color: var(--ink);
+  padding: 18px 28px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border: 2px solid var(--ink);
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.hero-cta-secondary:hover {
+  border-color: var(--terracotta);
+  color: var(--terracotta);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.hero-cta-secondary .hero-cta-arrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+}
+
+/* ============ HERO — OVERRIDE: real screenshot in the render frame ============ */
+/* Original rule (global.css ~475-480) used object-fit: cover, which is
+   fine for a full-bleed render but crops the UI chrome on an actual app
+   screenshot (1600x894, wider than the 4:3 frame). Switch to contain so
+   the whole screenshot — toolbar, stats, print — stays legible, and
+   letterbox on the frame's own dark background. This is a full
+   replacement of the existing .render-image img rule. */
+.render-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: var(--navy-deep);
+}
+
+/* ============ PROOF STRIP — NEW ============ */
+/* Tight, full-bleed credibility band directly under the hero. Reuses the
+   site's dark stamp-label vocabulary (see .section-divider) rather than
+   introducing a new visual language. */
+.proof-strip {
+  background: var(--ink);
+  color: var(--chalk);
+  border-top: 2px solid var(--ink);
+  padding: 16px 40px;
+}
+
+.proof-strip-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.proof-strip .mx-mark {
+  --mx-size: 26px;
+  flex-shrink: 0;
+}
+
+.proof-strip-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  color: var(--concrete);
+}
+
+.proof-strip-text strong {
+  color: var(--chalk);
+  font-weight: 700;
+}
+
+.proof-strip-sep {
+  margin: 0 2px;
+  color: var(--mortar);
+}
+
+/* ============ RESPONSIVE (max-width: 900px) ============ */
+@media (max-width: 900px) {
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .hero-cta-secondary {
+    justify-content: center;
+  }
+
+  .proof-strip {
+    padding: 14px 24px;
+  }
+
+  .proof-strip-inner {
+    gap: 12px;
+  }
+
+  .proof-strip-text {
+    font-size: 11px;
+  }
+}
+
+/* Checked at 375px: .hero-actions stacks to full width above (form and
+   ghost CTA both go full-bleed within .hero-inner's 24px padding at
+   900px), the ghost CTA's white-space: nowrap is safe because its own
+   text ("See a hard wall done right") fits on one line down to 375px
+   at 14px Oswald, and .proof-strip-inner wraps the mx-mark + text
+   without a fixed width so the two mono sentences reflow under the
+   monogram rather than overflowing. */
+
+/* ============================================================
+   BUILDER 2 SLICE — "See it" / pillars / shop-drawing paper moment
+   Components: SeeItSection.astro, PillarsSection.astro, SheetMoment.astro
+   Reuses (do not redefine): .page-section, .page-section-dark,
+   .page-section-inner, .page-section h2, .page-section p, .section-num,
+   .video-frame, .video-frame-caption, .drawing-figure (+ figcaption).
+   Everything below is new layout/visual surface these three components
+   need that doesn't already exist in global.css.
+   ============================================================ */
+
+/* ============ SECTION WIDTH / LEDE (shared helpers) ============ */
+/* .page-section-inner defaults to max-width:900px (good for prose-only
+   SEO pages) — these three sections carry grids/figures, so widen it.
+   Compound selectors below are written for specificity safety regardless
+   of where this file lands relative to global.css in the merge. */
+.page-section-inner.section-wide {
+  max-width: 1200px;
+}
+
+.page-section-inner p.section-lede {
+  font-size: 19px;
+  line-height: 1.55;
+  max-width: 760px;
+}
+
+/* ============ SEE IT — VIDEO CARD ============ */
+.showcase-video {
+  margin-top: 40px;
+}
+
+.showcase-video .video-frame {
+  margin: 0;
+}
+
+.showcase-video-caption {
+  margin-top: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--mortar);
+  max-width: 620px;
+}
+
+.showcase-video-caption strong {
+  color: var(--terracotta);
+}
+
+/* ============ SEE IT — SCREENSHOT FIGURES ============ */
+.showcase-shots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+
+/* Plan-view figure spans the full row; the 3D-view figure takes the first
+   half of the next row. The second half is left empty on purpose — that's
+   the "trivial add later" slot for a future takeoff screenshot, not a
+   fabricated placeholder. */
+.showcase-shot-wide {
+  grid-column: 1 / -1;
+}
+
+/* .drawing-figure sets its own dark bg/shadow/figcaption already; these
+   just tighten spacing since it's used in a grid here instead of stacked
+   prose flow. */
+.showcase-shots .drawing-figure {
+  margin: 0;
+}
+
+.showcase-shots .drawing-figure figcaption {
+  justify-content: flex-start;
+}
+
+/* ============ PILLARS ============ */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.pillar-card {
+  background: var(--navy);
+  border: 1px solid rgba(244, 241, 232, 0.15);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pillar-card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  color: var(--chalk);
+  margin: 0 0 14px;
+}
+
+.pillars-grid .pillar-card p {
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0;
+  max-width: none;
+}
+
+.pillars-grid .pillar-card p a {
+  color: var(--terracotta);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pillars-grid .pillar-card p a:hover {
+  color: var(--chalk);
+}
+
+.pillar-data {
+  margin-top: 20px;
+  background: var(--navy-deep);
+  border: 1px solid rgba(244, 241, 232, 0.12);
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--concrete);
+  font-variant-numeric: tabular-nums;
+}
+
+.pillar-data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.pillar-data-row span:last-child {
+  white-space: nowrap;
+}
+
+/* Full-width row: the label reads as one phrase, no value column. */
+.pillar-data-row.is-span span:last-child {
+  white-space: normal;
+}
+
+.pillar-data-accent {
+  color: var(--terracotta);
+  font-weight: 700;
+}
+
+/* ============ SHOP DRAWING PAPER MOMENT ============ */
+/* A white/chalk "sheet" laid down on the dark section — inverted from
+   .drawing-figure (which is a dark card) so the paper itself is the
+   brightest thing on the page. */
+.sheet-frame {
+  margin: 40px 0 0;
+  background: var(--chalk);
+  border: 2px solid var(--ink);
+  box-shadow: 18px 18px 0 var(--terracotta);
+}
+
+.sheet-frame-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 22px;
+  border-bottom: 2px solid var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.sheet-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sheet-frame figcaption.sheet-frame-cap {
+  padding: 14px 22px 18px;
+  border-top: 2px solid var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: #444;
+}
+
+.page-section-inner p.sheet-moment-closing {
+  margin-top: 18px;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.02em;
+  color: var(--mortar);
+  max-width: 700px;
+}
+
+.sheet-moment-link {
+  display: inline-block;
+  margin-top: 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+}
+
+.sheet-moment-link:hover {
+  color: var(--chalk);
+}
+
+/* ============ RESPONSIVE (max-width: 900px) ============ */
+@media (max-width: 900px) {
+  .showcase-section,
+  .pillars-section,
+  .sheet-moment {
+    padding: 60px 24px;
+  }
+
+  .showcase-shots {
+    grid-template-columns: 1fr;
+  }
+
+  .showcase-shot-wide {
+    grid-column: auto;
+  }
+
+  .pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .sheet-frame {
+    box-shadow: 10px 10px 0 var(--terracotta);
+  }
+
+  .sheet-frame-head {
+    padding: 12px 16px;
+    font-size: 10px;
+  }
+
+  .sheet-frame figcaption.sheet-frame-cap {
+    padding: 12px 16px 16px;
+  }
+}
+
+/* Verified at 375px: .pillar-data-row wraps its two spans onto separate
+   lines gracefully via flex-wrap below; long labels (e.g. "Rake cuts —
+   listed by dimension") no longer force horizontal overflow. */
+@media (max-width: 420px) {
+  .pillar-data-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* ============================================================
+   BUILDER 3 SLICE — Difference table, PM4Subs strip, Pricing,
+   Final CTA + footer
+   Components: DifferenceTable.astro, SuiteStrip.astro,
+               PricingSection.astro, FinalCTA.astro
+   Reuses (defined in global.css, NOT redefined here): .section-num,
+   .accent, .hero-cta, .hero-cta-arrow, .page-cta-section
+   ============================================================ */
+
+/* ============ THE DIFFERENCE TABLE ============ */
+.diff-section {
+  background: var(--chalk);
+  padding: 100px 40px 120px;
+  position: relative;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.diff-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.diff-section h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 4.2vw, 52px);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  max-width: 20ch;
+  margin-bottom: 48px;
+}
+
+.diff-table-wrap {
+  overflow-x: auto;
+  border: 2px solid var(--ink);
+  background: var(--chalk);
+}
+
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.diff-table thead th {
+  text-align: left;
+  padding: 16px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mortar);
+  border-bottom: 2px solid var(--ink);
+  background: var(--concrete-light);
+}
+
+.diff-table thead th.diff-th-tmm {
+  color: var(--chalk);
+  background: var(--navy-deep);
+}
+
+.diff-caption-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.diff-table tbody th[scope="row"] {
+  text-align: left;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--concrete-light);
+  vertical-align: top;
+  width: 26%;
+}
+
+.diff-table td {
+  font-family: 'Fraunces', serif;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: #555;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--concrete-light);
+  vertical-align: top;
+}
+
+.diff-table tr:last-child th[scope="row"],
+.diff-table tr:last-child td {
+  border-bottom: none;
+}
+
+.diff-table td.diff-td-tmm {
+  color: var(--chalk);
+  background: rgba(26, 41, 66, 0.03);
+  background: var(--navy-deep);
+}
+
+.diff-table td.diff-td-tmm strong {
+  color: var(--terracotta);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* ============ SUITE STRIP (PM4Subs) ============ */
+.suite-strip {
+  background: var(--chalk);
+  padding: 0 40px 100px;
+}
+
+.suite-strip-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  border-left: 3px solid var(--terracotta);
+  background: var(--concrete-light);
+  padding: 22px 28px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.suite-strip-copy { flex: 1 1 420px; min-width: 0; }
+
+.suite-strip-heading {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.suite-strip-copy p {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #444;
+  max-width: 62ch;
+}
+
+.suite-strip-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--terracotta);
+  text-decoration: none;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.suite-strip-link:hover { text-decoration: underline; }
+
+/* ============ PRICING SECTION ============ */
+.pricing-section {
+  background: var(--chalk);
+  padding: 20px 40px 110px;
+}
+
+.pricing-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pricing-section h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 4.2vw, 52px);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+.pricing-lead {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  line-height: 1.55;
+  color: #333;
+  max-width: 640px;
+  margin-bottom: 48px;
+}
+
+.pricing-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.pricing-card {
+  border: 2px solid var(--ink);
+  background: var(--chalk);
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-card-hot {
+  border-color: var(--terracotta);
+  box-shadow: 14px 14px 0 var(--terracotta);
+  position: relative;
+}
+
+.pricing-card-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--mortar);
+}
+
+.pricing-card-hot .pricing-card-head { color: var(--terracotta); }
+
+.pricing-amount {
+  margin-top: 14px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pricing-amount span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--mortar);
+  margin-left: 4px;
+}
+
+.pricing-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  flex: 1;
+}
+
+.pricing-list li {
+  font-family: 'Fraunces', serif;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: #444;
+  padding: 9px 0 9px 26px;
+  border-bottom: 1px solid var(--concrete-light);
+  position: relative;
+}
+
+.pricing-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  color: var(--terracotta);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+}
+
+.pricing-note {
+  margin-top: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: var(--mortar);
+}
+
+.pricing-note strong { color: var(--terracotta); font-weight: 700; }
+
+.pricing-cta {
+  margin-top: 28px;
+  align-self: flex-start;
+}
+
+/* ============ SITE FOOTER ============ */
+.site-footer {
+  background: var(--chalk);
+  border-top: 2px solid var(--ink);
+}
+
+.site-footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 26px 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--mortar);
+}
+
+.site-footer-brand { color: var(--mortar); }
+
+.site-footer-spacer { flex: 1; }
+
+.site-footer-link {
+  color: var(--terracotta);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.site-footer-link:hover { text-decoration: underline; }
+
+.site-footer-copy { color: var(--mortar); }
+
+/* ============ RESPONSIVE (max-width: 900px) ============ */
+@media (max-width: 900px) {
+  .diff-section { padding: 60px 24px 80px; }
+  .diff-section h2 { margin-bottom: 32px; }
+
+  /* Stack the comparison table into labeled row-cards so nothing
+     forces horizontal page scroll at narrow widths (verified 375px). */
+  .diff-table-wrap { overflow-x: visible; border: none; }
+
+  .diff-table, .diff-table tbody, .diff-table tr, .diff-table th, .diff-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .diff-table thead { display: none; }
+
+  .diff-table tr {
+    border: 2px solid var(--ink);
+    margin-bottom: 20px;
+    background: var(--chalk);
+  }
+
+  .diff-table tbody th[scope="row"] {
+    background: var(--ink);
+    color: var(--chalk);
+    border-bottom: none;
+    width: auto;
+    padding: 14px 18px;
+  }
+
+  .diff-table td {
+    padding: 14px 18px;
+    border-bottom: 1px dashed var(--concrete-light);
+    width: auto;
+  }
+
+  .diff-table td:last-child { border-bottom: none; }
+
+  .diff-table td::before {
+    content: attr(data-col);
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--mortar);
+    margin-bottom: 6px;
+  }
+
+  .diff-table td.diff-td-tmm::before { color: var(--terracotta); }
+
+  .diff-table td.diff-td-tmm {
+    background: var(--navy-deep);
+  }
+
+  .suite-strip { padding: 0 24px 60px; }
+  .suite-strip-inner { padding: 20px 22px; }
+  .suite-strip-link { margin-left: 0; flex: 1 1 100%; }
+
+  .pricing-section { padding: 10px 24px 80px; }
+  .pricing-cards { grid-template-columns: 1fr; gap: 24px; }
+  .pricing-card-hot { box-shadow: 8px 8px 0 var(--terracotta); }
+
+  .site-footer-inner { padding: 22px 24px; }
+  .site-footer-spacer { flex-basis: 100%; height: 0; }
 }
