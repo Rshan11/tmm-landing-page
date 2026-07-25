@@ -24,14 +24,21 @@ const sheetIndex = [
       { num: 'A2.1', label: 'CMU Block Count', href: '/cmu-block-count/' },
       { num: 'A2.2', label: 'Bond Beam Estimating', href: '/bond-beam-estimating/' },
       { num: 'A2.3', label: 'Masonry Takeoff Accuracy', href: '/masonry-takeoff-accuracy/' },
+      { num: 'A2.4', label: 'Masonry Shop Drawings', href: '/masonry-shop-drawings/' },
     ],
   },
   {
     group: 'Field Notes',
     entries: [
-      { num: 'B0',   label: 'All Posts',                  href: '/blog/' },
-      { num: 'B1.1', label: 'Why I Built This',           href: '/blog/why-i-built-this/' },
-      { num: 'B1.2', label: 'Software Sees the Corner',   href: '/blog/software-sees-the-corner/' },
+      { num: 'B0',   label: 'All Posts',                     href: '/blog/' },
+      { num: 'B1.1', label: 'Why I Built This',              href: '/blog/why-i-built-this/' },
+      { num: 'B1.2', label: 'Software Sees the Corner',      href: '/blog/software-sees-the-corner/' },
+      { num: 'B1.3', label: 'The Corner Test',               href: '/blog/the-corner-test/' },
+      { num: 'B1.4', label: 'Half the Block, ⅔ the Price',   href: '/blog/half-block-cost/' },
+      { num: 'B1.5', label: 'Stop Guessing Half Blocks',     href: '/blog/stop-guessing-half-block-order/' },
+      { num: 'B1.6', label: "What's On a Shop Drawing",      href: '/blog/whats-on-a-masonry-shop-drawing/' },
+      { num: 'B1.7', label: 'Shop Drawings in SketchUp',     href: '/blog/masonry-shop-drawings-in-sketchup/' },
+      { num: 'B1.8', label: 'Bluebeam Shop Drawings',        href: '/blog/bluebeam-shop-drawings/' },
     ],
   },
 ];
@@ -60,6 +67,14 @@ const isCurrent = (href: string) => {
       <span class="tb-label">Sheet</span>
       <span class="tb-value">{sheet}</span>
     </div>
+    <a
+      href="/masonry-shop-drawings/"
+      class:list={['tb-cell', 'tb-nav', { 'is-active': isCurrent('/masonry-shop-drawings/') }]}
+      aria-current={isCurrent('/masonry-shop-drawings/') ? 'page' : undefined}
+    >
+      <span class="tb-label">Sheets</span>
+      <span class="tb-value">Shop Drawings</span>
+    </a>
     <button
       type="button"
       class="tb-cell tb-menu"

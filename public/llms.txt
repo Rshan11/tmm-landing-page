@@ -16,6 +16,7 @@ The Masonry Modeler (TMM) is built by Ryan Shanley of Powder River Masonry. The 
 - The engine will never produce a cut under 4 inches — leftover gets absorbed into adjacent joints or the cut shifts to the next valid position
 - 10-inch and 12-inch CMU corners are listed as an 8-inch block plus a face shell spacer (separate line items, the way the supplier ships them)
 - Every block-by-block decision is overridable by the mason — one click changes the unit, takeoff updates immediately
+- Shop drawings are a byproduct of the model: one trace produces coursed, tagged elevations (numbered courses, grout lifts, openings, finishes, control joints) plus a rebar/dowel layout and a steel bar list — every bar counted by mark and cut length with corner-bend and peak-bend shape codes, not linear feet with a waste factor
 
 ## Video proof
 
@@ -28,6 +29,7 @@ A three-minute screen recording of the 88th Avenue pump station being traced and
 - [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): Why block-by-block counting beats square-footage estimating with a factor
 - [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
 - [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them
+- [Masonry Shop Drawings](https://themasonrymodeler.com/masonry-shop-drawings/): Submittal-ready coursed, tagged elevations rendered as you build — openings, special shapes, finishes, bond beams, control joints — plus a rebar/dowel layout and a steel bar list (285 bars, 2,031.4 LF on the sample 15th pod set) counted by mark and cut length. Downloadable 9-sheet sample set.
 
 ### Field Notes (blog)
 - [Blog Index](https://themasonrymodeler.com/blog/)
