@@ -9,6 +9,9 @@ interface DataRow {
   label: string;
   value: string;
   accent?: boolean;
+  /** Render the label as one full-width line instead of a label/value pair,
+      so phrases that read as a sentence don't split across the two columns. */
+  span?: boolean;
 }
 
 interface Pillar {
@@ -49,7 +52,7 @@ const pillars: Pillar[] = [
     rows: [
       { label: 'SHEET E-3 · ELEV B', value: '1/4" = 1\'-0"' },
       { label: 'PIECES — THIS SHEET', value: '✓', accent: true },
-      { label: 'U.N.O. tags · jamb callouts · cut list', value: 'auto' },
+      { label: 'U.N.O. tags · jamb callouts · cut list auto', value: '', span: true },
     ],
   },
 ];
@@ -71,9 +74,11 @@ const pillars: Pillar[] = [
           <p set:html={pillar.body} />
           <div class="pillar-data">
             {pillar.rows.map((row) => (
-              <div class="pillar-data-row">
+              <div class:list={['pillar-data-row', { 'is-span': row.span }]}>
                 <span>{row.label}</span>
-                <span class:list={[{ 'pillar-data-accent': row.accent }]}>{row.value}</span>
+                {!row.span && (
+                  <span class:list={[{ 'pillar-data-accent': row.accent }]}>{row.value}</span>
+                )}
               </div>
             ))}
           </div>
