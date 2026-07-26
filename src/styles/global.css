@@ -2559,10 +2559,22 @@ body {
    published steel bar list table
    Page: src/pages/masonry-shop-drawings.astro
    Reuses (not redefined here): .page-section, .page-section-dark,
-   .page-section-inner, .accent, .mx-mark, .scope-note
+   .page-section-inner, .mx-mark, .scope-note
    ============================================================ */
 
 /* ============ EVERY JOB GETS A SET — MASONX QUOTE ============ */
+
+/* .page-section h2 never had an .accent treatment (only .hero h1,
+   .proof-text h2, and .rules h2 did) — add it so the site's established
+   accent-word pattern works here too, light or dark background. */
+.page-section h2 .accent {
+  color: var(--terracotta);
+  font-style: italic;
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  text-transform: none;
+}
+
 .page-mx-quote {
   border-left: 3px solid var(--terracotta);
   padding: 14px 18px;
