@@ -72,6 +72,101 @@ const legendSheet = sheets[1]; // Elevation A
 const barListSheet = sheets[8]; // A09
 const rebarSheet = sheets[7]; // A08
 
+// Steel bar list — 15th pod, Sheet A09. Transcribed from the real sheet;
+// quantities sum to exactly 285 bars (matches the sheet's stated total).
+// DO NOT alter any value.
+const barGroups = [
+  {
+    mark: 'BB', size: '#4', shape: 'straight',
+    note: 'Bond beam',
+    bars: [
+      { length: `0'-7"`, qty: 1 },
+      { length: `1'-10"`, qty: 2 },
+      { length: `2'-7"`, qty: 2 },
+      { length: `3'-7"`, qty: 4 },
+      { length: `4'-3"`, qty: 1 },
+      { length: `4'-4"`, qty: 2 },
+      { length: `6'-4"`, qty: 2 },
+      { length: `6'-11"`, qty: 1 },
+      { length: `7'-8"`, qty: 2 },
+      { length: `9'-4"`, qty: 2 },
+      { length: `10'-5"`, qty: 4 },
+      { length: `11'-2"`, qty: 1 },
+      { length: `12'-0"`, qty: 6 },
+      { length: `12'-4"`, qty: 2 },
+      { length: `15'-0"`, qty: 4 },
+      { length: `15'-8"`, qty: 2 },
+      { length: `19'-0"`, qty: 2 },
+      { length: `20'-0"`, qty: 12 },
+    ],
+  },
+  {
+    mark: 'CORNER', size: '#4', shape: 'corner-bend',
+    note: 'Bent at the corner',
+    bars: [{ length: `4'-0"`, qty: 28 }],
+  },
+  {
+    mark: 'LINTEL', size: '#5', shape: 'straight',
+    note: 'Over openings',
+    bars: [
+      { length: `8'-4"`, qty: 4 },
+      { length: `12'-4"`, qty: 2 },
+    ],
+  },
+  {
+    mark: 'RAKE', size: '#4', shape: 'peak-bend',
+    note: 'Bent at the peak',
+    bars: [{ length: `4'-0"`, qty: 2 }],
+  },
+  {
+    mark: 'RAKE', size: '#4', shape: 'straight',
+    note: 'Up the slope',
+    bars: [{ length: `16'-7"`, qty: 4 }],
+  },
+  {
+    mark: 'LIFT 1 VERTS', size: '#5', shape: 'straight',
+    note: 'First grout lift',
+    bars: [
+      { length: `2'-4"`, qty: 1 },
+      { length: `3'-0"`, qty: 3 },
+      { length: `6'-6"`, qty: 85 },
+    ],
+  },
+  {
+    mark: 'LIFT 2 VERTS', size: '#5', shape: 'straight',
+    note: 'Second grout lift',
+    bars: [
+      { length: `4'-0"`, qty: 1 },
+      { length: `4'-3"`, qty: 1 },
+      { length: `5'-2"`, qty: 1 },
+      { length: `5'-10"`, qty: 47 },
+      { length: `5'-11"`, qty: 6 },
+      { length: `6'-1"`, qty: 8 },
+      { length: `6'-6"`, qty: 16 },
+      { length: `6'-11"`, qty: 2 },
+      { length: `7'-1"`, qty: 4 },
+      { length: `7'-8"`, qty: 2 },
+    ],
+  },
+  {
+    mark: 'RAKE VERTS', size: '#5', shape: 'straight',
+    note: 'Verticals in the gable',
+    bars: [
+      { length: `4'-0"`, qty: 1 },
+      { length: `4'-3"`, qty: 1 },
+      { length: `4'-10"`, qty: 2 },
+      { length: `5'-0"`, qty: 2 },
+      { length: `5'-2"`, qty: 1 },
+      { length: `5'-4"`, qty: 7 },
+      { length: `5'-7"`, qty: 2 },
+    ],
+  },
+];
+
+// Printed on the sheet — used verbatim for the table's totals row.
+const barTotals = { bars: 285, linearFeet: '2,031.4' };
+const barLineItems = barGroups.reduce((sum, g) => sum + g.bars.length, 0);
+
 const faqItems = [
   {
     question: 'What are masonry shop drawings?',
@@ -84,6 +179,10 @@ const faqItems = [
   {
     question: 'How long do masonry shop drawings take to produce?',
     answer: 'Drawn by hand or sent to a detailing service, a set runs days — and a full redraw every time the plans change. Because TMM tags every unit as you build the wall, the coursed, labeled elevation comes out automatically the moment the geometry exists. The shop drawing isn\'t a separate job; it\'s a byproduct of building the wall.',
+  },
+  {
+    question: 'How much drafting do I have to do?',
+    answer: 'None. You don\'t lay out sheets, place views, or set up callouts. You trace the wall and the sheets come out — plan, elevations, rebar layout, bar list. Change a wall height and they redraw themselves.',
   },
   {
     question: 'Can the drawings show architectural finishes like split face or ground face?',
@@ -100,6 +199,10 @@ const faqItems = [
   {
     question: 'Do the shop drawings update when the design changes?',
     answer: 'Yes. Change a wall height, swap a finish, move or resize an opening, and the elevation, coursing, labels, and counts redraw automatically. There is no re-detailing from scratch — the drawing is always a current reflection of the wall.',
+  },
+  {
+    question: 'Is it worth making shop drawings for a small job?',
+    answer: 'The submittal schedule won\'t ask for one on a trash enclosure. I draw it anyway. Field verify your dimensions, shop the cuts from your own yard, and the crew shows up to install — not to solve the wall standing on a scaffold. Once the wall\'s traced, the drawing costs nothing. The only question left is whether you\'d rather cut it in the yard or up on the scaffold.',
   },
 ];
 
@@ -339,6 +442,51 @@ const breadcrumbSchema = {
         </figcaption>
       </figure>
 
+      <p class="bar-list-note">
+        These are the actual quantities off Sheet A09 — the full bar list, copied straight from the sheet, not a summary of it.
+      </p>
+
+      <details class="bar-list-details">
+        <summary>Full bar list — {barLineItems} line items, {barTotals.bars} bars, {barTotals.linearFeet} LF</summary>
+        <div class="bar-list-scroll">
+          <table class="bar-list-table">
+            <caption>Steel bar list, Sheet A09, 15th pod — mark, size, shape, cut length, and quantity for every bar in the set.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Mark</th>
+                <th scope="col">Size</th>
+                <th scope="col">Shape</th>
+                <th scope="col">Length</th>
+                <th scope="col">Qty</th>
+              </tr>
+            </thead>
+            {barGroups.map((group) => (
+              <tbody>
+                {group.bars.map((bar) => (
+                  <tr>
+                    <th scope="row">
+                      <span class="bar-mark">{group.mark}</span>
+                      <span class="bar-note">{group.note}</span>
+                    </th>
+                    <td>{group.size}</td>
+                    <td>{group.shape}</td>
+                    <td class="num">{bar.length}</td>
+                    <td class="num">{bar.qty}</td>
+                  </tr>
+                ))}
+              </tbody>
+            ))}
+            <tfoot>
+              <tr>
+                <td colspan="3">Total</td>
+                <td class="num">{barTotals.linearFeet} LF</td>
+                <td class="num">{barTotals.bars}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </details>
+
       <figure class="drawing-figure">
         <Image
           src={rebarSheet.img}
@@ -410,6 +558,32 @@ const breadcrumbSchema = {
       <p class="roadmap-note">
         <strong>Coming in version 2:</strong> a full bond-drawing set, elevation by elevation, and a 3D model of the wall. Today the coursed, tagged elevations, the cut list, and the steel bar list come out automatically.
       </p>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>Every Job Gets a Set. Even the <span class="accent">Trash Enclosure</span>.</h2>
+      <p>
+        A shop drawing gets treated like a tax. You produce one because the submittal schedule says so, you pay a detailer by the sheet, and on anything small you skip it — nobody's paying to detail a trash enclosure.
+      </p>
+      <p>
+        That math only holds while the drawing costs something. When it falls out of the model you already traced, the cost goes to zero and the calculation flips. Every job gets one. The addition. The screen wall. The trash enclosure.
+      </p>
+      <p>
+        Because the drawing was never really for the architect. Field verify your dimensions, shop the cuts from your own yard, and the crew shows up to a wall that's already been solved — every course numbered, every cut dimensioned, every special unit where it belongs. Less saw time on site. Less waste. Fewer decisions made standing on a scaffold with a tape measure.
+      </p>
+
+      <div class="page-mx-quote">
+        <span class="mx-mark inverted" aria-hidden="true">
+          <svg><use href="#mx-monogram"/></svg>
+        </span>
+        <span class="page-mx-quote-text">
+          <strong>MasonX:</strong> I used to draw infills on graph paper, cut them in the yard, and install in half the time. It was never pretty. It was right the first time — and that's the only thing the foreman cares about.
+        </span>
+      </div>
+
+      <p class="scope-note">It doesn't have to be pretty. It has to be right.</p>
     </div>
   </section>
 
