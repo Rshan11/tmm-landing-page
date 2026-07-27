@@ -2724,4 +2724,30 @@ body {
   .bar-list-table th,
   .bar-list-table td { padding: 7px 12px; }
   .page-mx-quote { padding: 12px 16px; }
+/* ============ WO-SITE-SEO (2026-07-27) ============ */
+
+/* Second video (full walkthrough) sits under the short lead clip. */
+.showcase-video-secondary {
+  margin-top: 28px;
+}
+
+/* Direct-buy route alongside the waitlist CTA — a ready buyer shouldn't
+   have to join a list. */
+.pricing-direct {
+  margin-top: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: var(--mortar);
+}
+
+.pricing-direct a {
+  color: var(--terracotta);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pricing-direct a:hover {
+  color: var(--terracotta-dark);
 }

@@ -14,6 +14,7 @@ interface Props {
   seatsAvailable?: number;
   ctaHref?: string;
   ctaLabel?: string;
+  contactEmail?: string;
 }
 
 const {
@@ -22,7 +23,16 @@ const {
   seatsAvailable = 10,
   ctaHref = '/#waitlist',
   ctaLabel = 'Join the waitlist',
+  // Direct route for a buyer who is already convinced and doesn't want a
+  // waitlist. TMM's own address — the product stands on its own brand.
+  contactEmail = 'ryan@themasonrymodeler.com',
 } = Astro.props;
+
+const contactHref = `mailto:${contactEmail}?subject=${encodeURIComponent(
+  'Founder seat — ready to talk'
+)}&body=${encodeURIComponent(
+  "Tell me about your outfit and the work you bid, and I'll get you set up."
+)}`;
 
 const founderFeatures = [
   'Full modeler: CMU, brick veneer, stone, ugly walls included',
@@ -60,6 +70,9 @@ const coverageFeatures = [
           Price never rises while your seat is active. <strong>You're buying it from the contractor who bids with it.</strong>
         </p>
         <a href={ctaHref} class="hero-cta pricing-cta">{ctaLabel}<span class="hero-cta-arrow">→</span></a>
+        <p class="pricing-direct">
+          Already sold? <a href={contactHref}>Talk to Ryan</a> — skip the list.
+        </p>
       </div>
 
       <div class="pricing-card">
