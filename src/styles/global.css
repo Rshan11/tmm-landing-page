@@ -2553,3 +2553,31 @@ body {
   .site-footer-inner { padding: 22px 24px; }
   .site-footer-spacer { flex-basis: 100%; height: 0; }
 }
+
+/* ============ WO-SITE-SEO (2026-07-27) ============ */
+
+/* Second video (full walkthrough) sits under the short lead clip. */
+.showcase-video-secondary {
+  margin-top: 28px;
+}
+
+/* Direct-buy route alongside the waitlist CTA — a ready buyer shouldn't
+   have to join a list. */
+.pricing-direct {
+  margin-top: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: var(--mortar);
+}
+
+.pricing-direct a {
+  color: var(--terracotta);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pricing-direct a:hover {
+  color: var(--terracotta-dark);
+}

@@ -25,7 +25,27 @@ const { sectionNum = '02' } = Astro.props;
       palette is what the wall will actually look like, because you pick block and brick the way
       you pick them at the yard.</p>
 
+    <!-- Lead embed: the short clip. First-touch visitors get the 30-second
+         version; the full 3-minute walkthrough stays below it. -->
     <div class="showcase-video">
+      <div class="video-frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/eBQulJ2CVEE"
+          title="Tracing a CMU wall on the print in The Masonry Modeler"
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+      <div class="showcase-video-caption">
+        <strong>Watch: tracing a wall on the print.</strong>
+        Set the wall type, draw the segment, and the dimensions land as you draw —
+        8" CMU, 18'-8" long, 11'-4" tall, straight off the plan.
+      </div>
+    </div>
+
+    <div class="showcase-video showcase-video-secondary">
       <div class="video-frame">
         <iframe
           src="https://www.youtube-nocookie.com/embed/m-fSK2uB924"
@@ -37,7 +57,7 @@ const { sectionNum = '02' } = Astro.props;
         ></iframe>
       </div>
       <div class="showcase-video-caption">
-        <strong>Watch: pump station — trace → takeoff in 3 minutes.</strong>
+        <strong>The full walkthrough: pump station — trace → takeoff in 3 minutes.</strong>
         One print, ten walls, an exact count. No cuts skipped, no factor fudged.
       </div>
     </div>
