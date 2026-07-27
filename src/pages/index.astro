@@ -9,7 +9,6 @@ import SeeItSection from '../components/SeeItSection.astro';
 import PillarsSection from '../components/PillarsSection.astro';
 import SheetMoment from '../components/SheetMoment.astro';
 import DifferenceTable from '../components/DifferenceTable.astro';
-import SuiteStrip from '../components/SuiteStrip.astro';
 import PricingSection from '../components/PricingSection.astro';
 import FAQSection from '../components/FAQSection.astro';
 import FinalCTA from '../components/FinalCTA.astro';
@@ -63,6 +62,25 @@ const faqSchema = {
   })),
 };
 
+// Lead embed — the short trace clip. `duration` is intentionally omitted
+// rather than guessed; add it (ISO 8601, e.g. "PT38S") once the real runtime
+// is known. uploadDate is required and is the date Ryan posted it.
+const shortVideoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Tracing a CMU wall on the print in The Masonry Modeler",
+  "description": "Short clip: setting the wall type and tracing a segment on an architect's print in The Masonry Modeler, with dimensions landing live as the wall is drawn — 8-inch CMU, 18 feet 8 inches long, 11 feet 4 inches tall.",
+  "thumbnailUrl": ["https://i.ytimg.com/vi/eBQulJ2CVEE/maxresdefault.jpg"],
+  "uploadDate": "2026-07-26",
+  "embedUrl": "https://www.youtube.com/embed/eBQulJ2CVEE",
+  "contentUrl": "https://youtu.be/eBQulJ2CVEE",
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+};
+
 const videoSchema = {
   "@context": "https://schema.org",
   "@type": "VideoObject",
@@ -84,6 +102,7 @@ const videoSchema = {
 <Layout title={title} description={description} canonical={canonical}>
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(shortVideoSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
   </Fragment>
 
@@ -103,8 +122,11 @@ const videoSchema = {
   <SheetMoment sectionNum="04" />
 
   <SectionDivider number="05" label="The Difference" />
+  <!-- PM4Subs cross-sell strip removed 2026-07-27: TMM is positioned as a
+       standalone specialized product, so the homepage doesn't pitch a second
+       one ahead of pricing. SuiteStrip.astro and its CSS are retained — drop
+       <SuiteStrip /> back here to restore. Footer link to PM4Subs stays. -->
   <DifferenceTable sectionNum="05" />
-  <SuiteStrip />
 
   <SectionDivider number="06" label="Founder Pricing" />
   <PricingSection sectionNum="06" />
