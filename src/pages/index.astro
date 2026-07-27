@@ -62,16 +62,16 @@ const faqSchema = {
   })),
 };
 
-// Lead embed — the short trace clip. `duration` is intentionally omitted
-// rather than guessed; add it (ISO 8601, e.g. "PT38S") once the real runtime
-// is known. uploadDate is required and is the date Ryan posted it.
+// Lead embed — the short trace clip. uploadDate is the exact publish instant
+// from the channel's RSS feed, not a guessed date. `duration` is intentionally
+// omitted rather than invented; add it (ISO 8601, e.g. "PT38S") once known.
 const shortVideoSchema = {
   "@context": "https://schema.org",
   "@type": "VideoObject",
   "name": "Tracing a CMU wall on the print in The Masonry Modeler",
   "description": "Short clip: setting the wall type and tracing a segment on an architect's print in The Masonry Modeler, with dimensions landing live as the wall is drawn — 8-inch CMU, 18 feet 8 inches long, 11 feet 4 inches tall.",
   "thumbnailUrl": ["https://i.ytimg.com/vi/eBQulJ2CVEE/maxresdefault.jpg"],
-  "uploadDate": "2026-07-26",
+  "uploadDate": "2026-07-27T02:58:38+00:00",
   "embedUrl": "https://www.youtube.com/embed/eBQulJ2CVEE",
   "contentUrl": "https://youtu.be/eBQulJ2CVEE",
   "publisher": {
