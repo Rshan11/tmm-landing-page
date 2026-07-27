@@ -2553,3 +2553,175 @@ body {
   .site-footer-inner { padding: 22px 24px; }
   .site-footer-spacer { flex-basis: 100%; height: 0; }
 }
+
+/* ============================================================
+   SHOP DRAWINGS PAGE — "Every job gets a set" section +
+   published steel bar list table
+   Page: src/pages/masonry-shop-drawings.astro
+   Reuses (not redefined here): .page-section, .page-section-dark,
+   .page-section-inner, .mx-mark, .scope-note
+   ============================================================ */
+
+/* ============ EVERY JOB GETS A SET — MASONX QUOTE ============ */
+
+/* .page-section h2 never had an .accent treatment (only .hero h1,
+   .proof-text h2, and .rules h2 did) — add it so the site's established
+   accent-word pattern works here too, light or dark background. */
+.page-section h2 .accent {
+  color: var(--terracotta);
+  font-style: italic;
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  text-transform: none;
+}
+
+.page-mx-quote {
+  border-left: 3px solid var(--terracotta);
+  padding: 14px 18px;
+  background: rgba(244, 241, 232, 0.04);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  max-width: 700px;
+  margin: 8px 0 28px;
+}
+
+.page-mx-quote .mx-mark { --mx-size: 28px; flex-shrink: 0; }
+
+.page-mx-quote-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--concrete);
+}
+
+.page-mx-quote-text strong { color: var(--terracotta); }
+
+/* ============ PUBLISHED STEEL BAR LIST TABLE ============ */
+.bar-list-note {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--concrete);
+  max-width: 700px;
+  margin: 28px 0 16px;
+}
+
+.bar-list-details {
+  margin: 0 0 32px;
+  border: 1px solid rgba(244, 241, 232, 0.15);
+  background: var(--navy-deep);
+}
+
+.bar-list-details summary {
+  cursor: pointer;
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--chalk);
+  list-style: none;
+}
+
+.bar-list-details summary::-webkit-details-marker { display: none; }
+
+.bar-list-details summary::before {
+  content: '+ ';
+  color: var(--terracotta);
+  font-weight: 700;
+}
+
+.bar-list-details[open] summary::before {
+  content: '\2212 '; /* minus sign */
+}
+
+.bar-list-details summary:hover { color: var(--terracotta); }
+
+.bar-list-scroll {
+  overflow-x: auto;
+  border-top: 1px solid rgba(244, 241, 232, 0.15);
+}
+
+.bar-list-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-list-table caption {
+  caption-side: top;
+  text-align: left;
+  padding: 14px 20px 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mortar);
+}
+
+.bar-list-table th,
+.bar-list-table td {
+  padding: 8px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(244, 241, 232, 0.08);
+  color: var(--concrete);
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.bar-list-table thead th {
+  color: var(--chalk);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  border-bottom: 2px solid var(--terracotta);
+}
+
+.bar-list-table tbody th[scope="row"] {
+  color: var(--chalk);
+  font-weight: 700;
+}
+
+.bar-list-table tbody + tbody tr:first-child th,
+.bar-list-table tbody + tbody tr:first-child td {
+  border-top: 2px solid rgba(184, 69, 26, 0.3);
+}
+
+.bar-mark { display: block; }
+
+.bar-list-table .bar-note {
+  display: block;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 10px;
+  color: var(--mortar);
+  white-space: normal;
+}
+
+.bar-list-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-list-table tfoot td {
+  font-weight: 700;
+  color: var(--chalk);
+  border-top: 2px solid var(--terracotta);
+  border-bottom: none;
+}
+
+/* ============ RESPONSIVE (max-width: 900px) ============ */
+@media (max-width: 900px) {
+  .bar-list-details summary { padding: 14px 16px; font-size: 12px; }
+  .bar-list-table th,
+  .bar-list-table td { padding: 7px 12px; }
+  .page-mx-quote { padding: 12px 16px; }
+}
