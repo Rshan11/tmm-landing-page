@@ -2753,3 +2753,15 @@ body {
 .pricing-direct a:hover {
   color: var(--terracotta-dark);
 }
+
+/* ============ FORMSPREE HONEYPOT ============ */
+/* Positioned off-screen rather than display:none — some bots skip hidden
+   fields but will fill a visually-offset one. Never focusable or announced. */
+.fs-gotcha {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
