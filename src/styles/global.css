@@ -1734,6 +1734,16 @@ body {
 
   .action-grid { grid-template-columns: 1fr; }
   .sheet-strip { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+  /* The two-column comparison never collapsed, so at phone widths each column
+     was ~150px and its content pushed the page into horizontal scroll (9px
+     over at 375px). Stack them; the divider moves from right edge to bottom. */
+  .comparison-block { grid-template-columns: 1fr; }
+  .comparison-col { padding: 24px; }
+  .comparison-col:first-child {
+    border-right: none;
+    border-bottom: 2px solid var(--ink);
+  }
 }
 
 @media (max-width: 360px) {
