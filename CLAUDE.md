@@ -30,7 +30,7 @@ src/
     Layout.astro                     ← <head>, meta, OG/Twitter, JSON-LD, fonts. Accepts title/description/canonical + named slot="head" for per-page JSON-LD.
     MasonXMonogram.astro             ← SVG <defs> for the hardhat symbol. Include once per page.
     TitleBlock.astro                 ← sticky drafting-style header. Props: sheet, ctaLabel, ctaHref.
-    Hero.astro                       ← homepage hero + Formspree waitlist form (action: formspree.io/f/mykvgeld)
+    Hero.astro                       ← homepage hero + Formspree waitlist form (action: formspree.io/f/mkodkqyy)
     SectionDivider.astro             ← black bar with scale-mark borders (number + label + "Section")
     ProofSection.astro               ← homepage proof template (text + drafting-framed render)
     RuleCard.astro                   ← individual rule card
@@ -216,7 +216,7 @@ Dark navy background (`--navy-deep`). Pattern: H2 headline with accent word → 
 Layouts alternate left/right via `reverse` prop for visual rhythm.
 
 ## Waitlist form
-Homepage `Hero.astro` posts to **Formspree** (`https://formspree.io/f/mykvgeld`) with a vanilla `fetch` submit handler. On success it hides the form and shows `#waitlist-success`. The form anchor is `#waitlist`, which is what `PageCTA` links back to from interior pages.
+Homepage `Hero.astro` posts to **Formspree** (`https://formspree.io/f/mkodkqyy` — the "Sign Up" form) with a vanilla `fetch` submit handler. The two sample-set download forms on `/masonry-shop-drawings` post to a separate endpoint (`https://formspree.io/f/xrenwboe` — "Sample Downloads") so downloads can't crowd signups out of the plan quota. Both carry a `_gotcha` honeypot and a `_subject`. On success it hides the form and shows `#waitlist-success`. The form anchor is `#waitlist`, which is what `PageCTA` links back to from interior pages.
 
 ## SEO
 - **Per-page:** `Layout` props (`title`, `description`, `canonical`) — set on every page. Defaults are tuned for the homepage.
