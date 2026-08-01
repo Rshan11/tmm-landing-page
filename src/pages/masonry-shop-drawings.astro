@@ -262,7 +262,21 @@ const breadcrumbSchema = {
     kicker="Shop Drawings · Coursed & Tagged"
     headline="Masonry Shop Drawings, Drawn As You Build"
     lead="A masonry shop drawing is a submittal requirement — coursing, openings, special shapes, reinforcing, finishes, laid out unit by unit. Done by hand it's days of masonry detailing and a redraw every time the plans move. TMM is masonry estimating software that tags every block as you build the wall, then renders the coursed, labeled elevation — and the steel bar list — automatically."
-  />
+  >
+    <Fragment slot="actions">
+      <a
+        class="hero-cta"
+        href="mailto:ryan@themasonrymodeler.com?subject=Shop%20drawing%20request&body=Attach%20your%20elevations%20here.%20Give%20me%20the%20wall%20heights%2C%20block%20sizes%2C%20and%20finishes%2C%20and%20I%27ll%20run%20a%20sheet."
+      >
+        Send your elevations
+        <span class="hero-cta-arrow">&rarr;</span>
+      </a>
+      <a class="page-hero-secondary" href="#sample-set">
+        See the full nine-sheet set
+        <span class="hero-cta-arrow">&darr;</span>
+      </a>
+    </Fragment>
+  </PageHero>
 
   <section class="page-section">
     <div class="page-section-inner">
@@ -509,7 +523,7 @@ const breadcrumbSchema = {
         <strong>Scope:</strong> straight vertical and horizontal reinforcing, dowels, bond beam steel, lintel and rake bars. Pilaster hoops and bent bar are excluded — coordinate those with the rebar detailer.
       </p>
 
-      <div class="sample-download on-dark">
+      <div class="sample-download on-dark" id="sample-set">
         <div class="sample-download-copy">
           <span class="sample-download-kicker">Sample set · 15th pod</span>
           <p>See the whole thing — all nine sheets, plan through bar list.</p>

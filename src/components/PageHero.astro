@@ -13,5 +13,10 @@ const { kicker, headline, lead } = Astro.props;
     <div class="page-kicker">{kicker}</div>
     <h1>{headline}</h1>
     <p class="page-lead">{lead}</p>
+    {Astro.slots.has('actions') && (
+      <div class="page-hero-actions">
+        <slot name="actions" />
+      </div>
+    )}
   </div>
 </section>

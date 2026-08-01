@@ -2775,3 +2775,43 @@ body {
   opacity: 0;
   pointer-events: none;
 }
+
+/* ============ PAGE HERO ACTIONS ============ */
+/* Contact path above the fold. On /masonry-shop-drawings the first form sat
+   72% down a 2,586-word page — every visitor read ~2,000 words before finding
+   a way to reach Ryan. Optional slot, so other landing pages are unaffected. */
+.page-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.page-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 28px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--chalk);
+  background: transparent;
+  border: 2px solid rgba(244, 241, 232, 0.35);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.page-hero-secondary:hover {
+  border-color: var(--chalk);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--terracotta);
+}
+
+@media (max-width: 900px) {
+  .page-hero-actions { gap: 12px; }
+  .page-hero-actions > * { width: 100%; justify-content: center; }
+}
