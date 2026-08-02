@@ -2,16 +2,14 @@
 // Founder pricing — two cards. Card A (founder seat) is the highlighted/
 // primary card; Card B is the plain "what a seat covers" card.
 //
-// NOTE: `seatsAvailable` is a known open item from the handoff — "10
-// available" was hardcoded in the reference. It's wired as a prop here
-// (default 10) so the true remaining count is a one-line change later.
-// The lead paragraph's "Ten seats..." and FinalCTA's "Ten founder seats..."
-// are separate approved-copy strings, not derived from this prop — flagged
-// in the build report in case those should be kept in sync too.
+// Pricing copy updated 2026-08-01 to Ryan's wording. Deliberately NOT a live
+// remaining-seat counter: the offer reads "first 10 companies", which carries
+// the scarcity without asserting a number nobody is maintaining. When seats
+// actually sell, a real counter can replace `seatCap` and it will be true.
 interface Props {
   sectionNum?: string;
   label?: string;
-  seatsAvailable?: number;
+  seatCap?: number;
   ctaHref?: string;
   ctaLabel?: string;
   contactEmail?: string;
@@ -20,7 +18,7 @@ interface Props {
 const {
   sectionNum = '09',
   label = 'Pricing',
-  seatsAvailable = 10,
+  seatCap = 10,
   ctaHref = '/#waitlist',
   ctaLabel = 'Join the waitlist',
   // Direct route for a buyer who is already convinced and doesn't want a
@@ -35,7 +33,7 @@ const contactHref = `mailto:${contactEmail}?subject=${encodeURIComponent(
 )}`;
 
 const founderFeatures = [
-  'Full modeler: CMU, brick veneer, stone, ugly walls included',
+  'Block today — brick, stone and thin brick included as they ship, no upcharge',
   'Takeoff, bid & add-alternates with visible math',
   'Shop drawings, keyed elevations & placing sets',
   'Your crews, rates & regions on every project',
@@ -55,14 +53,14 @@ const coverageFeatures = [
     <div class="section-num" data-num={sectionNum}>{label}</div>
     <h2>Founder pricing. Locked for life.</h2>
     <p class="pricing-lead">
-      Ten seats at the founder price, and it never rises while your seat is active.
-      When they're gone, the list price takes over — founders keep theirs forever.
+      Your rate is locked for life. Every wall type is included as it comes online —
+      block today, brick, stone, and thin brick as they ship. No upcharge.
     </p>
 
     <div class="pricing-cards">
       <div class="pricing-card pricing-card-hot">
-        <div class="pricing-card-head">Founder seat &mdash; {seatsAvailable} available</div>
-        <div class="pricing-amount">$300<span>/mo &middot; locked for life</span></div>
+        <div class="pricing-card-head">Founder seat &mdash; first {seatCap} companies</div>
+        <div class="pricing-amount">$300<span> per seat, per month</span></div>
         <ul class="pricing-list">
           {founderFeatures.map((item) => <li>{item}</li>)}
         </ul>
