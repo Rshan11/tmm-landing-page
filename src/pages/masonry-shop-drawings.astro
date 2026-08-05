@@ -17,8 +17,8 @@ import sheet07 from '../assets/sheets/sheet-07-elevation-f.png';
 import sheet08 from '../assets/sheets/sheet-08-rebar-dowel-layout.png';
 import sheet09 from '../assets/sheets/sheet-09-steel-bar-list.png';
 
-const title = 'Masonry Shop Drawings, Drawn As You Build | The Masonry Modeler';
-const description = 'Masonry shop drawings, drawn as you build. CMU shop drawings with coursed, tagged elevations — openings, bond beams, finishes — plus the steel bar list.';
+const title = 'Masonry Shop Drawing Software | The Masonry Modeler';
+const description = 'Masonry shop drawing software, drawn as you build. CMU shop drawings with keyed elevations, piece counts and cut lists — plus the steel bar list.';
 const canonical = 'https://themasonrymodeler.com/masonry-shop-drawings/';
 
 const samplePdf = '/assets/themasonrymodeler-shop-drawings-sample-15th-pod.pdf';
@@ -169,6 +169,10 @@ const barLineItems = barGroups.reduce((sum, g) => sum + g.bars.length, 0);
 
 const faqItems = [
   {
+    question: 'What is masonry shop drawing software?',
+    answer: 'Masonry shop drawing software generates the submittal set — keyed wall elevations, placing sets, piece counts, cut lists and rebar layouts — out of the modeling phase instead of out of hand detailing. The Masonry Modeler builds the wall unit by unit as you trace the print, so the same model that priced the job produces the sheets. No separate detailing step, and no redraw when the plans move.',
+  },
+  {
     question: 'What are masonry shop drawings?',
     answer: 'A masonry shop drawing is the submittal a masonry contractor provides showing exactly how the wall gets built: course-by-course elevations, dimensions, opening locations, special shapes (corners, bond beam, lintel units), reinforcing placement, and control joints. It translates the architect\'s design intent into the unit-by-unit layout the crew lays and the supplier orders from.',
   },
@@ -264,8 +268,8 @@ const breadcrumbSchema = {
 
   <PageHero
     kicker="Shop Drawings · Coursed & Tagged"
-    headline="Masonry Shop Drawings, Drawn As You Build"
-    lead="A masonry shop drawing is a submittal requirement — coursing, openings, special shapes, reinforcing, finishes, laid out unit by unit. Done by hand it's days of masonry detailing and a redraw every time the plans move. TMM is masonry estimating software that tags every block as you build the wall, then renders the coursed, labeled elevation — and the steel bar list — automatically."
+    headline="Masonry Shop Drawing Software, Drawn As You Build"
+    lead="A masonry shop drawing is a submittal requirement — coursing, openings, special shapes, reinforcing, finishes, laid out unit by unit. Done by hand it's days of masonry detailing and a redraw every time the plans move. The Masonry Modeler is masonry shop drawing software: it tags every block as you build the wall, then generates keyed elevations, placing sets, piece counts and cut lists — plus the steel bar list — straight from the model you priced the job with."
   >
     <Fragment slot="actions">
       <a

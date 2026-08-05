@@ -29,7 +29,7 @@ A three-minute screen recording of the 88th Avenue pump station being traced and
 - [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): Why block-by-block counting beats square-footage estimating with a factor
 - [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
 - [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them
-- [Masonry Shop Drawings](https://themasonrymodeler.com/masonry-shop-drawings/): Submittal-ready coursed, tagged elevations rendered as you build — openings, special shapes, finishes, bond beams, control joints — plus a rebar/dowel layout and a steel bar list (285 bars, 2,031.4 LF on the sample 15th pod set) counted by mark and cut length. Downloadable 9-sheet sample set.
+- [Masonry Shop Drawings](https://themasonrymodeler.com/masonry-shop-drawings/): Masonry shop drawing software. Submittal-ready coursed, tagged elevations rendered as you build — openings, special shapes, finishes, bond beams, control joints — plus keyed elevations, placing sets, piece counts, cut lists, a rebar/dowel layout and a steel bar list (285 bars, 2,031.4 LF on the sample 15th pod set) counted by mark and cut length. Also covers CMU shop drawings specifically. Downloadable 9-sheet sample set.
 
 ### Field Notes (blog)
 - [Blog Index](https://themasonrymodeler.com/blog/)
