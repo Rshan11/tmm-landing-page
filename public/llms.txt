@@ -1,6 +1,6 @@
 # The Masonry Modeler
 
-> Masonry estimating software that renders every block — corners, lintels, bond beams, halves, cuts — as you draw. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Currently in pre-launch; founder pricing $300/month for the first 10 seats.
+> Masonry estimating software that renders every block — corners, lintels, bond beams, halves, cuts — as you draw. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Currently in pre-launch; founder pricing is $300 per seat, per month for the first 10 companies, and that rate is locked for life. Every wall type is included as it comes online — block today, brick, stone and thin brick as they ship, with no upcharge.
 
 ## Background
 
@@ -35,6 +35,13 @@ A three-minute screen recording of the 88th Avenue pump station being traced and
 - [Blog Index](https://themasonrymodeler.com/blog/)
 - [Why I Built The Masonry Modeler](https://themasonrymodeler.com/blog/why-i-built-this/): Founder story — the Douglas Humane Society job where the rectangle-counter model became impossible to ignore
 - [The Software Sees the Corner. Why Am I Placing It?](https://themasonrymodeler.com/blog/software-sees-the-corner/): On automatic corner detection, the cost premium of corner SKUs, and the half-high-course miss
+- [The Corner Test](https://themasonrymodeler.com/blog/the-corner-test/): A one-minute test for any masonry estimating tool — whether it was built from the coursing or from areas. A tool that fails it cannot be patched
+- [Half the Block, Two-Thirds the Price](https://themasonrymodeler.com/blog/half-block-cost/): A half block costs roughly two-thirds of a full unit. Halves fall out of the coursing, so area math can never produce a half count
+- [Stop Guessing Your Half Block Order](https://themasonrymodeler.com/blog/stop-guessing-half-block-order/): Why the 20% rule breaks down once a job mixes bullnose, split-face, colors and multiple widths — "halves" stopped being one line item
+- [What a Masonry Shop Drawing Submittal Must Show](https://themasonrymodeler.com/blog/whats-on-a-masonry-shop-drawing/): The required contents of a masonry submittal — coursing, special shapes, reinforcing, control joints, opening dimensions
+- [Masonry Shop Drawings in SketchUp — and Why You Shouldn't](https://themasonrymodeler.com/blog/masonry-shop-drawings-in-sketchup/): SketchUp draws boxes and has no concept of coursing, bond or special units, so every unit tag is hand work
+- [We All Label Shop Drawings in Bluebeam by Hand. Why?](https://themasonrymodeler.com/blog/bluebeam-shop-drawings/): The common workflow — export the render, mark it up in Bluebeam, label every opening and course by hand — and why the drawing should label itself
+- [What Skipping the Shop Drawing Costs You](https://themasonrymodeler.com/blog/what-skipping-the-shop-drawing-costs/): The case for a set on every job even when nobody requires one. On one project the per-sheet piece tables totalled 12,624 units against an order of 11,485 — the 1,139 difference was corner units appearing on two elevations, roughly nine percent of the order riding on one line of reconciliation
 
 ## About the founder
 
@@ -44,3 +51,5 @@ Ryan Shanley is the founder of Powder River Masonry and the builder of The Mason
 
 - Website: https://themasonrymodeler.com/
 - Waitlist: https://themasonrymodeler.com/#waitlist
+- Direct: ryan@themasonrymodeler.com
+- Sample shop drawing set (9 sheets): https://themasonrymodeler.com/masonry-shop-drawings/#sample-set
