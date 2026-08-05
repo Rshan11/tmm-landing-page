@@ -18,7 +18,7 @@ import sheet08 from '../assets/sheets/sheet-08-rebar-dowel-layout.png';
 import sheet09 from '../assets/sheets/sheet-09-steel-bar-list.png';
 
 const title = 'Masonry Shop Drawings, Drawn As You Build | The Masonry Modeler';
-const description = 'Masonry shop drawings, drawn as you build. TMM renders coursed, tagged elevations — openings, bond beams, finishes — plus the steel bar list.';
+const description = 'Masonry shop drawings, drawn as you build. CMU shop drawings with coursed, tagged elevations — openings, bond beams, finishes — plus the steel bar list.';
 const canonical = 'https://themasonrymodeler.com/masonry-shop-drawings/';
 
 const samplePdf = '/assets/themasonrymodeler-shop-drawings-sample-15th-pod.pdf';
@@ -175,6 +175,10 @@ const faqItems = [
   {
     question: 'What does a CMU shop drawing have to show?',
     answer: 'Sizes and profiles of units, full coursing shown as wall elevations, locations of special shapes, every opening with its dimensions, reinforcing and rebar coordinated with bond beams and lintels, and control joint locations. The Masonry Modeler renders all of it from the coursing — courses numbered, lifts marked, openings labeled, bond beam courses and control joints in their real positions.',
+  },
+  {
+    question: 'Are CMU shop drawings different from masonry shop drawings?',
+    answer: 'Same document, narrower word. Masonry shop drawings cover any unit — block, brick, stone. CMU shop drawings are the block version, and block is where the coursing math bites: corners interlock and carry the bond through, bond beams wrap the building, and a wall that isn\'t modular to 8 inches throws a half-high course that needs its own unit. Miss any of those on the drawing and you miss them on the order. TMM draws block today; brick, stone and thin brick come as they ship.',
   },
   {
     question: 'How long do masonry shop drawings take to produce?',
@@ -557,9 +561,9 @@ const breadcrumbSchema = {
 
   <section class="page-section">
     <div class="page-section-inner">
-      <h2>What the Elevation Shows</h2>
+      <h2>What CMU Shop Drawings Have to Show</h2>
       <p>
-        A submittal-ready masonry shop drawing <a href="/blog/whats-on-a-masonry-shop-drawing/">has to show the wall the way it gets built</a>, not the way it gets billed. TMM renders each piece:
+        CMU shop drawings <a href="/blog/whats-on-a-masonry-shop-drawing/">have to show the wall the way it gets built</a>, not the way it gets billed. Block is where the coursing math bites — corners interlock, bond beams wrap, half-high courses need their own unit — so the set has to carry every one of those decisions. TMM renders each piece:
       </p>
       <ul class="page-list">
         <li><strong>Coursing</strong> — every course numbered up the wall, lifts marked, the bond running through corners.</li>
