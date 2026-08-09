@@ -13,9 +13,9 @@ BreadcrumbList schema, sheet number, the video embed, internal links, and meta w
 - B. The Cells You Fill for a Reason
 - C. Grout Day Shouldn't Be a Memory Test
 
-**Meta description** (151 chars):
+**Meta description** (147 chars):
 > Solid grout is one line on the bid. Partial grout is a map of cells — rebar, bearing
-> plates, embeds — and if the map isn't on the drawing, somebody guesses.
+> plates, embeds — and if the map isn't drawn, somebody guesses.
 
 **Sheet number:** B1.10 (next in sequence — B1.9 is the skipping-costs post)
 
