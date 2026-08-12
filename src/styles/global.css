@@ -1697,6 +1697,30 @@ body {
   background: transparent;
 }
 
+/* ============ POST FIGURE ============ */
+.post-figure {
+  margin: 40px 0;
+  border: 2px solid var(--ink);
+  box-shadow: 10px 10px 0 var(--terracotta);
+  background: #f7f3ee;
+}
+
+.post-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.post-figure figcaption {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--mortar);
+  padding: 10px 14px;
+  border-top: 1px solid var(--concrete-light);
+}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 900px) {
   .hero-inner {

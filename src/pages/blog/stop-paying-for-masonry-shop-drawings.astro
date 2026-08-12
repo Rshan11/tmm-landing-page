@@ -1,0 +1,279 @@
+---
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+
+const title = "Stop Paying for Masonry Shop Drawings | TMM Blog";
+const description = "You paid for the shop drawings once — when you did the takeoff. Then you paid a drafting service to draw the same wall again. Stop paying twice.";
+const canonical = "https://themasonrymodeler.com/blog/stop-paying-for-masonry-shop-drawings/";
+
+const blogPostingSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Stop Paying for Masonry Shop Drawings",
+  "description": description,
+  "image": "https://themasonrymodeler.com/assets/og-image.png",
+  "datePublished": "2026-08-12",
+  "dateModified": "2026-08-12",
+  "author": {
+    "@type": "Person",
+    "name": "Ryan Shanley",
+    "jobTitle": "Founder",
+    "worksFor": { "@type": "Organization", "name": "Powder River Masonry" },
+    "url": "https://themasonrymodeler.com/blog/why-i-built-this/",
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field Notes", "item": "https://themasonrymodeler.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Stop Paying for Masonry Shop Drawings", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="B1.10 — Stop Paying for Shop Drawings" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes · B1.10</span>
+    <span class="scale-marks"></span>
+    <span>Shop Drawings</span>
+  </div>
+
+  <section class="blog-post-hero">
+    <div class="blog-post-hero-inner">
+      <div class="post-kicker">Field Notes</div>
+      <h1>
+        Stop Paying for Masonry
+        <span class="accent">Shop Drawings</span>
+      </h1>
+      <div class="post-meta">
+        <span><strong>Ryan Shanley</strong></span>
+        <span>August 2026</span>
+        <span>4 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="blog-post-body">
+
+    <p>
+      You already paid for the shop drawings. You paid for them when you did the takeoff. You just
+      paid a second time to have someone draw them.
+    </p>
+
+    <p>
+      That's the racket, and nobody calls it that because it's always been this way. You bid the job
+      off the prints. You win it. Then you send the same prints to a drafting service — or burn a
+      week of your own detailer's time — to produce the coursed set your crew and your supplier
+      need. Two documents. Same wall. Paid for twice.
+    </p>
+
+    <h2>What you're paying now</h2>
+
+    <p>
+      Search "masonry shop drawings" and look at what comes back: drafting services. Per-sheet fees.
+      Per-project quotes. Freelancers by the hour. A set for a mid-size CMU job runs real money —
+      and that's before the first revision.
+    </p>
+
+    <p>
+      And there's always a revision. The structural drawings change, an opening moves, the architect
+      issues an addendum. Now your set is wrong. Back to the draftsman, back in the queue, back out
+      the checkbook. The wall moved and the paper didn't, and you're paying for the gap.
+    </p>
+
+    <p>
+      Add the part nobody invoices: the wait. Your set is in someone else's backlog while your
+      foreman needs it Monday.
+    </p>
+
+    <h2>Why it costs anything at all</h2>
+
+    <p>
+      Because the takeoff and the shop drawings have always been two different documents made by
+      two different people from the same plans.
+    </p>
+
+    <p>
+      The estimator counts the wall. The detailer draws the wall. Neither one's work talks to the
+      other's. If the estimator counted 87 rake cuts and the detailer draws 91, somebody finds out
+      in the field. Two sources of truth is how a wall gets laid from numbers it wasn't bid from.
+    </p>
+
+    <figure class="post-figure">
+      <svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif" role="img" aria-label="Diagram comparing the old workflow — where the prints go to an estimator and a drafting service separately, producing a bid and shop drawings that are paid for twice with a re-draft loop on every addendum — against The Masonry Modeler, where tracing the wall once produces both the bid and the shop drawings from one model.">
+        <!-- Background -->
+        <rect width="1200" height="630" fill="#f7f3ee"/>
+
+        <!-- Title block strip (drawing-sheet style) -->
+        <rect x="0" y="0" width="1200" height="6" fill="#b8451a"/>
+
+        <!-- ============ LEFT: THE OLD WAY ============ -->
+        <text x="300" y="66" text-anchor="middle" font-size="30" font-weight="bold" fill="#3a3632" letter-spacing="1">THE OLD WAY</text>
+        <text x="300" y="94" text-anchor="middle" font-size="17" fill="#8a8378" font-style="italic">Same wall. Paid for twice.</text>
+
+        <!-- Prints box -->
+        <rect x="185" y="120" width="230" height="60" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="300" y="157" text-anchor="middle" font-size="19" fill="#3a3632">THE PRINTS</text>
+
+        <!-- Split arrows -->
+        <line x1="300" y1="180" x2="175" y2="235" stroke="#3a3632" stroke-width="2"/>
+        <line x1="300" y1="180" x2="425" y2="235" stroke="#3a3632" stroke-width="2"/>
+        <polygon points="175,235 186,226 191,236" fill="#3a3632"/>
+        <polygon points="425,235 414,226 409,236" fill="#3a3632"/>
+
+        <!-- Estimator box -->
+        <rect x="60" y="240" width="220" height="86" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="170" y="274" text-anchor="middle" font-size="18" fill="#3a3632">ESTIMATOR</text>
+        <text x="170" y="300" text-anchor="middle" font-size="15" fill="#8a8378">counts the wall</text>
+        <text x="170" y="356" text-anchor="middle" font-size="17" font-weight="bold" fill="#b8451a">$ PAID ONCE</text>
+
+        <!-- Drafting service box -->
+        <rect x="320" y="240" width="220" height="86" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="430" y="274" text-anchor="middle" font-size="18" fill="#3a3632">DRAFTING SERVICE</text>
+        <text x="430" y="300" text-anchor="middle" font-size="15" fill="#8a8378">draws the wall — again</text>
+        <text x="430" y="356" text-anchor="middle" font-size="17" font-weight="bold" fill="#b8451a">$ PAID TWICE</text>
+
+        <!-- Two documents -->
+        <line x1="170" y1="366" x2="170" y2="408" stroke="#3a3632" stroke-width="2"/>
+        <polygon points="170,408 165,397 175,397" fill="#3a3632"/>
+        <line x1="430" y1="366" x2="430" y2="408" stroke="#3a3632" stroke-width="2"/>
+        <polygon points="430,408 425,397 435,397" fill="#3a3632"/>
+
+        <rect x="60" y="412" width="220" height="58" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="170" y="447" text-anchor="middle" font-size="17" fill="#3a3632">THE BID</text>
+        <rect x="320" y="412" width="220" height="58" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="430" y="447" text-anchor="middle" font-size="17" fill="#3a3632">THE SHOP DRAWINGS</text>
+
+        <!-- Mismatch note -->
+        <text x="300" y="502" text-anchor="middle" font-size="15" font-style="italic" fill="#8a8378">two documents · two sources of truth</text>
+
+        <!-- Revision loop -->
+        <path d="M 540 441 C 590 441 590 283 545 283" fill="none" stroke="#b8451a" stroke-width="2.5" stroke-dasharray="7,5"/>
+        <polygon points="545,283 557,277 557,289" fill="#b8451a"/>
+        <text x="588" y="360" text-anchor="middle" font-size="14" fill="#b8451a" transform="rotate(90 588 360)">ADDENDUM → RE-DRAFT → RE-PAY</text>
+
+        <!-- Divider -->
+        <line x1="640" y1="50" x2="640" y2="580" stroke="#d8d1c6" stroke-width="2"/>
+
+        <!-- ============ RIGHT: TMM ============ -->
+        <text x="920" y="66" text-anchor="middle" font-size="30" font-weight="bold" fill="#3a3632" letter-spacing="1">THE MASONRY MODELER</text>
+        <text x="920" y="94" text-anchor="middle" font-size="17" fill="#8a8378" font-style="italic">One model. Paid once.</text>
+
+        <!-- Prints box -->
+        <rect x="805" y="120" width="230" height="60" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="920" y="157" text-anchor="middle" font-size="19" fill="#3a3632">THE PRINTS</text>
+
+        <line x1="920" y1="180" x2="920" y2="222" stroke="#3a3632" stroke-width="2"/>
+        <polygon points="920,222 915,211 925,211" fill="#3a3632"/>
+
+        <!-- Model box (highlighted) -->
+        <rect x="780" y="226" width="280" height="112" fill="#b8451a"/>
+        <text x="920" y="266" text-anchor="middle" font-size="19" font-weight="bold" fill="#ffffff">TRACE THE WALL ONCE</text>
+        <text x="920" y="294" text-anchor="middle" font-size="15" fill="#f2ddd2">TMM lays the bond —</text>
+        <text x="920" y="316" text-anchor="middle" font-size="15" fill="#f2ddd2">every block, every cut, every bar</text>
+
+        <!-- Split to outputs -->
+        <line x1="920" y1="338" x2="815" y2="400" stroke="#3a3632" stroke-width="2"/>
+        <line x1="920" y1="338" x2="1025" y2="400" stroke="#3a3632" stroke-width="2"/>
+        <polygon points="815,400 826,392 831,401" fill="#3a3632"/>
+        <polygon points="1025,400 1014,392 1009,401" fill="#3a3632"/>
+
+        <rect x="705" y="404" width="220" height="58" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="815" y="439" text-anchor="middle" font-size="17" fill="#3a3632">THE BID</text>
+        <rect x="915" y="404" width="220" height="58" fill="#ffffff" stroke="#3a3632" stroke-width="2"/>
+        <text x="1025" y="439" text-anchor="middle" font-size="17" fill="#3a3632">THE SHOP DRAWINGS</text>
+
+        <!-- Same numbers note -->
+        <text x="920" y="496" text-anchor="middle" font-size="15" font-style="italic" fill="#8a8378">same model · same numbers · one click apart</text>
+
+        <!-- Change note -->
+        <text x="920" y="540" text-anchor="middle" font-size="16" fill="#3a3632">Change the wall — the bid and the sheets move together.</text>
+        <text x="920" y="566" text-anchor="middle" font-size="16" font-weight="bold" fill="#b8451a">No re-draft. No re-pay.</text>
+
+        <!-- Sheet-style footer -->
+        <rect x="0" y="606" width="1200" height="24" fill="#3a3632"/>
+        <text x="24" y="623" font-size="13" fill="#f7f3ee" letter-spacing="2">THEMASONRYMODELER.COM</text>
+        <text x="1176" y="623" text-anchor="end" font-size="13" fill="#f7f3ee" letter-spacing="2">SHEET FN-01 · STOP PAYING TWICE</text>
+      </svg>
+      <figcaption>FN-01 · Two documents, two payments — vs. one model, one click apart</figcaption>
+    </figure>
+
+    <h2>The wall you priced is the wall you print</h2>
+
+    <p>
+      The Masonry Modeler doesn't draft shop drawings. It doesn't have to. It laid the bond — every
+      block, every cut, every bar — when you did the takeoff. The set already exists. Printing it is
+      one click.
+    </p>
+
+    <p>
+      Keyed elevations on coursing. Dims that land on block. Jamb callouts, U.N.O. tags, a piece
+      count for that sheet. Generated from the same model that priced the job, so the wall gets laid
+      from the same numbers it was bid from.
+    </p>
+
+    <p>
+      And when the addendum hits: change the wall. The sheets, the counts, and the bid all move
+      together. No queue. No re-draft fee. No second source of truth.
+    </p>
+
+    <p>
+      <a href="/masonry-shop-drawings">See the full nine-sheet set — actual output, unretouched.</a>
+    </p>
+
+    <h2>The honest caveat</h2>
+
+    <p>
+      If your submittal needs an engineer's stamp, you still need the engineer. TMM generates the
+      coursed layout set — the elevations, placing sets, and piece counts your crew and your
+      supplier actually build from. It replaces the drafting, not the engineering.
+    </p>
+
+    <h2>Do the math on your last three jobs</h2>
+
+    <p>
+      Pull the invoices. What did drafting cost you on the last three jobs — in dollars, in days
+      waited, in revision rounds?
+    </p>
+
+    <p>
+      A TMM seat is $300 a month, every project included, drawings included. No per-sheet fees, no
+      per-set fees. One job's drafting bill covers the seat for months — and the takeoff came with
+      it.
+    </p>
+
+    <blockquote>
+      <p>Stop paying for the wall twice.</p>
+    </blockquote>
+
+    <a href="/#waitlist" class="post-cta-inline">Founder pricing — first 10 companies, locked for life →</a>
+
+    <p>
+      <em>Written at Powder River Masonry, where we bid our own work with TMM every week.</em>
+    </p>
+
+  </article>
+
+  <div class="blog-post-footer">
+    <a href="/blog/" class="blog-back-link">← All posts</a>
+  </div>
+
+</Layout>

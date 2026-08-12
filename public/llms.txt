@@ -35,6 +35,14 @@ A three-minute screen recording of the 88th Avenue pump station being traced and
 - [Blog Index](https://themasonrymodeler.com/blog/)
 - [Why I Built The Masonry Modeler](https://themasonrymodeler.com/blog/why-i-built-this/): Founder story — the Douglas Humane Society job where the rectangle-counter model became impossible to ignore
 - [The Software Sees the Corner. Why Am I Placing It?](https://themasonrymodeler.com/blog/software-sees-the-corner/): On automatic corner detection, the cost premium of corner SKUs, and the half-high-course miss
+- [The Corner Test](https://themasonrymodeler.com/blog/the-corner-test/): A one-minute test — draw two walls meeting at a corner — that shows whether a tool models bonded masonry or just rectangles
+- [Half the Block, Two-Thirds the Price](https://themasonrymodeler.com/blog/half-block-cost/): A half block costs about two-thirds of a full one; missing the half-block count shorts the bid in the one direction you can't claw back
+- [We All Label Shop Drawings in Bluebeam by Hand. Why?](https://themasonrymodeler.com/blog/bluebeam-shop-drawings/): The export-and-annotate workflow re-types labels the model already knew — the drawing should label itself
+- [What Goes On a Masonry Shop Drawing](https://themasonrymodeler.com/blog/whats-on-a-masonry-shop-drawing/): What the coursed submittal has to show — coursing, special shapes, openings, reinforcing, control joints — and why the contractor has to produce it
+- [Drawing Masonry in SketchUp](https://themasonrymodeler.com/blog/masonry-shop-drawings-in-sketchup/): Why building masonry shop drawings in SketchUp by hand is so much work — the model doesn't know it's a wall
+- [Stop Guessing Your Half Block Order](https://themasonrymodeler.com/blog/stop-guessing-half-block-order/): The 20% rule breaks on modern jobs that mix bullnose, split-face, colors, and multiple widths — "halves" isn't one line item anymore
+- [What Skipping the Shop Drawing Costs You](https://themasonrymodeler.com/blog/what-skipping-the-shop-drawing-costs/): On one recent job the sheets totalled 12,624 units and the order was 11,485 — the 1,139-unit gap was corners counted twice, caught by one line of reconciliation
+- [Stop Paying for Masonry Shop Drawings](https://themasonrymodeler.com/blog/stop-paying-for-masonry-shop-drawings/): The takeoff already paid for the shop drawings; TMM prints the coursed set from the same model that priced the job — no per-sheet fees, no re-draft on revisions
 
 ## About the founder
 
