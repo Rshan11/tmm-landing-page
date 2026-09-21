@@ -1,0 +1,223 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../components/Layout.astro';
+import MasonXMonogram from '../../components/MasonXMonogram.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+import rakeElevation from '../../assets/shop-drawing-example-rake.png';
+
+// Targets the "show me one" searcher — Search Console (Jun–Sep 2026) showed
+// "masonry drawing", "masonry drawing plan", "masonry drawings", "masonry
+// blueprints" and "…shop drawing example" all landing on the pillar, which
+// sells but never walks through a drawing. B1.6 is the checklist; this is the
+// worked example. Keep the two distinct.
+const title = "Masonry Shop Drawing Example: A CMU Wall, Line by Line | TMM Blog";
+const description = "A real masonry shop drawing example — a 30-course CMU rake wall with course numbers, lift lines, rebar, grout and bands — and how to read every mark.";
+const canonical = "https://themasonrymodeler.com/blog/masonry-shop-drawing-example/";
+
+const blogPostingSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "A Masonry Shop Drawing Example, Read Line by Line",
+  "description": description,
+  "image": "https://themasonrymodeler.com/assets/og-image.png",
+  "datePublished": "2026-09-21",
+  "dateModified": "2026-09-21",
+  "author": {
+    "@type": "Person",
+    "name": "Ryan Shanley",
+    "jobTitle": "Founder",
+    "worksFor": { "@type": "Organization", "name": "Powder River Masonry" },
+    "url": "https://themasonrymodeler.com/blog/why-i-built-this/",
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field Notes", "item": "https://themasonrymodeler.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Masonry Shop Drawing Example", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="B1.11 — Shop Drawing Example" ctaLabel="Join Waitlist →" ctaHref="/#waitlist" />
+
+  <div class="section-divider">
+    <span>Field Notes · B1.11</span>
+    <span class="scale-marks"></span>
+    <span>Shop Drawings</span>
+  </div>
+
+  <section class="blog-post-hero">
+    <div class="blog-post-hero-inner">
+      <div class="post-kicker">Field Notes</div>
+      <h1>
+        A Masonry Shop Drawing Example, Read
+        <span class="accent">Line by Line</span>
+      </h1>
+      <div class="post-meta">
+        <span><strong>Ryan Shanley</strong></span>
+        <span>September 2026</span>
+        <span>5 min read</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="blog-post-body">
+
+    <p>
+      Everybody will tell you what a masonry shop drawing is supposed to have on it. Hardly anybody
+      will show you one. The specs give you a paragraph. The guides give you a checklist. If you've
+      never had to produce one, neither tells you what the thing actually looks like.
+    </p>
+
+    <p>
+      So here's one. It's a single CMU elevation, straight off the drawing canvas of the masonry
+      estimating software I'm building. One wall, one sheet's worth. Let's read it the way the
+      reviewer will — and the way your foreman will on Monday morning.
+    </p>
+
+    <figure class="drawing-figure">
+      <Image
+        src={rakeElevation}
+        alt="Masonry shop drawing example: a coursed CMU rake wall elevation with courses numbered C1 to C30 over a curb, lift lines every six courses, vertical and horizontal rebar, solid grout hatching, and two banded block colors"
+        widths={[800, 1200, 1333]}
+        sizes="(max-width: 900px) 92vw, 760px"
+        loading="lazy"
+      />
+      <figcaption>
+        <span>Rake wall · C1–C30 over curb · 20'-10" · lifts, rebar, grout, bands</span>
+        <span><strong>Powder River Masonry</strong> · MasonX</span>
+      </figcaption>
+    </figure>
+
+    <h2>Start at the left edge: the course numbers</h2>
+
+    <p>
+      Down the left side, every course has a name — CURB, then C1 up through C30. Thirty courses of
+      8-inch block is 20 feet. Add the curb and you get the 20'-10" on the dimension string. The
+      math closes, and it closes on the module. That's the first thing a reviewer checks and the
+      first thing a hand-drawn elevation gets wrong.
+    </p>
+
+    <p>
+      The numbers aren't decoration. They're how everybody talks about the wall from here on.
+      "Bond beam at C13." "Dark band starts at C22." Nobody's counting up from the footing with a
+      finger on the paper.
+    </p>
+
+    <h2>The green dashed lines: lifts</h2>
+
+    <p>
+      Every six courses there's a green dashed line — Lift 1 through Lift 5. Six courses is 4 feet.
+      That's how this wall actually goes up: lay a lift, set the steel, grout it, move the scaffold,
+      go again. The drawing shows the wall in the same bites the crew builds it in, so the lift
+      lines double as your grout pours and your scaffold moves.
+    </p>
+
+    <h2>The steel</h2>
+
+    <p>
+      The heavy black lines are the reinforcing, drawn where it lives in the wall.
+    </p>
+
+    <ul class="page-list">
+      <li><strong>Verticals</strong> — bars in the cores on a regular spacing, end to end. They come up in lengths that work with the lifts, and where two lines run side by side, that's the lap splice. Nobody threads block over a 20-foot bar.</li>
+      <li><strong>Horizontals</strong> — bars running the length of the wall in the <a href="/bond-beam-estimating/">bond beam</a> courses. Look at C1, C7, C13, C19 and C25. The short ticks along each bar mark the laps.</li>
+      <li><strong>Ends and hooks</strong> — at each end of the wall the horizontal steel is drawn turning into the end cells instead of just stopping at the edge of the paper.</li>
+    </ul>
+
+    <p>
+      This is the part of the submittal the engineer reads hardest. Size, spacing, lap, where it
+      stops. If it's on the elevation, coordinated with the courses, there's nothing to argue about.
+    </p>
+
+    <h2>The hatch: grout</h2>
+
+    <p>
+      The diagonal hatch over the block is grout. On this wall it covers everything — it's
+      solid-grouted, bottom to top. On a partially grouted wall you'd see the hatch only at the
+      bar cells and the bond beams, and that picture is your grout quantity. Either way the
+      drawing answers "which cells get filled" without a note that says <em>see structural</em>.
+    </p>
+
+    <h2>The colors: bands</h2>
+
+    <p>
+      Two block types on this wall. The tan field, and a dark band at C11 through C13 and again
+      from C22 to the top. Each band sits in its real coursing position, so the architect sees the
+      look they drew and the supplier sees two separate orders — not one pile of "8-inch CMU."
+    </p>
+
+    <p>
+      Look at the ends of the courses, too. The end units on alternating courses are shaded
+      differently from the stretchers. Running bond doesn't end the same way on every course, and
+      the drawing doesn't pretend it does.
+    </p>
+
+    <h2>The top: the rake</h2>
+
+    <p>
+      The wall isn't a rectangle. It slopes from 30 courses at the high end down to about 19 at the
+      low end, and every course dies into that slope at a different spot. Each one of those is a
+      cut block, and each cut is drawn. A rake is where an area takeoff quietly gives up — it
+      averages the triangle and hopes. On the drawing, you can count them.
+    </p>
+
+    <blockquote>
+      <p>
+        If you can't point at a block on the drawing, it isn't on the order. If you can, it is.
+        That's the whole job of the sheet.
+      </p>
+    </blockquote>
+
+    <h2>What this example is not</h2>
+
+    <p>
+      It's one elevation, not a full submittal. A complete set also carries the plan view, every
+      other elevation, the opening schedule, and the bar list — the full rundown is in
+      <a href="/blog/whats-on-a-masonry-shop-drawing/">what a masonry shop drawing has to show</a>.
+      But the elevation is the sheet that does the heavy lifting, and it's the one that takes the
+      longest to draw by hand.
+    </p>
+
+    <h2>Nobody drew this one</h2>
+
+    <p>
+      Here's the part I care about. Nobody sat down and drafted that elevation. The wall was modeled
+      once, course by course, to get the count for the bid. The course numbers, the lift lines, the
+      steel, the grout, the bands, the rake cuts — they're all just the model, shown on paper.
+      Change the wall and the drawing changes with it. That's how
+      <a href="/masonry-shop-drawings/">masonry shop drawings</a> work in The Masonry Modeler: the
+      takeoff and the drawing are the same wall, so they can't disagree.
+    </p>
+
+    <p>
+      If you're still drawing these by hand — or paying somebody else to — that's the week I'm
+      trying to give you back.
+    </p>
+
+    <a href="/#waitlist" class="post-cta-inline">Join the waitlist →</a>
+
+  </article>
+
+  <div class="blog-post-footer">
+    <a href="/blog/" class="blog-back-link">← All posts</a>
+  </div>
+
+</Layout>
