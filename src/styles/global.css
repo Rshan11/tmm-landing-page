@@ -1721,6 +1721,12 @@ body {
   border-top: 1px solid var(--concrete-light);
 }
 
+/* .drawing-figure inside a blog post — it's built for stacked page sections
+   (top margin only), so give it room on both sides in prose flow. */
+.blog-post-body .drawing-figure {
+  margin: 40px 0 48px;
+}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 900px) {
   .hero-inner {

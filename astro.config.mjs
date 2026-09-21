@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://themasonrymodeler.com',
   output: 'static',
+  trailingSlash: 'always',
   integrations: [sitemap()],
   image: {
     service: { entrypoint: 'astro/assets/services/sharp' },

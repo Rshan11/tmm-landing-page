@@ -43,6 +43,7 @@ A three-minute screen recording of the 88th Avenue pump station being traced and
 - [Stop Guessing Your Half Block Order](https://themasonrymodeler.com/blog/stop-guessing-half-block-order/): The 20% rule breaks on modern jobs that mix bullnose, split-face, colors, and multiple widths — "halves" isn't one line item anymore
 - [What Skipping the Shop Drawing Costs You](https://themasonrymodeler.com/blog/what-skipping-the-shop-drawing-costs/): On one recent job the sheets totalled 12,624 units and the order was 11,485 — the 1,139-unit gap was corners counted twice, caught by one line of reconciliation
 - [Stop Paying for Masonry Shop Drawings](https://themasonrymodeler.com/blog/stop-paying-for-masonry-shop-drawings/): The takeoff already paid for the shop drawings; TMM prints the coursed set from the same model that priced the job — no per-sheet fees, no re-draft on revisions
+- [A Masonry Shop Drawing Example, Read Line by Line](https://themasonrymodeler.com/blog/masonry-shop-drawing-example/): One real CMU rake-wall elevation — courses C1–C30 over a curb, lift lines every six courses, vertical and bond beam steel with laps, solid grout hatch, banded block colors, rake cuts — and what each mark means
 
 ## About the founder
 
