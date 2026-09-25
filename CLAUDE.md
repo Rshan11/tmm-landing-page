@@ -181,16 +181,17 @@ Google Fonts loaded via `<link>` in `Layout.astro` with `display=swap`.
 
 ### Color tokens (updated at Ryan's request, September 25, 2026)
 
-The website uses cool concrete, charcoal, and restrained safety yellow. Avoid returning to warm cream/rust, italic editorial-serif headings, decorative grid overlays, or large offset shadows. Use upright Oswald headings and Barlow prose.
+The website uses cool concrete, charcoal, and restrained brick red. Avoid returning to warm cream/rust, italic editorial-serif headings, decorative grid overlays, or large offset shadows. Use upright Oswald headings and Barlow prose.
 
-Semantic text colors depend on the surrounding light/dark surface; yellow small text is not suitable on light concrete. Existing `--terracotta` names are compatibility aliases, not the old orange palette.
+Semantic text colors depend on the surrounding light/dark surface; deep brick red is for actions and light-surface text; use the lighter red text accent on charcoal. Existing `--terracotta` names are compatibility aliases, not the old orange palette.
 
 CSS custom properties are defined at the top of `global.css`.
 | Token | Hex | Use |
 |-------|-----|-----|
-| `--signal` | `#f3cb45` | Yellow actions and highlights |
-| `--signal-ink` | `#4d430a` | Readable accent text on light surfaces |
-| `--on-signal` | `#171b1e` | Text on yellow |
+| `--signal` | `#b83c36` | Brick red actions and highlights |
+| `--signal-ink` | `#922d29` | Readable red text on light surfaces |
+| `--signal-light` | `#ed8178` | Readable red text on dark surfaces |
+| `--on-signal` | `#ffffff` | White text on red actions |
 | `--navy` | `#292f34` | Charcoal panels |
 | `--navy-deep` | `#171b1e` | Header, hero, dark sections |
 | `--chalk` | `#f2f4f5` | Light concrete surface / light text |
@@ -198,7 +199,7 @@ CSS custom properties are defined at the top of `global.css`.
 | `--concrete` | `#c3cbd0` | Secondary light text |
 | `--concrete-light` | `#e1e6e9` | Concrete surface |
 | `--text-muted` | context-dependent | Muted readable text |
-| `--accent-text` | context-dependent | Yellow on dark, dark accent on light |
+| `--accent-text` | context-dependent | Light red on dark, deep red on light |
 
 ### Grid / texture
 - Keep the useful sheet navigation and concise drawing labels.
