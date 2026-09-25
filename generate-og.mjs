@@ -17,7 +17,7 @@ const overlay = `
   <rect x="0" y="${H - 110}" width="${W}" height="110" fill="rgba(17,23,27,0.94)"/>
 
   <!-- Signal accent line above bar -->
-  <rect x="0" y="${H - 112}" width="${W}" height="3" fill="#f3cb45"/>
+  <rect x="0" y="${H - 112}" width="${W}" height="3" fill="#b83c36"/>
 
   <!-- Tagline -->
   <text
@@ -37,18 +37,18 @@ const overlay = `
     font-weight="700"
     font-size="13"
     letter-spacing="2"
-    fill="#f3cb45"
+    fill="#ed8178"
     text-anchor="start"
   >FULLS. HALVES. CORNERS. COUNTED FROM THE FIRST CLICK.</text>
 
   <!-- MX hardhat monogram (top-left, 72px) -->
   <g transform="translate(32, 24) scale(2.0)">
     <!-- Hat dome -->
-    <path d="M 4 24 Q 4 8, 20 6 Q 36 8, 36 24 L 32 24 Q 32 14, 20 12 Q 8 14, 8 24 Z" fill="#f3cb45"/>
+    <path d="M 4 24 Q 4 8, 20 6 Q 36 8, 36 24 L 32 24 Q 32 14, 20 12 Q 8 14, 8 24 Z" fill="#b83c36"/>
     <!-- Crown ridge -->
-    <rect x="19" y="6" width="2" height="4" rx="1" fill="#f3cb45"/>
+    <rect x="19" y="6" width="2" height="4" rx="1" fill="#b83c36"/>
     <!-- Brim -->
-    <path d="M 2 24 L 38 24 L 38 28 Q 38 30, 36 30 L 4 30 Q 2 30, 2 28 Z" fill="#b89930"/>
+    <path d="M 2 24 L 38 24 L 38 28 Q 38 30, 36 30 L 4 30 Q 2 30, 2 28 Z" fill="#922d29"/>
     <!-- MX letters -->
     <text
       x="20" y="22"
@@ -57,7 +57,7 @@ const overlay = `
       font-weight="700"
       font-size="11"
       letter-spacing="1"
-      fill="#f3cb45"
+      fill="#f3f5f5"
     >MX</text>
   </g>
 
@@ -68,7 +68,7 @@ const overlay = `
     font-weight="900"
     font-size="28"
     letter-spacing="2"
-    fill="#f3cb45"
+    fill="#f3f5f5"
   >TMM</text>
 
 </svg>

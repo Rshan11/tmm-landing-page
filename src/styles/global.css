@@ -1,14 +1,15 @@
 /* ============================================================
    THE MASONRY MODELER — Global Styles
-   Design language: contractor field sheets / concrete, charcoal, safety yellow
+   Design language: contractor field sheets / concrete, charcoal, brick red
    ============================================================ */
 
 :root {
-  /* Safety yellow is a surface/highlight, never small text on concrete. */
-  --signal: #f3cb45;
-  --signal-hover: #ffda61;
-  --signal-ink: #4d430a;
-  --on-signal: #171b1e;
+  /* Brick red actions use white labels; dark surfaces use the lighter text accent. */
+  --signal: #b83c36;
+  --signal-hover: #9e302b;
+  --signal-ink: #922d29;
+  --signal-light: #ed8178;
+  --on-signal: #ffffff;
   --terracotta: var(--signal);
   --terracotta-dark: var(--signal-ink);
   --navy: #292f34;
@@ -358,7 +359,7 @@ body {
 }
 
 .hero-sub strong {
-  background: linear-gradient(180deg, transparent 60%, rgba(243, 203, 69, 0.25) 60%);
+  background: linear-gradient(180deg, transparent 60%, rgba(184, 60, 54, 0.25) 60%);
   font-weight: 600;
 }
 
@@ -2727,7 +2728,7 @@ body {
 
 .bar-list-table tbody + tbody tr:first-child th,
 .bar-list-table tbody + tbody tr:first-child td {
-  border-top: 2px solid rgba(243, 203, 69, 0.3);
+  border-top: 2px solid rgba(184, 60, 54, 0.3);
 }
 
 .bar-mark { display: block; }
@@ -2852,7 +2853,7 @@ body {
   .comparison-col:last-child, .diff-th-tmm, .diff-td-tmm, .bar-list-details) {
   --text-body: #d5dce0;
   --text-muted: #b5c0c8;
-  --accent-text: var(--signal);
+  --accent-text: var(--signal-light);
   --line: #56616a;
 }
 :where(.sheet-index-panel, .hero-form, .render-stats, .rule-card,
@@ -2876,7 +2877,7 @@ button, input, select, textarea { font-family: var(--font-body); }
 ::selection { background: var(--signal); color: var(--on-signal); }
 :where(section[id], h2[id]) { scroll-margin-top: 100px; }
 
-/* Dark, level header. Navigation stays distinct from the yellow action. */
+/* Dark, level header. Navigation stays distinct from the red action. */
 .title-block { background: var(--navy-deep); color: var(--chalk); border-bottom: 1px solid #48535c; }
 .tb-cell { border-right-color: #48535c; }
 .tb-label { color: #b5c0c8; }
@@ -2889,9 +2890,9 @@ button, input, select, textarea { font-family: var(--font-body); }
 .tb-cta:hover { background: var(--signal-hover); }
 .tb-cta .tb-value { color: var(--on-signal); }
 .sheet-index-panel { border-color: var(--line); }
-.sheet-index-entry.is-current { --accent-text: var(--signal); }
-.mx-mark .mx-letters { fill: var(--on-signal); }
-.mx-mark .mx-brim { fill: #be9e32; }
+.sheet-index-entry.is-current { --accent-text: var(--signal-light); }
+.mx-mark .mx-letters { fill: var(--signal-ink); }
+.mx-mark .mx-brim { fill: var(--signal-ink); }
 
 /* The wall footage is the hero; no grid overlay, slanted type or fake depth. */
 .hero { min-height: auto; padding: 64px 0 72px; background: var(--navy-deep); color: var(--chalk); }
@@ -2907,11 +2908,11 @@ button, input, select, textarea { font-family: var(--font-body); }
 .hero-form { border: 1px solid #a4afb7; }
 .hero-form-input { font-family: var(--font-body); font-size: 16px; }
 .hero-form-input:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-.hero-form-success { color: var(--signal); font-family: var(--font-body); font-size: 16px; letter-spacing: 0; }
+.hero-form-success { color: var(--signal-light); font-family: var(--font-body); font-size: 16px; letter-spacing: 0; }
 .hero .hero-cta-secondary { color: var(--chalk); border-color: #8e9ca6; background: transparent; }
 .hero .hero-cta-secondary:hover { color: var(--chalk); background: #343e46; border-color: var(--chalk); }
 
-/* Yellow is reserved for actions and short markers, always with dark text. */
+/* Brick red actions and short markers use white labels. */
 .hero-cta, .blog-post-body .post-cta-inline {
   background: var(--signal); color: var(--on-signal);
   min-height: 48px; letter-spacing: .05em;
