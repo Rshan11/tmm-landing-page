@@ -6,13 +6,13 @@ interface Props {
   ctaHref?: string;
 }
 const {
-  waitlistHref = '/#waitlist',
+  waitlistHref = '/#demo',
   sheet = 'A1.0 — Home',
   ctaLabel,
   ctaHref,
 } = Astro.props;
 const finalCtaHref = ctaHref ?? waitlistHref;
-const finalCtaLabel = ctaLabel ?? 'Join Waitlist →';
+const finalCtaLabel = ctaLabel ?? 'Book a Demo →';
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 
@@ -20,8 +20,8 @@ const sheetIndex = [
   {
     group: 'Architectural',
     entries: [
-      { num: 'A1.0', label: 'Home', href: '/' },
-      { num: 'A2.1', label: 'CMU Block Count', href: '/cmu-block-count/' },
+      { num: 'A1.0', label: 'Masonry Estimating Software', href: '/' },
+      { num: 'A2.1', label: 'CMU Count & Estimate', href: '/cmu-block-count/' },
       { num: 'A2.2', label: 'Bond Beam Estimating', href: '/bond-beam-estimating/' },
       { num: 'A2.3', label: 'Masonry Takeoff Accuracy', href: '/masonry-takeoff-accuracy/' },
       { num: 'A2.4', label: 'Masonry Shop Drawings', href: '/masonry-shop-drawings/' },

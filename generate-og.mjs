@@ -24,11 +24,11 @@ const overlay = `
     x="40" y="${H - 52}"
     font-family="'Arial Black', 'Arial Bold', Arial, sans-serif"
     font-weight="900"
-    font-size="38"
+    font-size="32"
     letter-spacing="-0.5"
     fill="#f4f1e8"
     text-anchor="start"
-  >IT DOESN'T ESTIMATE THE WALL. IT BUILDS IT.</text>
+  >MASONRY ESTIMATING SOFTWARE. BUILT BY A MASON.</text>
 
   <!-- Sub-label: JetBrains Mono style -->
   <text

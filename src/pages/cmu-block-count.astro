@@ -5,19 +5,24 @@ import TitleBlock from '../components/TitleBlock.astro';
 import PageHero from '../components/PageHero.astro';
 import PageCTA from '../components/PageCTA.astro';
 import FAQSection from '../components/FAQSection.astro';
+import EstimateExample from '../components/EstimateExample.astro';
 
-const title = 'Exact CMU Block Count, Not Square Footage | The Masonry Modeler';
-const description = 'Most masonry software estimates by square foot. TMM counts every block — corners, bond beams, half-highs, cuts — as you draw. See the pump station proof.';
+const title = 'CMU Estimating: Block Count to Bid | The Masonry Modeler';
+const description = 'Learn how to estimate a CMU wall: block count, mortar, grout, labor, equipment, overhead, and profit. Follow a worked masonry estimate with sample rates.';
 const canonical = 'https://themasonrymodeler.com/cmu-block-count/';
 
 const faqItems = [
+  {
+    question: 'How do I turn a CMU block count into an estimate?',
+    answer: 'Price the fulls, halves, and specialty units, then add mortar, grout, reinforcing, and accessories. Apply your production rates, crew labor, and equipment costs. Review allowances, tax, overhead, and profit against the project scope before issuing the bid.',
+  },
   {
     question: 'Why is a block-by-block count more accurate than square footage?',
     answer: 'Square-footage takeoffs apply a factor — typically 1.125 blocks per square foot — then round up. That factor doesn\'t know about corners, openings, bond beams, or non-modular heights. Block-by-block counts each unit type individually, so the order matches what the crew actually lays.',
   },
   {
     question: 'What does "non-modular" mean and why does it matter?',
-    answer: 'Non-modular means the wall height doesn\'t divide evenly by 8 inches. When that happens, the top or bottom course needs a half-high block — a different unit entirely, sourced separately and priced separately. Square-footage estimating buries this in waste. TMM counts it as its own line item.',
+    answer: 'Non-modular means a dimension does not land on the selected unit module. A remaining height may need a specified half-high unit or a cut from full-height stock. Review both the placed piece and the unit you need to purchase.',
   },
   {
     question: 'How long does it take to trace a building and get a block count?',
@@ -25,7 +30,7 @@ const faqItems = [
   },
   {
     question: 'What block types does TMM count separately?',
-    answer: 'Standard stretchers, corner blocks (inside and outside), bond beam units, lintel units, half-high blocks, sill blocks, and cut pieces at non-modular wall ends. Each is a separate line item. No lumping, no rounding up into a waste factor.',
+    answer: 'Standard stretchers, corner blocks (inside and outside), bond beam units, lintel units, half-high blocks, sill blocks, and cut pieces at non-modular wall ends. Review the placed piece types and their purchased units separately from any waste allowance.',
   },
 ];
 
@@ -40,21 +45,16 @@ const schema = {
 };
 
 const howToSchema = {
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  "name": "How to Get an Exact CMU Block Count Instead of a Square-Footage Estimate",
-  "description": "Generate a block-by-block CMU takeoff that counts each unit type separately — corners, bond beams, half-highs, cuts — instead of multiplying square footage by a factor.",
-  "totalTime": "PT10M",
+  "@context": "https://schema.org", "@type": "HowTo",
+  "name": "How to prepare a masonry estimate",
+  "description": "Review CMU quantities, apply your prices and production rates, then add overhead and profit for the defined scope.",
   "step": [
-    { "@type": "HowToStep", "position": 1, "name": "Trace the wall geometry",
-      "text": "Draw the building perimeter and openings to scale. The bond pattern is generated from the geometry, not from a square-footage assumption." },
-    { "@type": "HowToStep", "position": 2, "name": "Identify unit types",
-      "text": "Define stretchers, corner blocks, bond beam units, lintel units, half-high blocks, sill blocks, and cuts. Each is a separate SKU on the supplier's invoice and a separate line item on the takeoff." },
-    { "@type": "HowToStep", "position": 3, "name": "Let it count as you draw",
-      "text": "As walls are placed, the correct unit is assigned at each location — corners at intersections, half-highs at non-modular heights, bond beams at rebar elevations." },
-    { "@type": "HowToStep", "position": 4, "name": "Review the takeoff with separate line items",
-      "text": "Check that each unit type has its own count with no lumping into a waste factor. The order goes to the supplier matching what the crew will actually lay." },
-  ],
+    { "@type": "HowToStep", "name": "Define the scope", "text": "Read plans and specifications; set wall geometry, openings, finishes, and reinforcement." },
+    { "@type": "HowToStep", "name": "Review the takeoff", "text": "Check units, mortar, grout, reinforcing, accessories, and allowances." },
+    { "@type": "HowToStep", "name": "Apply your costs", "text": "Use supplier quotes and loaded labor and equipment rates; check delivery, waste, and tax." },
+    { "@type": "HowToStep", "name": "Price how you will build", "text": "Set production rates and crews; review laying, grouting, and other work." },
+    { "@type": "HowToStep", "name": "Review the bid", "text": "Add overhead and profit, resolve missing scope or rates, and review against the plans." }
+  ]
 };
 
 const breadcrumbSchema = {
@@ -101,18 +101,18 @@ const videoSchema = {
 
   <PageHero
     kicker="CMU Estimating · Block by Block"
-    headline="Exact CMU Block Count, Not Square Footage"
-    lead="Every CMU estimating method that starts with square footage ends with a factor. Factors are wrong. TMM is masonry estimating software that renders the wall block-by-block — corners, bond beams, half-highs — and counts what's actually there."
+    headline="CMU estimating: from block count to bid"
+    lead="A masonry estimate needs quantities, prices, and a plan for doing the work. The Masonry Modeler is masonry estimating software that connects the CMU wall you draw to the materials, crews, equipment, and markup in your bid."
   />
 
   <section class="page-section">
     <div class="page-section-inner">
-      <h2>The Square-Foot Method Has a Math Problem</h2>
+      <h2>Start with the wall and specifications</h2>
       <p>
-        The standard approach: multiply wall area by 1.125 blocks per square foot, add 5–10% waste. It's been the default for decades because it's fast. It's also wrong in the same ways every time.
+        Wall area is a useful starting check. For nominal 8-by-16-inch CMU, 1.125 units per square foot gives a full-unit equivalent. A purchase list also needs the actual fulls, halves, corners, bond beams, and cuts, plus the specified finishes and allowances.
       </p>
       <p>
-        Corners aren't blocks. They're special units — different face dimensions, different pricing, sourced differently. Every inside and outside corner pulls corner blocks from the count and puts them in a separate column. A square-footage takeoff <a href="/blog/the-corner-test/">doesn't know where the corners are</a>. It can't — it never drew the wall.
+        A corner's position and its purchased unit are related, but the specified block determines what you buy. Smooth 8-inch CMU may use regular stock at a corner; textured units or other widths can need special units. <a href="/blog/the-corner-test/">Review the corners</a>, openings, control joints, and non-modular heights before pricing.
       </p>
 
       <div class="comparison-block">
@@ -192,6 +192,22 @@ const videoSchema = {
     </div>
   </section>
 
+  <section class="page-section" id="estimate-workflow">
+    <div class="page-section-inner">
+      <h2>How to prepare a masonry estimate</h2>
+      <ol class="estimate-steps">
+        <li><strong>Define the scope.</strong> Read the plans and specifications. Set wall lengths, heights, thicknesses, finishes, openings, and reinforcement.</li>
+        <li><strong>Review the takeoff.</strong> Check the fulls, halves, specialty units, cuts, mortar, grout, and reinforcing. Account for accessories and job-specific allowances.</li>
+        <li><strong>Apply your costs.</strong> Use supplier quotes, mortar coverage, grout pricing, loaded labor costs, and equipment rates. Check delivery, minimum orders, waste, and tax.</li>
+        <li><strong>Price how you will build.</strong> Set production rates and the working crew. Review the days for laying and grouting, plus access and other work.</li>
+        <li><strong>Review the bid.</strong> Add overhead and profit, resolve missing scope or rates, and compare the estimate to the plans before sending it.</li>
+      </ol>
+      <p>The <a href="/#estimate-example">masonry estimating software overview</a> shows how the count connects to the bid. Below is one small worked example with all its assumptions visible.</p>
+    </div>
+  </section>
+
+  <EstimateExample />
+
   <FAQSection
     items={faqItems}
     sectionNum="FAQ"
@@ -204,3 +220,9 @@ const videoSchema = {
     body="Trace the wall, get the count. Founder pricing at $300/mo while seats last."
   />
 </Layout>
+
+<style>
+  .estimate-steps { padding-left: 1.4em; font-size: 18px; line-height: 1.75; }
+  .estimate-steps li { margin: 0 0 18px; }
+  #estimate-workflow { scroll-margin-top: 90px; }
+</style>
