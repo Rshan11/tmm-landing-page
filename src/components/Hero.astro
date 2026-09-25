@@ -1,78 +1,55 @@
 ---
 import { Image } from 'astro:assets';
 import planViewImage from '../assets/product/tmm-plan-view.jpg';
-
-interface Props {
-  waitlistHref?: string;
-}
-const { waitlistHref = '#waitlist' } = Astro.props;
 ---
 
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-tag">Masonry estimating &amp; shop drawings</div>
-      <h1>
-        It doesn't estimate the wall.<br/>
-        <span class="accent">It builds it.</span>
-      </h1>
+      <div class="hero-tag">Plans → takeoff → bid → shop drawings</div>
+      <h1>Masonry estimating software.<br/><span class="accent">Built by a mason.</span></h1>
       <p class="hero-sub">
-        The Masonry Modeler is masonry estimating software that doesn't estimate at all.
-        Trace your walls on the print. TMM lays the bond — <strong>every block, every cut,
-        every bar</strong> — the way your crew will lay it. The count isn't a factor times
-        square feet. It's the wall. <strong>Then it prints the shop drawings.</strong>
+        Build your masonry estimate from the wall you'll actually lay.
+        Trace the plans, review the block, mortar, grout, and rebar quantities,
+        then price the work with <strong>your material costs, crews, and equipment.</strong>
+        Add overhead and profit. Produce the bid and <strong>shop drawings from the same model.</strong>
       </p>
       <div class="hero-actions">
-        <div id="waitlist" class="hero-waitlist-wrap">
+        <div id="demo" class="hero-waitlist-wrap">
+          <span id="waitlist" aria-hidden="true"></span>
+          <p class="demo-intro" id="demo-help">See the estimating workflow with Ryan. Leave your email and he'll arrange a demo.</p>
           <form class="hero-form" id="waitlist-form" action="https://formspree.io/f/mkodkqyy" method="POST">
-            <input type="hidden" name="_subject" value="Waitlist signup" />
-            <!-- Honeypot: bots fill this, humans never see it. Formspree discards
-                 those submissions without counting them against the plan quota. -->
+            <input type="hidden" name="_subject" value="TMM estimating demo request" />
+            <input type="hidden" name="request_type" value="estimating-demo" />
             <input type="text" name="_gotcha" class="fs-gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
-            <input
-              type="email"
-              name="email"
-              class="hero-form-input"
-              placeholder="your@email.com"
-              required
-              autocomplete="email"
-            />
-            <button type="submit" class="hero-cta">
-              Join the waitlist
-              <span class="hero-cta-arrow">→</span>
-            </button>
+            <input type="email" name="email" class="hero-form-input" placeholder="your@email.com" required autocomplete="email" aria-label="Email for your demo" aria-describedby="demo-help" />
+            <button type="submit" class="hero-cta">Request a demo <span class="hero-cta-arrow">→</span></button>
+            <details class="demo-source">
+              <summary>How did you find us? <span>(optional)</span></summary>
+              <label for="demo-source">Where you heard about TMM</label>
+              <select name="heard_about_us" id="demo-source">
+                <option value="">Choose one</option>
+                <option>Google or another search engine</option>
+                <option>Instagram</option>
+                <option>A contractor or friend</option>
+                <option>A supplier or trade event</option>
+                <option>Other</option>
+              </select>
+            </details>
           </form>
-          <p class="hero-form-success" id="waitlist-success" style="display:none">
-            You're on the list. We'll be in touch.
-          </p>
+          <p class="hero-form-success" id="waitlist-success" role="status" tabindex="-1" hidden>Thanks — your request was sent. Ryan will email you to arrange your demo.</p>
+          <p class="demo-error" id="demo-error" role="alert" hidden>We couldn't send your request. Please try again or <a href="mailto:ryan@themasonrymodeler.com?subject=TMM%20demo%20request">email Ryan directly</a>.</p>
         </div>
-        <a class="hero-cta-secondary" href="#see-it">
-          See a hard wall done right
-          <span class="hero-cta-arrow">→</span>
-        </a>
+        <a class="hero-cta-secondary" href="#estimate-example">See an estimate <span class="hero-cta-arrow">→</span></a>
       </div>
-      <div class="hero-pricing">
-        Founder pricing: <strong>$300 per seat, per month</strong> · first 10 companies
-      </div>
+      <div class="hero-pricing">Founder rate: <strong>$300 per seat, per month</strong> · first 10 companies. Ask about current availability.</div>
     </div>
-
     <div class="hero-render">
-      <div class="render-titlebar">
-        <span><span class="dot">◉</span> Plan View · Live Trace</span>
-        <span>TMM</span>
-      </div>
+      <div class="render-titlebar"><span><span class="dot">◉</span> Plan View · Live Trace</span><span>TMM</span></div>
       <div class="render-image">
-        <Image
-          src={planViewImage}
-          alt="The Masonry Modeler plan view: an architect's floor plan loaded as a print with walls traced over it in blue, 8-inch CMU wall type selected, and live segment stats"
-          loading="eager"
-          fetchpriority="high"
-        />
+        <Image src={planViewImage} alt="The Masonry Modeler plan view: an architect's floor plan with traced walls, 8-inch CMU selected, and live segment quantities" loading="eager" fetchpriority="high" />
       </div>
-      <div class="render-stats">
-        <span>8" CMU · 10 lines · 14 segments</span>
-        <span><strong>189'-4"</strong> traced</span>
-      </div>
+      <div class="render-stats"><span>8" CMU · 10 lines · 14 segments</span><span><strong>189'-4"</strong> traced</span></div>
     </div>
   </div>
 </section>
@@ -80,43 +57,61 @@ const { waitlistHref = '#waitlist' } = Astro.props;
 <script>
   const form = document.getElementById('waitlist-form') as HTMLFormElement;
   const success = document.getElementById('waitlist-success') as HTMLElement;
+  const error = document.getElementById('demo-error') as HTMLElement;
   const emailInput = form?.querySelector('input[type="email"]') as HTMLInputElement;
-
   const focusEmail = () => {
-    if (location.hash === '#waitlist' && emailInput && form?.style.display !== 'none') {
-      emailInput.focus({ preventScroll: true });
-    }
+    if (['#waitlist', '#demo'].includes(location.hash) && emailInput && !form?.hidden) emailInput.focus({ preventScroll: true });
   };
-
-  if (location.hash === '#waitlist') {
-    window.addEventListener('load', () => setTimeout(focusEmail, 400));
-  }
+  if (['#waitlist', '#demo'].includes(location.hash)) window.addEventListener('load', () => setTimeout(focusEmail, 400));
   window.addEventListener('hashchange', () => setTimeout(focusEmail, 400));
-
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = form.querySelector('button') as HTMLButtonElement;
+    if (btn.disabled) return;
     const originalText = btn.innerHTML;
     btn.textContent = 'Sending…';
     btn.disabled = true;
-
+    error.hidden = true;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
     try {
-      const res = await fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { Accept: 'application/json' },
-      });
-
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }, signal: controller.signal });
       if (res.ok) {
-        form.style.display = 'none';
-        success.style.display = 'block';
-      } else {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
+        form.hidden = true;
+        success.hidden = false;
+        success.focus({ preventScroll: true });
+      } else error.hidden = false;
     } catch {
+      error.hidden = false;
+    } finally {
+      window.clearTimeout(timeout);
       btn.innerHTML = originalText;
       btn.disabled = false;
     }
   });
 </script>
+
+<style>
+  .hero h1 { font-size: clamp(40px, 4.5vw, 66px); line-height: 1.06; }
+  .hero h1 .accent { display: inline-block; font-size: .7em; margin-top: .22em; }
+  .hero-tag { letter-spacing: .09em; }
+  .hero-sub { margin-bottom: 24px; }
+  .hero-waitlist-wrap { width: 100%; scroll-margin-top: 110px; }
+  #waitlist { scroll-margin-top: 130px; }
+  .demo-intro, .demo-error { font-size: 14px; line-height: 1.5; margin: 0 0 12px; }
+  .demo-error { color: var(--terracotta-dark); margin-top: 12px; }
+  .demo-error a { color: inherit; text-decoration: underline; }
+  .hero-form[hidden], [hidden] { display: none; }
+  .hero-form-input:focus-visible, select:focus-visible { outline: 2px solid var(--terracotta); outline-offset: -2px; }
+  .hero-cta:disabled { cursor: wait; opacity: .7; }
+  .demo-source { flex: 1 0 100%; min-width: 0; padding: 10px 12px; border-top: 1px solid var(--concrete); font: 12px/1.5 'JetBrains Mono', monospace; }
+  .demo-source summary { cursor: pointer; }
+  .demo-source summary span { color: #615b52; }
+  .demo-source label { display: block; margin: 12px 0 6px; }
+  .demo-source select { width: 100%; max-width: 100%; padding: 9px; background: var(--chalk); color: var(--ink); border: 1px solid var(--mortar); font: inherit; }
+  @media (max-width: 480px) {
+    .hero-cta { width: 100%; justify-content: center; }
+    .hero-tag { font-size: 10px; }
+    .hero-tag::before { display: none; }
+  }
+</style>

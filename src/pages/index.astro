@@ -3,6 +3,7 @@ import Layout from '../components/Layout.astro';
 import MasonXMonogram from '../components/MasonXMonogram.astro';
 import TitleBlock from '../components/TitleBlock.astro';
 import Hero from '../components/Hero.astro';
+import EstimateExample from '../components/EstimateExample.astro';
 import ProofStrip from '../components/ProofStrip.astro';
 import SectionDivider from '../components/SectionDivider.astro';
 import SeeItSection from '../components/SeeItSection.astro';
@@ -14,10 +15,18 @@ import FAQSection from '../components/FAQSection.astro';
 import FinalCTA from '../components/FinalCTA.astro';
 
 const title = 'Masonry Estimating Software & Shop Drawings | The Masonry Modeler';
-const description = 'Masonry estimating software that lays the bond block by block — CMU and brick takeoff with visible math, and shop drawings from the same model.';
+const description = 'Masonry estimating software built by a mason. Turn CMU takeoffs into material costs, crew days, bids, and shop drawings. Request a demo.';
 const canonical = 'https://themasonrymodeler.com/';
 
 const faqItems = [
+  {
+    question: 'What does masonry estimating software calculate?',
+    answer: 'TMM connects wall quantities to material prices, production rates, crew labor, equipment, overhead, and profit. Review the included scope and your rates before issuing a bid. The same wall model also produces shop drawings.',
+  },
+  {
+    question: 'Can I use my own supplier prices and crews?',
+    answer: 'Yes. Set your material prices, production rates, crew, and equipment, then review the estimate by item. Your job conditions and costs determine the bid.',
+  },
   {
     question: 'How do corners work in The Masonry Modeler?',
     answer: 'Corners interlock by default — inside and outside. The bond runs through the corner. No butt joints unless overridden. The corner is a consequence of the bond, not a special case bolted on top.',
@@ -36,11 +45,11 @@ const faqItems = [
   },
   {
     question: 'Does The Masonry Modeler handle half-high courses?',
-    answer: 'Yes. When a wall is not modular to 8 inches, it generates the half-high course at top or bottom and adds it as its own line item. Counted, weighted, and priced separately — not buried in a waste factor.',
+    answer: 'Yes. Review the partial-height course in the elevation and takeoff. It may use a specified half-high unit or a cut from full-height stock; the purchased block and the remaining piece height have different roles in the estimate.',
   },
   {
     question: 'Will The Masonry Modeler produce cuts smaller than 4 inches?',
-    answer: 'No. If a layout would force a cut under 4 inches, it absorbs the leftover into adjacent joints or shifts the cut to the next valid position. By design.',
+    answer: 'TMM resolves coursing and shows the resulting pieces. Tight openings, corners, and special details can need small closures. Review the elevation and cutting list for the detail you intend to build.',
   },
   {
     question: 'How are 10-inch and 12-inch CMU corners handled?',
@@ -48,7 +57,7 @@ const faqItems = [
   },
   {
     question: 'Can the mason override it?',
-    answer: 'Yes. It is right about 90 percent of the time. The mason is right on the other 10 percent. Click any block, change the type, and the takeoff updates. One-click override.',
+    answer: 'Yes. Select a block and change its type to match the detail you intend to build. Review the updated takeoff and estimate before issuing the bid.',
   },
 ];
 
@@ -112,27 +121,30 @@ const videoSchema = {
   <Hero />
   <ProofStrip />
 
-  <SectionDivider number="02" label="See It Work" />
-  <SeeItSection sectionNum="02" />
+  <SectionDivider number="02" label="From Takeoff to Bid" />
+  <EstimateExample compact sectionNum="02" />
 
-  <SectionDivider number="03" label="Why The Number Is Right" />
-  <PillarsSection sectionNum="03" />
+  <SectionDivider number="03" label="See It Work" />
+  <SeeItSection sectionNum="03" />
 
-  <SectionDivider number="04" label="The Shop Drawing" />
-  <SheetMoment sectionNum="04" />
+  <SectionDivider number="04" label="Why The Number Is Right" />
+  <PillarsSection sectionNum="04" />
 
-  <SectionDivider number="05" label="The Difference" />
+  <SectionDivider number="05" label="The Shop Drawing" />
+  <SheetMoment sectionNum="05" />
+
+  <SectionDivider number="06" label="The Difference" />
   <!-- PM4Subs cross-sell strip removed 2026-07-27: TMM is positioned as a
        standalone specialized product, so the homepage doesn't pitch a second
        one ahead of pricing. SuiteStrip.astro and its CSS are retained — drop
        <SuiteStrip /> back here to restore. Footer link to PM4Subs stays. -->
-  <DifferenceTable sectionNum="05" />
+  <DifferenceTable sectionNum="06" />
 
-  <SectionDivider number="06" label="Founder Pricing" />
-  <PricingSection sectionNum="06" />
+  <SectionDivider number="07" label="Founder Pricing" />
+  <PricingSection sectionNum="07" />
 
-  <SectionDivider number="07" label="Common Questions" />
-  <FAQSection items={faqItems} sectionNum="07" />
+  <SectionDivider number="08" label="Common Questions" />
+  <FAQSection items={faqItems} sectionNum="08" />
 
   <FinalCTA />
 </Layout>

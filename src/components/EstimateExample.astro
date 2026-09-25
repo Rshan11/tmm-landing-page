@@ -1,0 +1,234 @@
+---
+import { estimateExample } from '../data/estimate-example';
+
+interface Props {
+  compact?: boolean;
+  sectionNum?: string;
+}
+
+const { compact = false, sectionNum } = Astro.props;
+const { wall, materials, labor, equipment, totals } = estimateExample;
+const money = (cents: number) => new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+}).format(cents / 100);
+---
+
+<section
+  class:list={['estimate-example', { compact }]}
+  id={compact ? 'estimate-example' : 'worked-estimate'}
+  aria-labelledby={compact ? 'estimate-example-compact-heading' : 'estimate-example-heading'}
+>
+  <div class="estimate-inner">
+    <header class="estimate-header">
+      <div class="estimate-kicker">
+        {sectionNum && <span class="section-number">{sectionNum}</span>}
+        <span>{estimateExample.label}</span>
+      </div>
+      <h2 id={compact ? 'estimate-example-compact-heading' : 'estimate-example-heading'}>
+        {compact ? 'From a wall to a bid.' : 'One CMU wall, priced all the way through.'}
+      </h2>
+      <p>
+        A simple {wall.lengthFeet} × {wall.heightFeet} ft wall in {wall.nominalCmuInches}-inch CMU.
+        Start with the units in the wall, then add the crew and equipment it takes to lay them.
+      </p>
+    </header>
+
+    <div class="wall-facts" aria-label="Example wall quantities">
+      <span><strong>{wall.areaSquareFeet}</strong> sq ft of wall</span>
+      <span><strong>{wall.fullCount} full + {wall.halfCount} half</strong> = {wall.laidPieces} pieces</span>
+      <span><strong>{wall.groutCy} CY</strong> grout</span>
+      <span><strong>{wall.mortarBags}</strong> mortar bags</span>
+    </div>
+
+    {compact ? (
+      <>
+        <div class="compact-totals" aria-label="Example cost totals">
+          <div><span>Materials</span><strong>{money(totals.materialsCents)}</strong></div>
+          <div><span>Labor</span><strong>{money(totals.laborCents)}</strong></div>
+          <div><span>Equipment</span><strong>{money(totals.equipmentCents)}</strong></div>
+          <div class="bid-total"><span>Sample bid</span><strong>{money(totals.bidCents)}</strong></div>
+        </div>
+        <p class="compact-math">
+          {money(totals.costCents)} direct cost + {totals.overheadPercent}% overhead + {totals.profitPercent}% profit on cost and overhead.
+        </p>
+        <a class="estimate-link" href="/cmu-block-count/#worked-estimate">
+          See every rate and calculation <span aria-hidden="true">→</span>
+        </a>
+      </>
+    ) : (
+      <div class="estimate-ledger">
+        <div class="ledger-panel">
+          <h3>Materials <strong>{money(totals.materialsCents)}</strong></h3>
+          <p class="panel-note">Fully grouted example: {wall.selectedGroutCells} cells ÷ a sample yield of {wall.groutCellsPerCy} cells/CY = {wall.groutCy} CY.</p>
+          <p class="panel-note">Mortar: {wall.laidPieces} laid pieces ÷ a sample coverage of {wall.mortarPiecesPerBag} pieces/bag = {wall.mortarBags} bags.</p>
+          <div class="ledger-rows">
+            {materials.map((item) => (
+              <div class="ledger-row">
+                <div>
+                  <span>{item.name}</span>
+                  <small>{item.quantity} {item.unit} × {money(item.unitCents)}/{item.unit === 'CY' ? 'CY' : item.unit === 'bags' ? 'bag' : 'block'}</small>
+                </div>
+                <strong>{money(item.cents)}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="ledger-panel">
+          <h3>Labor <strong>{money(totals.laborCents)}</strong></h3>
+          <p class="panel-note">
+            {labor.masonCount} mason × {labor.hoursPerMasonDay} hours/day × {money(labor.hourlyCents)}/hour.
+            Production rates: {labor.blockPiecesPerMasonDay} pieces and {labor.groutCyPerMasonDay} CY per mason-day, one day each. Sample wage only; use your full crew cost, including helpers and payroll burden.
+          </p>
+          <div class="ledger-rows">
+            <div class="ledger-row">
+              <div><span>Lay block</span><small>{labor.blockDays} mason-day</small></div>
+              <strong>{money(labor.blockCents)}</strong>
+            </div>
+            <div class="ledger-row">
+              <div><span>Grout wall</span><small>{labor.groutDays} mason-day</small></div>
+              <strong>{money(labor.groutCents)}</strong>
+            </div>
+          </div>
+          <h3 class="equipment-heading">Equipment <strong>{money(totals.equipmentCents)}</strong></h3>
+          <div class="ledger-row">
+            <div><span>{equipment.name}</span><small>{equipment.days} days × {money(equipment.centsPerDay)}/day</small></div>
+            <strong>{money(equipment.cents)}</strong>
+          </div>
+        </div>
+
+        <div class="bid-ledger" aria-label="Sample bid calculation">
+          <div><span>Direct cost</span><strong>{money(totals.costCents)}</strong></div>
+          <div><span>Overhead · {totals.overheadPercent}% of cost</span><strong>{money(totals.overheadCents)}</strong></div>
+          <div><span>Profit · {totals.profitPercent}% of cost plus overhead</span><strong>{money(totals.profitCents)}</strong></div>
+          <div class="bid-line"><span>Sample bid</span><strong>{money(totals.bidCents)}</strong></div>
+        </div>
+      </div>
+    )}
+
+    <footer class="estimate-caveat">
+      <strong>Illustrative prices, not a supplier quote. Use your own material prices and loaded labor rates.</strong>
+      <span>No openings, reinforcement, waste or sales tax are included. Add your job's requirements before bidding.</span>
+    </footer>
+  </div>
+</section>
+
+<style>
+  .estimate-example {
+    scroll-margin-top: 90px;
+    padding: clamp(48px, 6vw, 88px) 24px;
+    color: var(--chalk);
+    background: var(--navy-deep);
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+  }
+  .estimate-inner { max-width: 1120px; margin: 0 auto; }
+  .estimate-kicker, .wall-facts, .compact-totals, .compact-math, .estimate-link,
+  .ledger-panel h3, .ledger-row small, .bid-ledger, .estimate-caveat {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .estimate-kicker {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--concrete-light); font-size: 12px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  .section-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 40px; min-height: 40px; padding: 4px;
+    border: 2px solid var(--terracotta); color: var(--chalk);
+  }
+  h2 {
+    margin-top: 16px; max-width: 900px;
+    font-family: 'Oswald', sans-serif; font-weight: 600;
+    font-size: clamp(34px, 4.4vw, 60px); line-height: 1.08;
+  }
+  .estimate-header p {
+    max-width: 730px; margin-top: 16px;
+    font-size: clamp(17px, 1.8vw, 21px); color: var(--concrete-light);
+  }
+  .wall-facts {
+    display: flex; flex-wrap: wrap; gap: 8px 20px;
+    margin: 30px 0 28px; padding: 16px 0;
+    border-top: 1px solid var(--mortar); border-bottom: 1px solid var(--mortar);
+    color: var(--concrete-light); font-size: 12px;
+  }
+  .wall-facts strong { color: var(--chalk); }
+  .wall-facts span + span::before { content: '·'; margin-right: 20px; color: var(--terracotta); }
+  .compact-totals {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2px; background: var(--mortar); border: 2px solid var(--mortar);
+  }
+  .compact-totals > div {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 22px 18px; background: var(--chalk); color: var(--ink);
+  }
+  .compact-totals span { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  .compact-totals strong { font-size: clamp(20px, 2.2vw, 29px); font-weight: 700; }
+  .compact-totals .bid-total { background: var(--terracotta); color: white; }
+  .compact-math { margin-top: 16px; color: var(--concrete-light); font-size: 12px; }
+  .estimate-link {
+    display: inline-block; margin-top: 18px; padding-bottom: 4px;
+    border-bottom: 2px solid var(--terracotta);
+    color: var(--chalk); font-size: 13px; font-weight: 700;
+    text-decoration: none;
+  }
+  .estimate-link:hover, .estimate-link:focus-visible { color: var(--concrete-light); }
+  .estimate-ledger { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .ledger-panel {
+    padding: 24px; border: 2px solid var(--mortar);
+    background: var(--chalk); color: var(--ink);
+  }
+  .ledger-panel h3 {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding-bottom: 14px; border-bottom: 2px solid var(--ink);
+    font-size: 15px; text-transform: uppercase;
+  }
+  .ledger-panel h3 strong { white-space: nowrap; }
+  .ledger-rows { display: flex; flex-direction: column; }
+  .ledger-row {
+    display: flex; align-items: start; justify-content: space-between;
+    gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--concrete);
+  }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-row span { display: block; font-size: 17px; }
+  .ledger-row small { display: block; margin-top: 4px; color: #615b52; font-size: 11px; }
+  .ledger-row strong { white-space: nowrap; font: 700 14px 'JetBrains Mono', monospace; }
+  .panel-note { margin: 12px 0 4px; color: var(--ink); font-size: 14px; }
+  .ledger-panel .equipment-heading { margin-top: 22px; }
+  .bid-ledger {
+    grid-column: 1 / -1;
+    padding: 22px 24px; border: 2px solid var(--mortar);
+    background: var(--navy); font-size: 13px;
+  }
+  .bid-ledger > div { display: flex; justify-content: space-between; gap: 14px; padding: 8px 0; }
+  .bid-ledger strong { white-space: nowrap; }
+  .bid-ledger .bid-line {
+    margin-top: 8px; padding-top: 16px; border-top: 2px solid var(--chalk);
+    font-size: clamp(18px, 2.5vw, 30px); font-weight: 700;
+  }
+  .estimate-caveat {
+    display: flex; flex-direction: column; gap: 5px;
+    margin-top: 26px; padding-left: 14px; border-left: 4px solid var(--terracotta);
+    color: var(--concrete-light); font-size: 11px; line-height: 1.6;
+  }
+  .estimate-caveat strong { color: var(--chalk); }
+  .compact { padding-block: clamp(42px, 5vw, 64px); }
+  .compact h2 { font-size: clamp(32px, 4vw, 48px); }
+  @media (max-width: 760px) {
+    .estimate-example { padding-inline: 18px; }
+    .wall-facts { gap: 8px 12px; }
+    .wall-facts span { flex-basis: calc(50% - 8px); }
+    .wall-facts span + span::before { content: none; }
+    .compact-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .estimate-ledger { grid-template-columns: 1fr; }
+    .bid-ledger { grid-column: 1; }
+  }
+  @media (max-width: 440px) {
+    .wall-facts span { flex-basis: 100%; }
+    .compact-totals > div { padding: 16px 12px; }
+    .compact-totals strong { font-size: 20px; }
+    .ledger-panel { padding: 18px; }
+    .ledger-row span { font-size: 15px; }
+  }
+</style>

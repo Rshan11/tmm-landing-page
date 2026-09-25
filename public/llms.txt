@@ -1,6 +1,6 @@
 # The Masonry Modeler
 
-> Masonry estimating software that renders every block — corners, lintels, bond beams, halves, cuts — as you draw. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Currently in pre-launch; founder pricing $300/month for the first 10 seats.
+> Masonry estimating software that renders every block — corners, lintels, bond beams, halves, cuts — as you draw. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Demos are available by request. Founder pricing is $300 per seat per month for the first 10 companies; contact Ryan for current availability.
 
 ## Background
 
@@ -13,7 +13,7 @@ The Masonry Modeler (TMM) is built by Ryan Shanley of Powder River Masonry. The 
 - Control joints default to 24 feet 8 inches (296 inches = 18.5 blocks × 16 inches exactly); never auto-placed within 16 inches of a corner
 - Bond beam courses are driven by the rebar schedule from the structural drawings, not by a checkbox
 - Half-high courses are generated and broken out as their own line item, not buried in a waste factor
-- The engine will never produce a cut under 4 inches — leftover gets absorbed into adjacent joints or the cut shifts to the next valid position
+- Review small closures at tight openings, corners, and special details in the elevation and cutting list
 - 10-inch and 12-inch CMU corners are listed as an 8-inch block plus a face shell spacer (separate line items, the way the supplier ships them)
 - Every block-by-block decision is overridable by the mason — one click changes the unit, takeoff updates immediately
 - Shop drawings are a byproduct of the model: one trace produces coursed, tagged elevations (numbered courses, grout lifts, openings, finishes, control joints) plus a rebar/dowel layout and a steel bar list — every bar counted by mark and cut length with corner-bend and peak-bend shape codes, not linear feet with a waste factor
@@ -25,8 +25,8 @@ A three-minute screen recording of the 88th Avenue pump station being traced and
 ## Pages
 
 ### Architectural (product / topic pages)
-- [Home](https://themasonrymodeler.com/): Product overview, hero render of the 88th Avenue pump station, founder waitlist
-- [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): Why block-by-block counting beats square-footage estimating with a factor
+- [Home](https://themasonrymodeler.com/): Masonry estimating software overview, material and crew pricing workflow, worked estimate summary, demo request
+- [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): CMU quantity review and a worked estimate with explicit sample material, labor, equipment, overhead, and profit inputs
 - [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
 - [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them
 - [Masonry Shop Drawings](https://themasonrymodeler.com/masonry-shop-drawings/): Submittal-ready coursed, tagged elevations rendered as you build — openings, special shapes, finishes, bond beams, control joints — plus a rebar/dowel layout and a steel bar list (285 bars, 2,031.4 LF on the sample 15th pod set) counted by mark and cut length. Downloadable 9-sheet sample set.
@@ -52,4 +52,4 @@ Ryan Shanley is the founder of Powder River Masonry and the builder of The Mason
 ## Contact
 
 - Website: https://themasonrymodeler.com/
-- Waitlist: https://themasonrymodeler.com/#waitlist
+- Demo request: https://themasonrymodeler.com/#demo
