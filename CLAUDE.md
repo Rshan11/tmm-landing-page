@@ -2,7 +2,7 @@
 
 ## Project
 Landing page for themasonrymodeler.com. Masonry estimating software.
-Built with **Astro 5** (static output). Deployed to **Cloudflare Pages** — ship the `dist/` directory.
+Built with **Astro 5** (static output). Published from `master` by **Cloudflare Workers Builds**, service `tmm-landing-page`. Build output is `dist/`; verify the GitHub Cloudflare check and live content after merging.
 
 ## Dev commands
 ```
@@ -30,14 +30,14 @@ src/
     Layout.astro                     ← <head>, meta, OG/Twitter, JSON-LD, fonts. Accepts title/description/canonical + named slot="head" for per-page JSON-LD.
     MasonXMonogram.astro             ← SVG <defs> for the hardhat symbol. Include once per page.
     TitleBlock.astro                 ← sticky drafting-style header. Props: sheet, ctaLabel, ctaHref.
-    Hero.astro                       ← homepage hero + Formspree waitlist form (action: formspree.io/f/mkodkqyy)
+    Hero.astro                       ← homepage hero + Formspree demo request form (action: formspree.io/f/mkodkqyy)
     SectionDivider.astro             ← black bar with scale-mark borders (number + label + "Section")
     ProofSection.astro               ← homepage proof template (text + drafting-framed render)
     RuleCard.astro                   ← individual rule card
     RulesSection.astro               ← rules grid + all 8 rule cards (data lives in this file)
     FAQSection.astro                 ← FAQ block (used on homepage and every SEO page)
     PageHero.astro                   ← SEO/blog page hero (kicker + h1 + lead)
-    PageCTA.astro                    ← bottom-of-page waitlist CTA (links back to /#waitlist)
+    PageCTA.astro                    ← bottom-of-page demo CTA (links back to /#demo)
   styles/global.css                  ← ALL CSS (custom properties + every component)
   assets/
     pump-station-hero.png            ← hero render (Astro-optimized, LCP image)
@@ -174,29 +174,36 @@ When you add a new page, also add it to the `sheetIndex` array inside `TitleBloc
 | Role | Family | Weight |
 |------|--------|--------|
 | Display / headings | Oswald | 500, 600, 700 |
-| Body / italic accents | Fraunces | 400, 600, 900 |
+| Body / explanations | Barlow | 400, 500, 600, 700 |
 | Labels, stats, MasonX voice | JetBrains Mono | 400, 500, 700 |
 
 Google Fonts loaded via `<link>` in `Layout.astro` with `display=swap`.
 
-### Color tokens (CSS custom properties — defined at the top of `global.css`)
+### Color tokens (updated at Ryan's request, September 25, 2026)
+
+The website uses cool concrete, charcoal, and restrained safety yellow. Avoid returning to warm cream/rust, italic editorial-serif headings, decorative grid overlays, or large offset shadows. Use upright Oswald headings and Barlow prose.
+
+Semantic text colors depend on the surrounding light/dark surface; yellow small text is not suitable on light concrete. Existing `--terracotta` names are compatibility aliases, not the old orange palette.
+
+CSS custom properties are defined at the top of `global.css`.
 | Token | Hex | Use |
 |-------|-----|-----|
-| `--terracotta` | `#b8451a` | Primary accent, CTAs, MasonX badge |
-| `--terracotta-dark` | `#8a3413` | Hover states |
-| `--navy` | `#1a2942` | Proof section background |
-| `--navy-deep` | `#0e1828` | Proof section deep background, dark page sections |
-| `--chalk` | `#f4f1e8` | Page background, dark-bg text |
-| `--ink` | `#181818` | Primary text, dark surfaces |
-| `--concrete` | `#c8c3bb` | Muted / secondary text |
-| `--concrete-light` | `#e8e3d8` | Hover backgrounds |
-| `--mortar` | `#8a8378` | Labels, captions |
-| `--grid` | `rgba(26,41,66,0.08)` | Blueprint grid overlay |
+| `--signal` | `#f3cb45` | Yellow actions and highlights |
+| `--signal-ink` | `#4d430a` | Readable accent text on light surfaces |
+| `--on-signal` | `#171b1e` | Text on yellow |
+| `--navy` | `#292f34` | Charcoal panels |
+| `--navy-deep` | `#171b1e` | Header, hero, dark sections |
+| `--chalk` | `#f2f4f5` | Light concrete surface / light text |
+| `--ink` | `#171b1e` | Primary text on light |
+| `--concrete` | `#c3cbd0` | Secondary light text |
+| `--concrete-light` | `#e1e6e9` | Concrete surface |
+| `--text-muted` | context-dependent | Muted readable text |
+| `--accent-text` | context-dependent | Yellow on dark, dark accent on light |
 
 ### Grid / texture
-- 32px engineering grid overlay on hero and rules sections
-- Drafting-style borders, corner marks, stamp labels
-- Hard-edged box shadows (offset, no blur): `14px 14px 0 var(--terracotta)`
+- Keep the useful sheet navigation and concise drawing labels.
+- Use restrained borders and level surfaces; no decorative hero grid or offset colored shadows.
+- The hero features a native, click-to-play rake-wall video with an actual frame as its poster. Preserve controls, `playsinline`, `preload="none"`, the direct video link, and no autoplay.
 
 ### `global.css` section map
 Major comment-block headers, in order: `TITLE BLOCK HEADER`, `MASONX MONOGRAM`, `MASONX SIGNATURE LINE`, `HERO`, `SECTION DIVIDER`, `SECTION NUMBER BADGE`, `PROOF SECTIONS`, `RULES SECTION`, `RULE CARD`, `HERO KICKER`, `LANDING PAGE HERO`, `LANDING PAGE CONTENT`, `COMPARISON BLOCK`, `STAT BLOCK`, `CODE DIAGRAM`, `PAGE CTA`, `FAQ SECTION`, `BLOG`, `RESPONSIVE`. Add new sections at the bottom (before `RESPONSIVE`) with the same banner style.
@@ -211,12 +218,12 @@ MasonX is the foreman who built the engine. Not a brand mascot.
 - **Tone rule:** He explains *why* the rule exists, not what the software does.
 
 ## ProofSection template
-Dark navy background (`--navy-deep`). Pattern: H2 headline with accent word → one or two Fraunces paragraphs → MasonX quote callout (JetBrains Mono, terracotta left border) → drafting-framed render image with caption + credit.
+Dark navy background (`--navy-deep`). Pattern: H2 headline with accent word → one or two Barlow paragraphs → MasonX quote callout (JetBrains Mono, terracotta left border) → drafting-framed render image with caption + credit.
 
 Layouts alternate left/right via `reverse` prop for visual rhythm.
 
-## Waitlist form
-Homepage `Hero.astro` posts to **Formspree** (`https://formspree.io/f/mkodkqyy` — the "Sign Up" form) with a vanilla `fetch` submit handler. The two sample-set download forms on `/masonry-shop-drawings` post to a separate endpoint (`https://formspree.io/f/xrenwboe` — "Sample Downloads") so downloads can't crowd signups out of the plan quota. Both carry a `_gotcha` honeypot and a `_subject`. On success it hides the form and shows `#waitlist-success`. The form anchor is `#waitlist`, which is what `PageCTA` links back to from interior pages.
+## Demo request form
+Homepage `Hero.astro` requests a demo and posts to **Formspree** (`https://formspree.io/f/mkodkqyy` — the "Sign Up" form) with a vanilla `fetch` submit handler. The two sample-set download forms on `/masonry-shop-drawings` post to a separate endpoint (`https://formspree.io/f/xrenwboe` — "Sample Downloads") so downloads can't crowd signups out of the plan quota. Both carry a `_gotcha` honeypot and a `_subject`. On success it hides the form and shows `#waitlist-success`. The current form anchor is `#demo`, with `#waitlist` retained for old links. Only email is required; lead-source attribution is optional. Preserve accessible success/error messages, timeout and duplicate-submit protection. Test with mocks; do not send test leads without permission.
 
 ## SEO
 - **Per-page:** `Layout` props (`title`, `description`, `canonical`) — set on every page. Defaults are tuned for the homepage.
@@ -240,12 +247,12 @@ Homepage `Hero.astro` posts to **Formspree** (`https://formspree.io/f/mkodkqyy` 
 - **Never name competitors.** Let renders prove the difference.
 - Rule card titles are MasonX first-person quotes. Keep that voice.
 - Proof section H2s follow "Look at the X" / "Now watch the Y" pattern.
-- Body copy uses Fraunces for warmth; JetBrains Mono only for numbers, labels, MasonX voice.
+- Body copy uses Barlow; Oswald headings stay upright. JetBrains Mono is reserved for short numbers and labels.
 - FAQ answers stay in MasonX voice — terse, foreman cadence, no marketing softeners.
 - SEO page titles: lead with the user-search phrasing, end with `| The Masonry Modeler`.
 
 ## Deployment notes
-- Cloudflare Pages serves `dist/` directly. `public/_headers` controls cache: hashed `/_astro/*` assets are `immutable, max-age=31536000`; everything else is `max-age=0, must-revalidate`.
+- Cloudflare Workers Builds publishes `master` through the existing integration. `public/_headers` controls cache: hashed `/_astro/*` assets are `immutable, max-age=31536000`; everything else is `max-age=0, must-revalidate`.
 - Google Search Console is set up as a domain property — verification file is `public/google8e2eb7d3d8a4355e.html`.
 - No environment variables, no API keys, no server-side anything. Pure static build.
 
