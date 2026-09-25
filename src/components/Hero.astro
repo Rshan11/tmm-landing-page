@@ -1,12 +1,7 @@
----
-import { Image } from 'astro:assets';
-import planViewImage from '../assets/product/tmm-plan-view.jpg';
----
-
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-tag">Plans → takeoff → bid → shop drawings</div>
+      <div class="hero-tag">Takeoff · Estimating · Shop drawings</div>
       <h1>Masonry estimating software.<br/><span class="accent">Built by a mason.</span></h1>
       <p class="hero-counts">Fulls, halves, and corners.<br/><strong>Counted from the first click.</strong></p>
       <p class="hero-sub">
@@ -44,17 +39,40 @@ import planViewImage from '../assets/product/tmm-plan-view.jpg';
       </div>
       <div class="hero-pricing">Founder rate: <strong>$300 per seat, per month</strong> · first 10 companies. Ask about current availability.</div>
     </div>
-    <div class="hero-render">
-      <div class="render-titlebar"><span><span class="dot">◉</span> Plan View · Live Trace</span><span>TMM</span></div>
-      <div class="render-image">
-        <Image src={planViewImage} alt="The Masonry Modeler plan view: an architect's floor plan with traced walls, 8-inch CMU selected, and live segment quantities" loading="eager" fetchpriority="high" />
+    <figure class="hero-render rake-demo" id="rake-demo">
+      <div class="render-titlebar"><span><span class="dot">●</span> See the actual model</span><span>0:29</span></div>
+      <div class="rake-player">
+        <video id="rake-video" class="hero-video" controls playsinline preload="none"
+          poster="/assets/video/rake-wall-poster.jpg" width="876" height="928"
+          aria-label="Rake-wall layout demonstration" aria-describedby="rake-video-description">
+          <source src="/assets/video/rake-wall.mp4" type="video/mp4" />
+          <a href="/assets/video/rake-wall.mp4">Watch the rake-wall video.</a>
+        </video>
+        <button type="button" class="rake-play" id="rake-play" aria-label="Play the 29-second rake-wall demo" hidden>
+          <span class="play-symbol" aria-hidden="true">▶</span>
+          <span>Watch the rake wall<span class="play-duration">29-second product demo</span></span>
+        </button>
       </div>
-      <div class="render-stats"><span>8" CMU · 10 lines · 14 segments</span><span><strong>189'-4"</strong> traced</span></div>
-    </div>
+      <figcaption class="rake-caption" id="rake-video-description">
+        <strong>A rake wall. Built block by block.</strong>
+        <span>Adjust the rake on the plan. Inspect the wall in 3D. Silent demo. <a href="/assets/video/rake-wall.mp4">Open video ↗</a></span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
 <script>
+  const rakeVideo = document.getElementById('rake-video') as HTMLVideoElement | null;
+  const rakePlay = document.getElementById('rake-play') as HTMLButtonElement | null;
+  if (rakeVideo && rakePlay) {
+    rakePlay.hidden = false;
+    rakePlay.addEventListener('click', () => {
+      rakePlay.hidden = true;
+      rakeVideo.play().catch(() => { rakeVideo.focus(); });
+    });
+    rakeVideo.addEventListener('play', () => { rakePlay.hidden = true; });
+  }
+
   const form = document.getElementById('waitlist-form') as HTMLFormElement;
   const success = document.getElementById('waitlist-success') as HTMLElement;
   const error = document.getElementById('demo-error') as HTMLElement;
@@ -96,22 +114,37 @@ import planViewImage from '../assets/product/tmm-plan-view.jpg';
   .hero h1 .accent { display: inline-block; font-size: .7em; margin-top: .22em; }
   .hero-tag { letter-spacing: .09em; }
   .hero h1 { margin-bottom: 22px; }
-  .hero-counts { font: 600 clamp(21px, 2.2vw, 28px)/1.25 'Oswald', sans-serif; color: var(--ink); margin: 0 0 16px; }
-  .hero-counts strong { color: var(--terracotta); font-weight: 600; }
+  .hero-counts { font: 600 clamp(21px, 2.2vw, 28px)/1.25 'Oswald', sans-serif; color: var(--chalk); margin: 0 0 16px; }
+  .hero-counts strong { color: var(--signal); font-weight: 600; }
   .hero-sub { margin-bottom: 24px; }
   .hero-waitlist-wrap { width: 100%; scroll-margin-top: 110px; }
   #waitlist { scroll-margin-top: 130px; }
   .demo-intro, .demo-error { font-size: 14px; line-height: 1.5; margin: 0 0 12px; }
-  .demo-error { color: var(--terracotta-dark); margin-top: 12px; }
+  .demo-error { color: #ffb4ab; margin-top: 12px; }
   .demo-error a { color: inherit; text-decoration: underline; }
   .hero-form[hidden], [hidden] { display: none; }
-  .hero-form-input:focus-visible, select:focus-visible { outline: 2px solid var(--terracotta); outline-offset: -2px; }
+  .hero-form-input:focus-visible, select:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
   .hero-cta:disabled { cursor: wait; opacity: .7; }
-  .demo-source { flex: 1 0 100%; min-width: 0; padding: 10px 12px; border-top: 1px solid var(--concrete); font: 12px/1.5 'JetBrains Mono', monospace; }
+  .demo-source { flex: 1 0 100%; min-width: 0; padding: 10px 12px; border-top: 1px solid #465159; font: 12px/1.5 'JetBrains Mono', monospace; }
   .demo-source summary { cursor: pointer; }
-  .demo-source summary span { color: #615b52; }
+  .demo-source summary span { color: var(--text-muted); }
   .demo-source label { display: block; margin: 12px 0 6px; }
   .demo-source select { width: 100%; max-width: 100%; padding: 9px; background: var(--chalk); color: var(--ink); border: 1px solid var(--mortar); font: inherit; }
+  .rake-demo { margin: 0; scroll-margin-top: 90px; min-width: 0; width: 100%; max-width: 500px; justify-self: end; aspect-ratio: auto; overflow: visible; }
+  .rake-demo .render-titlebar { position: static; }
+  .rake-player { position: relative; background: #0f1418; }
+  .hero-video { display: block; width: 100%; height: auto; aspect-ratio: 219 / 232; object-fit: contain; background: #0f1418; }
+  .rake-play { position: absolute; inset: 0; width: fit-content; height: fit-content; max-width: calc(100% - 36px); margin: auto; display: flex; align-items: center; gap: 14px; padding: 16px 22px; border: 1px solid #f3cb45; background: #171b1e; color: #f3f5f5; font: 600 18px/1.25 'Oswald', sans-serif; text-align: left; cursor: pointer; box-shadow: 0 6px 28px #0009; }
+  .rake-play[hidden] { display: none; }
+  .rake-play:hover { background: #252d33; }
+  .rake-play:focus-visible { outline: 3px solid var(--signal); outline-offset: 5px; }
+  .play-symbol { color: var(--signal); font-size: 30px; }
+  .play-duration { display: block; margin-top: 4px; color: #c6ced3; font: 12px/1.4 'Barlow', Arial, sans-serif; }
+  .rake-caption { display: flex; flex-direction: column; gap: 5px; padding: 16px 20px; background: #20272c; color: #f3f5f5; border-top: 1px solid #465159; }
+  .rake-caption strong { font-size: 16px; font-weight: 600; }
+  .rake-caption span { color: #c6ced3; font-size: 13px; line-height: 1.5; }
+  .rake-caption a { color: inherit; text-underline-offset: 3px; }
+  @media (max-width: 900px) { .rake-demo { justify-self: center; max-width: 540px; } }
   @media (max-width: 480px) {
     .hero-cta { width: 100%; justify-content: center; }
     .hero-tag { font-size: 10px; }

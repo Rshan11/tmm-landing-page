@@ -94,6 +94,17 @@ const shortVideoSchema = {
   },
 };
 
+const rakeVideoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Rake-wall layout in The Masonry Modeler",
+  "description": "A silent product recording: adjust the rake of a CMU wall on the plan, then inspect the block-by-block model in 3D.",
+  "thumbnailUrl": ["https://themasonrymodeler.com/assets/video/rake-wall-poster.jpg"],
+  "contentUrl": "https://themasonrymodeler.com/assets/video/rake-wall.mp4",
+  "uploadDate": "2026-09-25",
+  "duration": "PT29.2S",
+};
+
 const videoSchema = {
   "@context": "https://schema.org",
   "@type": "VideoObject",
@@ -114,6 +125,8 @@ const videoSchema = {
 
 <Layout title={title} description={description} canonical={canonical}>
   <Fragment slot="head">
+    <link rel="preload" as="image" href="/assets/video/rake-wall-poster.jpg" fetchpriority="high" />
+    <script type="application/ld+json" set:html={JSON.stringify(rakeVideoSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(shortVideoSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
