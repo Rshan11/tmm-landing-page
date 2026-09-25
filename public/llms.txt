@@ -1,6 +1,6 @@
 # The Masonry Modeler
 
-> Masonry estimating software that renders every block — corners, lintels, bond beams, halves, cuts — as you draw. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Demos are available by request. Founder pricing is $300 per seat per month for the first 10 companies; contact Ryan for current availability.
+> Masonry estimating software that counts fulls, halves, and corners from the first click as you draw your walls. The model renders the pieces and carries their counts into the material list, estimate, and shop drawings. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Demos are available by request. Founder pricing is $300 per seat per month for the first 10 companies; contact Ryan for current availability.
 
 ## Background
 

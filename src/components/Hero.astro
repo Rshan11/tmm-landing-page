@@ -8,11 +8,11 @@ import planViewImage from '../assets/product/tmm-plan-view.jpg';
     <div class="hero-text">
       <div class="hero-tag">Plans → takeoff → bid → shop drawings</div>
       <h1>Masonry estimating software.<br/><span class="accent">Built by a mason.</span></h1>
+      <p class="hero-counts">Fulls, halves, and corners.<br/><strong>Counted from the first click.</strong></p>
       <p class="hero-sub">
-        Build your masonry estimate from the wall you'll actually lay.
-        Trace the plans, review the block, mortar, grout, and rebar quantities,
-        then price the work with <strong>your material costs, crews, and equipment.</strong>
-        Add overhead and profit. Produce the bid and <strong>shop drawings from the same model.</strong>
+        Draw your walls and TMM counts the pieces as you go.
+        Those counts carry into your <strong>material list, estimate, and shop drawings.</strong>
+        Build your bid with your own prices, crews, equipment, overhead, and profit.
       </p>
       <div class="hero-actions">
         <div id="demo" class="hero-waitlist-wrap">
@@ -95,6 +95,9 @@ import planViewImage from '../assets/product/tmm-plan-view.jpg';
   .hero h1 { font-size: clamp(40px, 4.5vw, 66px); line-height: 1.06; }
   .hero h1 .accent { display: inline-block; font-size: .7em; margin-top: .22em; }
   .hero-tag { letter-spacing: .09em; }
+  .hero h1 { margin-bottom: 22px; }
+  .hero-counts { font: 600 clamp(21px, 2.2vw, 28px)/1.25 'Oswald', sans-serif; color: var(--ink); margin: 0 0 16px; }
+  .hero-counts strong { color: var(--terracotta); font-weight: 600; }
   .hero-sub { margin-bottom: 24px; }
   .hero-waitlist-wrap { width: 100%; scroll-margin-top: 110px; }
   #waitlist { scroll-margin-top: 130px; }
