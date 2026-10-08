@@ -97,12 +97,12 @@ const shortVideoSchema = {
 const rakeVideoSchema = {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": "3D rakes and moving openings in The Masonry Modeler",
-  "description": "A silent product recording: adjust a CMU wall top, then move and resize an opening in the block-by-block 3D model.",
-  "thumbnailUrl": ["https://themasonrymodeler.com/assets/video/rakes-and-opening-move-poster.jpg"],
-  "contentUrl": "https://themasonrymodeler.com/assets/video/rakes-and-opening-move.mp4",
+  "name": "Pump station from plans to 3D in The Masonry Modeler",
+  "description": "A silent product recording: trace a CMU pump station from the plan sheet, build the block-by-block 3D model, then set openings and a gable wall top.",
+  "thumbnailUrl": ["https://themasonrymodeler.com/assets/video/pump-station-demo-poster.jpg"],
+  "contentUrl": "https://themasonrymodeler.com/assets/video/pump-station-demo.mp4",
   "uploadDate": "2026-10-08",
-  "duration": "PT17.233S",
+  "duration": "PT15.766S",
 };
 
 const videoSchema = {
@@ -125,7 +125,7 @@ const videoSchema = {
 
 <Layout title={title} description={description} canonical={canonical}>
   <Fragment slot="head">
-    <link rel="preload" as="image" href="/assets/video/rakes-and-opening-move-poster.jpg" fetchpriority="high" />
+    <link rel="preload" as="image" href="/assets/video/pump-station-demo-poster.jpg" fetchpriority="high" />
     <script type="application/ld+json" set:html={JSON.stringify(rakeVideoSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(shortVideoSchema)} />
