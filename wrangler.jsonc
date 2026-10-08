@@ -1,0 +1,10 @@
+// Tells Cloudflare Workers Builds where the built static site lives.
+// Without this, branch/preview builds run `wrangler versions upload` with no
+// target and fail with "Missing entry-point to Worker script or to assets directory".
+{
+  "name": "tmm-landing-page",
+  "compatibility_date": "2026-10-06",
+  "assets": {
+    "directory": "./dist"
+  }
+}
