@@ -9,6 +9,10 @@
   "observability": {
     "enabled": true
   },
+  // Workers Builds has no build command set, so wrangler builds the site itself.
+  "build": {
+    "command": "npm run build"
+  },
   "assets": {
     "directory": "./dist"
   }
