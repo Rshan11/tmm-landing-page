@@ -1,0 +1,218 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import PageCTA from '../components/PageCTA.astro';
+import FAQSection from '../components/FAQSection.astro';
+
+const title = 'CMU Takeoff Software & Block Takeoff | The Masonry Modeler';
+const description = 'CMU takeoff software for a real block takeoff: corners, bullnose, halves, cuts, bond beams, rebar laps, and grout by cell. Counted from the bond.';
+const canonical = 'https://themasonrymodeler.com/cmu-takeoff-software/';
+
+const faqItems = [
+  {
+    question: 'Why not take off CMU from net area?',
+    answer: 'Net area times 1.125 gives a pile of full-unit equivalents. It does not give the corner, the bullnose, the half, the bond beam, or the cut. I order the pieces the wall uses. Area does not know those pieces.',
+  },
+  {
+    question: 'How do you count bullnose?',
+    answer: 'By the course. A bullnose jamb is one special unit every course, for the height of that jamb. Two jambs means two per course. A bullnose sill or head is its own run, counted along its length. It is not a percent of the wall.',
+  },
+  {
+    question: 'How should CMU grout be taken off?',
+    answer: 'By the cell that gets grout. Solid grout is every cell. Partial grout is the reinforced cells, plus the bond beams, which fill the whole course. Convert those cells to cubic yards for the block width you are buying. Square feet of wall is not a grout quantity.',
+  },
+  {
+    question: 'What does TMM count without a factor?',
+    answer: 'Draw the wall and set the rebar schedule. TMM lays the bond and lists stretchers, corners, halves, cuts, bullnose, bond beam units, and lintels. Vertical bars include the lap from the notes. Grout is the cells that are actually filled.',
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to take off a CMU wall",
+  "description": "Count CMU units, corners, bullnose, halves, cuts, bond beams, lintels, vertical rebar with laps, and grout by cell from the bond instead of net area.",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Separate the unit types from net area", "text": "Use length times height, minus openings, times 1.125 only as a check for nominal 8-by-16 block. Order stretchers, corners, bullnose, halves, cuts, and bond beams as their own lines." },
+    { "@type": "HowToStep", "position": 2, "name": "Count corners and bullnose by the course", "text": "Count one corner unit per course at each corner, and one bullnose unit per course at each bullnose edge. Wider block and textured finishes usually need a special corner, not a stretcher." },
+    { "@type": "HowToStep", "position": 3, "name": "List halves and cuts apart from stretchers", "text": "Where the length or height misses the module, list the purchased half or half-high and the field cut as different lines. A cut still starts as a full unit." },
+    { "@type": "HowToStep", "position": 4, "name": "Place bond beams and lintels from the drawings", "text": "Put bond beam units on the courses where the horizontal bar is scheduled, including through the corner. Count the lintel over each opening for the span plus the bearing the schedule calls for." },
+    { "@type": "HowToStep", "position": 5, "name": "Count rebar with laps and grout by cell", "text": "Place vertical bars at the spacing on the structural sheet, add the specified lap at every splice, and convert length to pounds with the standard weight for that bar. Fill grout by the grouted cell, then convert cells to cubic yards for that block width." },
+  ],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "CMU Takeoff Software", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A2.5 — CMU Takeoff" />
+
+  <PageHero
+    kicker="CMU Takeoff · Unit by Unit"
+    headline="CMU takeoff software that counts the block"
+    lead="A CMU block takeoff is the list of units you will buy. The Masonry Modeler is masonry estimating software that counts those units from the bond as you draw the wall: corners, bullnose, halves, cuts, bond beams, rebar, and grout."
+  />
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>CMU takeoff software counts units, not net area</h2>
+      <p>
+        I still figure net area. Length times height, minus the openings, times 1.125 for nominal 8-by-16 block. That number is a check on the full-unit equivalent. It is not the order.
+      </p>
+      <p>
+        1.125 treats every piece as a stretcher. A corner is not a stretcher. A bullnose is not a stretcher. A bond beam unit is not a stretcher. A half is not half a stretcher on the invoice. If the yard gets one line that says "block," the takeoff is not finished.
+      </p>
+      <p>
+        Face brick on the same wall is a different count. That page is the <a href="/brick-takeoff-software/">brick takeoff</a>. How the count becomes a bid is on the <a href="/">masonry estimating software</a> page.
+      </p>
+
+      <div class="comparison-block">
+        <div class="comparison-col">
+          <span class="comparison-label">Net area × 1.125</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>One equivalent full-unit number</li>
+            <li>Openings subtracted, specials ignored</li>
+            <li>Corners buried in the stretcher count</li>
+            <li>Bond beams and lintels guessed later</li>
+            <li>Cuts absorbed by rounding</li>
+          </ul>
+        </div>
+        <div class="comparison-col">
+          <span class="comparison-label">TMM, from the bond</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>Stretchers as their own line</li>
+            <li>Corners, bullnose, halves, and cuts listed</li>
+            <li>Bond beam and lintel units separated</li>
+            <li>Rebar length with the laps included</li>
+            <li>Grout from the cells that are filled</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>Corners and bullnose, by the course</h2>
+      <p>
+        An outside corner uses one corner unit per course. The bond offsets 8 inches, so the return starts on a full one course and a half the next. Inside corners work the same way. The piece that turns the corner is its own unit when the finish is split-face, scored, or ground-face. Smooth 8-inch sometimes uses regular stock there. Textured units usually do not.
+      </p>
+      <p>
+        Ten-inch and 12-inch corners are an 8-inch corner plus a face shell spacer. Two lines, because that is how they ship and how the crew lays them. <a href="/blog/the-corner-test/">The corner test</a> is the quick read: if the takeoff does not list a corner, the count treated the corner as more wall.
+      </p>
+      <p>
+        Bullnose is counted by course height, not by area. Walk the jamb. Every course that shows a bullnose edge gets a bullnose unit. Two jambs means two per course. A bullnose sill or head is a separate run, counted along its length. If the opening does not land on the module, the closer at the top of the jamb is still a listed piece.
+      </p>
+      <p>
+        In TMM the corner interlocks as you draw, inside and outside. Bullnose is the unit sitting on that course, on its own line. Click a piece and change the type when the detail says something else. The takeoff follows the piece you picked.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Halves and cuts in a CMU block takeoff</h2>
+      <p>
+        Running bond offsets 8 inches. If the wall length is not a multiple of 16 inches, every other course needs a closer. Sometimes that closer is a half block you buy. Sometimes it is a cut you make from a full. Those are different lines. The half is a unit the plant makes. The cut starts as a full you buy, and the length of the piece you lay matters.
+      </p>
+      <p>
+        Height does the same thing. A wall that misses 8 inches needs a half-high course or a rip from a full-height unit. List the piece you lay and the unit you purchase. They are not always the same. <a href="/blog/half-block-cost/">A half is its own order</a>, and <a href="/blog/stop-guessing-half-block-order/">"halves" is more than one line</a> once the job mixes bullnose, finish, color, and width.
+      </p>
+
+      <div class="code-diagram">
+        <div class="code-diagram-label">Running bond · corner, half, bullnose jamb</div>
+        <pre>
+Course 4   <span class="highlight">C</span>  <span class="bright">H</span>  S  S  <span class="highlight">BN</span>  | door |
+Course 3   <span class="highlight">C</span>  S  S  S  <span class="highlight">BN</span>  | door |
+Course 2   <span class="highlight">C</span>  <span class="bright">H</span>  S  S  <span class="highlight">BN</span>  | door |
+Course 1   <span class="highlight">C</span>  S  S  S  <span class="highlight">BN</span>  | door |
+<span class="dim">C = corner unit    H = half, purchased    S = stretcher    BN = bullnose at the jamb</span></pre>
+      </div>
+
+      <p>
+        The corner unit repeats every course. The field swaps between a half and a stretcher so the bond can run. The bullnose repeats once per course at that jamb. None of those swaps show up in a square-foot factor.
+      </p>
+      <p>
+        TMM lists the halves and the cuts as you draw. A half-high course is its own line. A cut is flagged with its size. Read it before you send the order. A faster count you do not look at is still a wrong order.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>Bond beams and lintels are their own units</h2>
+      <p>
+        A bond beam unit is a U or a knockout. It goes where the horizontal bar goes, on the elevation in the structural schedule, not on a spacing remembered from the last job. That course is bond beam units, including through the corner, and the corner piece is still a corner.
+      </p>
+      <p>
+        A lintel is the course over the opening. It bears each side for the length the lintel schedule calls for. The units in that span are lintel or bond beam units. The stretcher count stops at the bearing. The courses above the head still have to land on the bond. If they do not, there is a cut course over the opening, and area math will not show it.
+      </p>
+      <p>
+        In TMM the rebar schedule sets the bond beam courses. Draw the opening and the lintel is that span, with the development past it included. The same courses land on the <a href="/masonry-shop-drawings/">masonry shop drawings</a>. The scheduling detail is on the <a href="/bond-beam-estimating/">bond beam</a> page.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Rebar spacing, laps, and grout by cell</h2>
+      <p>
+        Vertical bars come from the structural sheet. Corners, jambs, and a field spacing. Count the bars where they sit. Dividing the wall length by a spacing and rounding is how a bar at a jamb gets missed.
+      </p>
+      <p>
+        Each bar is as long as the height it has to reach, plus the lap at every splice. The lap length is the one in the notes for that bar size. Add it. Then turn linear feet into pounds with the standard weight for that bar. The yard sells pounds. <a href="/bond-beam-estimating/">Bar weight is part of the bond beam takeoff</a>, and the same weights apply to the verticals.
+      </p>
+      <p>
+        Grout is by the cell. Solid grout fills every cell. Partial grout fills the reinforced cells, and a bond beam fills the whole course, not one core. Convert those cells to cubic yards with the core size of the block you are buying. An 8-inch core and a 12-inch core are not the same yard. One fully grouted sample, with the assumptions written out, is the <a href="/cmu-block-count/#worked-estimate">worked CMU estimate</a>.
+      </p>
+      <p>
+        TMM places the verticals at the spacing you set, includes the laps, and reports linear feet and pounds. Grout is the cells the model fills. The wall you just counted is the wall on the shop drawing, and the <a href="/brick-takeoff-software/">brick takeoff</a> uses the same openings when the face is veneer.
+      </p>
+      <p>
+        <a href="/#demo">Book a demo</a> and bring a wall. We will read the block, the rebar, and the grout off the bond.
+      </p>
+    </div>
+  </section>
+
+  <FAQSection
+    items={faqItems}
+    sectionNum="FAQ"
+    label="CMU takeoff questions"
+    headline="What I want on the block order."
+  />
+
+  <PageCTA
+    headline="Run the CMU takeoff on a wall you bid."
+    body="Bring a plan. We will trace it and read the block, the rebar, and the grout off the bond."
+    ctaText="Book a demo"
+    ctaHref="/#demo"
+  />
+</Layout>
