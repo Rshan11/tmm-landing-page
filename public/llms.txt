@@ -30,6 +30,8 @@ A three-minute screen recording of the 88th Avenue pump station being traced and
 - [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
 - [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them
 - [Masonry Shop Drawings](https://themasonrymodeler.com/masonry-shop-drawings/): Submittal-ready coursed, tagged elevations rendered as you build — openings, special shapes, finishes, bond beams, control joints — plus a rebar/dowel layout and a steel bar list (285 bars, 2,031.4 LF on the sample 15th pod set) counted by mark and cut length. Downloadable 9-sheet sample set.
+- [CMU Takeoff Software](https://themasonrymodeler.com/cmu-takeoff-software/): How to take off CMU from the bond — units instead of net area, corners and bullnose by course, halves and cuts, bond beams and lintels, vertical rebar with laps, and grout by cell
+- [Brick Takeoff Software](https://themasonrymodeler.com/brick-takeoff-software/): How to take off brick veneer from the actual bond — openings, corners, soldier and rowlock courses, and brick over block
 
 ### Field Notes (blog)
 - [Blog Index](https://themasonrymodeler.com/blog/)

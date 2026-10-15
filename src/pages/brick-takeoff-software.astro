@@ -1,0 +1,201 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import PageCTA from '../components/PageCTA.astro';
+import FAQSection from '../components/FAQSection.astro';
+
+const title = 'Brick Takeoff Software & Masonry Takeoff | The Masonry Modeler';
+const description = 'Brick takeoff software that counts veneer by the bond: openings, corners, soldiers, rowlocks, and brick over block. A masonry takeoff from the wall.';
+const canonical = 'https://themasonrymodeler.com/brick-takeoff-software/';
+
+const faqItems = [
+  {
+    question: 'Is 6.75 brick per square foot a takeoff?',
+    answer: 'It is a check for modular brick in running bond. It is not the order. Soldiers, rowlocks, corners you measured twice, and a different brick size all fall outside that factor. I use 6.75 to see if the field count is in the right neighborhood. Then I count the wall.',
+  },
+  {
+    question: 'How do you keep from double-counting a brick corner?',
+    answer: 'One brick turns the corner. Take one elevation out-to-out and the return to the face of that brick. If both elevations are out-to-out, the corner brick is on the takeoff twice. Stack two courses. The corner should swap. If both courses end the same way, the bond is not running through.',
+  },
+  {
+    question: 'How do you count a soldier or a rowlock?',
+    answer: 'Along the band or the sill, not by the area of the wall. A modular soldier course is about three running courses tall, and the check is 4.5 soldiers per foot. A rowlock is one brick per nominal length of sill or coping, on a taller course. List them apart from the field brick.',
+  },
+  {
+    question: 'How does TMM take off brick over block?',
+    answer: 'Both wythes come off the wall you draw. The opening lands in the brick and in the block. The lists stay separate, because a block jamb and a brick soldier are not the same piece. Three brick courses match one block course when the veneer is modular.',
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to take off brick veneer",
+  "description": "Count brick veneer from the actual bond, including openings, corners, soldier and rowlock courses, and brick over block.",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Count the field brick from the bond", "text": "Use 6.75 per square foot only as a check for modular brick in running bond. Order the pieces in the courses you will lay. A different brick size needs its own module." },
+    { "@type": "HowToStep", "position": 2, "name": "Count openings without losing the specials", "text": "Deducting the opening removes field brick only. Add the closures at the jambs, and count a soldier head or rowlock sill as its own course." },
+    { "@type": "HowToStep", "position": 3, "name": "Count each corner once", "text": "Measure one wall out-to-out and the return to the face of the corner brick so the corner is not on both elevations. Check that successive courses swap through the corner." },
+    { "@type": "HowToStep", "position": 4, "name": "Count soldiers and rowlocks by the foot", "text": "Count a soldier band along its length. On modular brick, 12 divided by 2-2/3 inches is 4.5 soldiers per foot, as a check. Count a rowlock sill or coping by the brick along that line." },
+    { "@type": "HowToStep", "position": 5, "name": "Take off brick and block as two lists", "text": "Share the opening between the wythes and keep the unit counts separate. Three modular brick courses match one CMU course. Ties and joint reinforcement are measured on their own." },
+  ],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Brick Takeoff Software", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A2.6 — Brick Takeoff" />
+
+  <PageHero
+    kicker="Brick Takeoff · By the Bond"
+    headline="Brick takeoff software that counts the bond"
+    lead="A brick takeoff is the brick you will lay, course by course. The Masonry Modeler is masonry estimating software that counts veneer from that bond: openings, corners, soldiers, rowlocks, and brick over block."
+  />
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Brick takeoff software counts the actual bond</h2>
+      <p>
+        Modular brick in running bond is where 6.75 per square foot comes from. Three courses and their joints stack to 8 inches, the same as one block course. I use 6.75 to check the field brick. I do not send it to the yard as the order.
+      </p>
+      <p>
+        That factor assumes running bond, modular size, and a flat rectangle. A soldier is not running bond. A rowlock is not a modular running course. A corner measured on both elevations is not a check that will save you. Utility, queen, and Norman sizes are different modules. If the spec is not modular, drop 6.75 before you start.
+      </p>
+      <p>
+        The whole workflow, from the count to the bid and the shop drawings, is the <a href="/">masonry estimating software</a> page. The block behind this veneer is the <a href="/cmu-takeoff-software/">CMU takeoff</a>.
+      </p>
+
+      <div class="comparison-block">
+        <div class="comparison-col">
+          <span class="comparison-label">Area × 6.75</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>A field-brick check, used as an order</li>
+            <li>Openings deducted, jamb cuts ignored</li>
+            <li>Soldiers and rowlocks priced as stretchers</li>
+            <li>Corners counted twice, or not at all</li>
+            <li>Brick and block sharing one area</li>
+          </ul>
+        </div>
+        <div class="comparison-col">
+          <span class="comparison-label">TMM, from the bond</span>
+          <h3>What you get</h3>
+          <ul>
+            <li>Field brick counted course by course</li>
+            <li>Opening closures listed</li>
+            <li>Soldier and rowlock courses on their own lines</li>
+            <li>Each corner brick counted once</li>
+            <li>Brick and block as separate lists</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>Openings and corners in the brick takeoff</h2>
+      <p>
+        Deducting an opening from the area only removes field brick. The jambs still need closures. The head may be a soldier, or a steel angle with brick above it. The sill may be a rowlock. None of that is inside 6.75 times the net area. Add the specials back, or count the courses and skip the deduction.
+      </p>
+      <p>
+        Corners are where elevation takeoffs go wrong. One brick turns the corner. Take one wall out-to-out and the return to the face of that brick. Take both elevations out-to-out and the corner brick is on the order twice. Brick at a normal corner is usually the same brick, not a special SKU, unless the spec calls a shape. The miss is the count and the bond.
+      </p>
+      <p>
+        Stack two courses at the corner. The end should swap. If both courses finish the same way, you have two veneers butted together, not a corner. <a href="/blog/the-corner-test/">The corner test</a> is the same read I use on block.
+      </p>
+      <p>
+        In TMM the bond runs through the corner, and the opening is a hole in that bond. The closures and the special courses at the opening are the pieces sitting there, counted as those pieces.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-inner">
+      <h2>Soldier courses and rowlock courses</h2>
+      <p>
+        A soldier stands the brick on end. One soldier course is about three running courses tall, so it lines up with an 8-inch band and with a block course behind it. Count the soldiers along the band or the header. On modular brick the width you see, plus the joint, is the nominal brick height: 2-2/3 inches. Twelve divided by 2-2/3 is 4.5 soldiers per foot. That is the check. The order is the count along that course, including the piece that turns a corner in it.
+      </p>
+      <p>
+        A rowlock lays the brick on its face so the edge shows. Sills, copings, and water tables are usually rowlock. The course is taller than a running course, about the width of the brick plus a joint, so the brick above it moves unless you planned the coursing. Count one rowlock per nominal brick length along the sill. Do not paint the sill with the wall-area factor.
+      </p>
+
+      <div class="code-diagram">
+        <div class="code-diagram-label">Opening · soldier head, rowlock sill</div>
+        <pre>
+          <span class="highlight">So So So So So So</span>    ← soldier header, check at 4.5 / ft
+Course 6  Br Br Br | opening |
+Course 5  Br Br Br | opening |
+Course 4  Br Br Br | opening |
+          <span class="bright">Rw Rw Rw Rw Rw Rw</span>    ← rowlock sill, counted by the foot
+<span class="dim">Br = running-bond field brick    So = soldier    Rw = rowlock</span></pre>
+      </div>
+
+      <p>
+        The field courses stop at the jamb. The soldier replaces about three of those courses over the head. The rowlock replaces the brick at the sill and changes the coursing above it. Three different lines.
+      </p>
+      <p>
+        TMM counts those courses from the bond you set. Soldiers and rowlocks stay off the field-brick line because they are not field brick. Change the course and the count moves with it.
+      </p>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark">
+    <div class="page-section-inner">
+      <h2>Brick over block in masonry takeoff software</h2>
+      <p>
+        Brick over block is two walls that share an opening. Block modular is 16 inches by 8 inches. Modular brick is 8 inches by 2-2/3 inches, three courses to one block course. The rough opening is the same hole. The pieces around it are not. Block wants jamb units, a lintel, maybe bullnose. Brick wants cuts at the jamb, maybe a soldier at the head, maybe a rowlock sill.
+      </p>
+      <p>
+        Take the block off as block. Take the brick off as brick. One area used for both will be wrong on at least one of them. Ties and joint reinforcement still get measured, by the course or by the foot of wall. They do not change the unit count. The block method — corners, bullnose, bond beams, rebar, grout by cell — is the <a href="/cmu-takeoff-software/">CMU takeoff</a>.
+      </p>
+      <p>
+        In TMM both wythes come off the wall you draw. The opening lands in the brick and in the block. The lists stay separate. The same model is what prints the <a href="/masonry-shop-drawings/">masonry shop drawings</a>, so the veneer on the sheet is the veneer you priced.
+      </p>
+      <p>
+        <a href="/#demo">Book a demo</a> and bring a veneer elevation. We will count the bond, the opening, and the brick over block.
+      </p>
+    </div>
+  </section>
+
+  <FAQSection
+    items={faqItems}
+    sectionNum="FAQ"
+    label="Brick takeoff questions"
+    headline="What I want on the brick order."
+  />
+
+  <PageCTA
+    headline="Run a brick takeoff on a wall you bid."
+    body="Bring a veneer elevation. We will count the bond, the opening, and the brick over block."
+    ctaText="Book a demo"
+    ctaHref="/#demo"
+  />
+</Layout>
