@@ -97,9 +97,9 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
   <header>
     <div class="job">
       <h1 id="job">Loading…</h1>
-      <p id="pub">Field view, published Oct 21</p>
+      <p id="pub">Field view</p>
     </div>
-    <span class="rev" id="rev">Rev 1</span>
+    <span class="rev" id="rev" hidden></span>
   </header>
 
   <div class="stage" id="stage">
@@ -160,6 +160,10 @@ function init(meta, bbuf, rbuf){
   /* ---------- header ---------- */
   var jobName = (meta.project && meta.project.name) || 'Masonry job';
   $('job').textContent = jobName; document.title = jobName + ' – field view';
+  var ex = meta.export || {}, rev = ex['Revision'], exd = ex['Exported (UTC)'], dateTxt = '', dateShort = '';
+  if (exd){ var dm = /^(\d{4})-(\d{2})-(\d{2})/.exec(exd); if (dm){ dateShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+dm[2]-1] + ' ' + (+dm[3]); dateTxt = dateShort + ', ' + dm[1]; } }
+  if (rev != null){ $('rev').textContent = 'Rev ' + rev + (dateShort ? ' · ' + dateShort : ''); $('rev').hidden = false; }
+  $('pub').textContent = 'Field view' + (rev != null ? ' · Rev ' + rev : '') + (dateTxt ? ' · ' + dateTxt : '');
 
   /* ---------- per-block facts ---------- */
   var bLift = new Int16Array(N), bType = new Uint8Array(N), bWall = new Int16Array(N);
@@ -173,6 +177,7 @@ function init(meta, bbuf, rbuf){
   /* ---------- psets -> plain quantities ---------- */
   function pmap(obj){ var m = {}; (obj.psets || []).forEach(function(p){ m[p[0]] = p[1]; }); return m; }
   function get(props, k){ var v; (props || []).forEach(function(p){ if (p[0] === k) v = p[1]; }); return v; } // last wins (rounded duplicates)
+  function first(props, ks){ for (var i = 0; i < ks.length; i++){ var v = get(props, ks[i]); if (v !== undefined && v !== null) return v; } return undefined; }
   function find(props, re){ var v, kk; (props || []).forEach(function(p){ if (re.test(p[0])){ v = p[1]; kk = p[0]; } }); return v === undefined ? null : { k: kk, v: v }; }
 
   var walls = meta.walls.map(function(w, k){
@@ -180,20 +185,22 @@ function init(meta, bbuf, rbuf){
     var lifts = {};
     Object.keys(ps).forEach(function(name){
       var m = /^TMM Lift (\d+)/.exec(name); if (!m) return;
-      var p = ps[name], n = +m[1], q = qtyFrom(p, get(p, 'Lift total pieces'));
+      var p = ps[name], n = +m[1], q = qtyFrom(p, first(p, ['Total blocks', 'Lift total pieces']));
       q.lo = get(p, 'Lift bottom'); q.hi = get(p, 'Lift top');
       if (q.total > 0) lifts[n] = q;
     });
-    var whole = qtyFrom(wt, get(wt, 'Total pieces (sum of the lifts)'));
-    if (whole.grout === null){ var g = find(ps['TMM Grout'], /^Wall grout \((CY|m³)\)$/); if (g){ whole.grout = g.v; whole.groutU = g.k; } }
+    var whole = qtyFrom(wt, first(wt, ['Total blocks', 'Total pieces (sum of the lifts)']));
+    if (whole.grout === null){ var g = find(ps['TMM Grout'], /^Wall grout \((CY|m³|m3)\)$/); if (g){ whole.grout = g.v; whole.groutU = g.k; } }
     var rw = find(wt, /^Rebar \((lbs|kg)/) || find(ps['TMM Rebar'], /^Rebar \((lbs|kg)/);
-    var bars = 0;
-    (ps['TMM Rebar'] || []).forEach(function(p){ var m = /^(\d+)\s*x\s/.exec(String(p[1])); if (m) bars += +m[1]; });
+    var bars = first(wt, ['Bars']) || first(ps['TMM Rebar'], ['Bars']) || 0;
+    if (!bars) (ps['TMM Rebar'] || []).forEach(function(p){ var m = /^(\d+)\s*x\s/.exec(String(p[1])); if (m) bars += +m[1]; });
     whole.rebarW = rw ? rw.v : null; whole.rebarU = rw ? (/kg/.test(rw.k) ? 'kg' : 'lb') : '';
     whole.bars = bars;
     var ops = meta.openings.filter(function(o){ return o.wall === k; }).map(function(o){ return get((pmap(o)['TMM Opening']), 'Type') || 'Opening'; });
-    return { k:k, name:w.name, tag:w.tag, type:get(wp, 'Wall type') || w.objtype, len:get(wp, 'Length'), h:get(wp, 'Height (tallest)'),
-      bond:get(wp, 'Bond'), grout:get(wp, 'Grout mode'), liftH:get(wp, 'Lift height'), lifts:lifts, whole:whole, ops:ops };
+    var conc = {}; (meta.concrete || []).forEach(function(c){ if (c.wall !== k) return; var cp = pmap(c)['TMM Concrete'] || [], kind = get(cp, 'Kind') || 'Concrete';
+      var e = conc[kind] || (conc[kind] = { n:0, vol:0, volU:'' }); e.n++; var v = find(cp, /^Volume \((CY|m³|m3)\)$/); if (v){ e.vol += +v.v || 0; e.volU = v.k; } });
+    return { k:k, name:get(wp, 'Wall line') || w.name, tag:w.tag, type:get(wp, 'Wall type') || w.objtype, len:get(wp, 'Length'), h:first(wp, ['Height', 'Height (tallest)']),
+      bond:get(wp, 'Bond'), grout:first(wp, ['Grout', 'Grout mode']), liftH:get(wp, 'Lift height'), lifts:lifts, whole:whole, ops:ops, conc:conc };
   });
 
   // a Pset (lift or wall totals) -> {rows:{label:{n, colours}}, total, grout, mortar}
@@ -206,7 +213,7 @@ function init(meta, bbuf, rbuf){
         u.n += e[1] || 0; if (colour) u.colours[colour] = (u.colours[colour] || 0) + (e[1] || 0);
       }
     });
-    var g = find(p, /^Grout \((CY|m³)\)$/); if (g){ q.grout = g.v; q.groutU = g.k; }
+    var g = find(p, /^Grout \((CY|m³|m3)\)$/); if (g){ q.grout = g.v; q.groutU = g.k; }
     var m = get(p, 'Mortar (bags)'); if (m !== undefined) q.mortar = m;
     if (!q.total){ var t = 0; Object.keys(q.units).forEach(function(l){ t += q.units[l].n; }); q.total = t; }
     return q;
@@ -239,6 +246,47 @@ function init(meta, bbuf, rbuf){
     }
     Object.keys(seen).forEach(function(l){ var s = Object.keys(seen[l]); if (s.length <= 2) sizeOf[l] = s.join(', '); });
   })();
+
+  /* ---------- sides: per-block "Segment" -> one chip per side; else one chip per wall line ---------- */
+  var colSeg = keys.indexOf('Segment') >= 0 ? cols[keys.indexOf('Segment')] : null;
+  var sides = [], bSide = new Int16Array(N); bSide.fill(-1);
+  if (colSeg){
+    var seen = {};
+    for (var i2 = 0; i2 < N; i2++){
+      var pk2 = U[i2*5+2]; if (pk2 === 65535) continue; var sv = colSeg[pk2]; if (sv == null || sv === '') continue;
+      var key = bWall[i2] + '|' + sv; if (!(key in seen)){ seen[key] = 1; sides.push({ wall:bWall[i2], seg:String(sv) }); }
+    }
+    var nat = function(a, b){ return a.wall - b.wall || a.seg.localeCompare(b.seg, 'en', { numeric:true }); };
+    sides.sort(nat); var sIdx = {}; sides.forEach(function(sd, n){ sIdx[sd.wall + '|' + sd.seg] = n; });
+    var multiColour = colColour && colColour.some(function(c){ return c && c !== colColour[0]; });
+    var prefixOf = function(w){ var m = /^(\d+(?:\.\d+)?\s*(?:"|cm|mm))/.exec(w.type || ''); return m ? m[1] + ' ' : ''; };
+    var addBlock = function(q, label, colour){ var u = q.units[label] || (q.units[label] = { n:0, colours:{} }); u.n++; q.total++; if (multiColour && colour) u.colours[colour] = (u.colours[colour] || 0) + 1; };
+    var sideQ = function(){ return { units:{}, total:0, grout:null, groutU:'', mortar:null }; };
+    sides.forEach(function(sd){ sd.whole = sideQ(); sd.lifts = {}; sd.name = sd.seg; sd.tag = sd.seg; });
+    for (i2 = 0; i2 < N; i2++){
+      pk2 = U[i2*5+2]; if (pk2 === 65535) continue; sv = colSeg[pk2]; if (sv == null || sv === '') continue;
+      var sd = sides[sIdx[bWall[i2] + '|' + sv]]; bSide[i2] = sIdx[bWall[i2] + '|' + sv];
+      var w2 = walls[sd.wall], label = prefixOf(w2) + colUnit[pk2], colour = colColour ? colColour[pk2] : '';
+      addBlock(sd.whole, label, colour);
+      var L2 = bLift[i2], lq = sd.lifts[L2] || (sd.lifts[L2] = sideQ());
+      if (w2.lifts[L2]){ lq.lo = w2.lifts[L2].lo; lq.hi = w2.lifts[L2].hi; }
+      addBlock(lq, label, colour);
+    }
+    // grout / mortar per side only when a "TMM Side" pset carries them
+    (meta.sides || []).forEach(function(sp){
+      var props = sp.props || [];
+      sides.forEach(function(sd){
+        var w3 = walls[sd.wall], hit = props.some(function(e){ return String(e[1]) === sd.seg; });
+        var wl = get(props, 'Wall'); if (wl && String(wl).indexOf(w3.tag) < 0 && String(wl).indexOf(w3.name) < 0) hit = false;
+        if (!hit) return;
+        var g = find(props, /^Grout \((CY|m³|m3)\)$/); if (g){ sd.whole.grout = g.v; sd.whole.groutU = g.k; }
+        var mo = get(props, 'Mortar (bags)'); if (mo != null) sd.whole.mortar = mo;
+      });
+    });
+  }
+  var bySide = sides.length > 0;
+  var selGroups = bySide ? sides : walls;
+  function groupOf(i){ return bySide ? bSide[i] : bWall[i]; }
 
   // lift numbers that have blocks anywhere
   var liftNums = {};
@@ -301,6 +349,16 @@ function init(meta, bbuf, rbuf){
     var mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color:0xffffff }));
     mesh.matrixAutoUpdate = false; mesh.matrix.multiplyMatrices(toThree, M); mesh.userData = { gi: pp.i };
     polys.push(mesh); scene.add(mesh);
+  });
+  // cast-in-place concrete (curbs, pours): grey solids, shown at every lift
+  var concMeshes = [];
+  (meta.concrete || []).forEach(function(cc, n){
+    var shape = new THREE.Shape(cc.pts.map(function(v){ return new THREE.Vector2(v[0], v[1]); }));
+    var g = new THREE.ExtrudeGeometry(shape, { depth:cc.d, bevelEnabled:false, steps:1 });
+    var m = cc.m, M = new THREE.Matrix4().set(m[0],m[1],m[2],m[3], m[4],m[5],m[6],m[7], m[8],m[9],m[10],m[11], 0,0,0,1);
+    var mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color:0xa3a3a3 }));
+    mesh.matrixAutoUpdate = false; mesh.matrix.multiplyMatrices(toThree, M); mesh.userData = { conc:n, wall:cc.wall };
+    concMeshes.push(mesh); scene.add(mesh);
   });
   // openings: translucent boxes, clipped with the lift
   var openMesh = null;
@@ -379,11 +437,12 @@ function init(meta, bbuf, rbuf){
   function pick(e){
     var r = canvas.getBoundingClientRect();
     ndc.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
-    var objs = meshes.concat(polys.filter(function(m){ return m.visible; }));
+    var objs = meshes.concat(polys.filter(function(m){ return m.visible; }), concMeshes);
     var hit = ray.intersectObjects(objs, false)[0]; hideHint();
     if (!hit) { select(null); return; }
+    if (hit.object.userData.conc !== undefined){ select(!bySide && hit.object.userData.wall >= 0 ? hit.object.userData.wall : null); return; }
     var gi = hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.idx[hit.instanceId];
-    select(bWall[gi]);
+    var gk = groupOf(gi); select(gk >= 0 ? gk : null);
   }
 
   /* ---------- state + painting ---------- */
@@ -392,7 +451,7 @@ function init(meta, bbuf, rbuf){
   function blockColour(i, out){
     var c = colorOn ? typeInfo(bType[i]).col : (meta.colours[U[i*5]] || NEUTRAL), j = jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
     if (selLift !== null && bLift[i] === selLift){ r = r*0.5 + sel.r*0.5; g = g*0.5 + sel.g*0.5; b = b*0.5 + sel.b*0.5; }
-    if (selected !== null && bWall[i] !== selected){
+    if (selected !== null && groupOf(i) !== selected){
       var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; r = r*0.15 + f[0]*0.85; g = g*0.15 + f[1]*0.85; b = b*0.15 + f[2]*0.85;
     }
     out[0] = Math.min(1, r); out[1] = Math.min(1, g); out[2] = Math.min(1, b);
@@ -412,6 +471,11 @@ function init(meta, bbuf, rbuf){
       var i = mesh.userData.gi; blockColour(i, tmp); mesh.material.color.setRGB(tmp[0], tmp[1], tmp[2]);
       mesh.visible = selLift === null || bLift[i] <= selLift;
     });
+    concMeshes.forEach(function(mesh){
+      var c = [0.64, 0.64, 0.64], selWall = selected === null ? null : (bySide ? sides[selected].wall : selected);
+      if (selWall !== null && mesh.userData.wall !== selWall){ var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; c = c.map(function(v, j){ return v*0.15 + f[j]*0.85; }); }
+      mesh.material.color.setRGB(c[0], c[1], c[2]);
+    });
     // clip openings + rebar at the top of the highest block shown
     if (selLift === null) clipPlane.constant = 1e5;
     else { var top = -1e9; for (var i = 0; i < N; i++) if (bLift[i] <= selLift && bTop[i] > top) top = bTop[i]; clipPlane.constant = top + 0.005; }
@@ -430,19 +494,26 @@ function init(meta, bbuf, rbuf){
   var fmt = function(n){ return Math.round(n).toLocaleString('en-US'); };
   function groutText(q){
     if (q.grout === null) return null;
-    return /m³/.test(q.groutU) ? q.grout.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' m³'
+    return /m³|m3/.test(q.groutU) ? q.grout.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' m³'
       : q.grout.toLocaleString('en-US', { minimumFractionDigits:1, maximumFractionDigits:1 }) + ' cu yd';
   }
   function labelOrder(a, b){
     var ta = typeOf(a.replace(/^\S+(\s+cm)?\s+/, '')), tb = typeOf(b.replace(/^\S+(\s+cm)?\s+/, ''));
     return ta - tb || parseFloat(a) - parseFloat(b) || (a < b ? -1 : 1);
   }
+  function concRows(ws){
+    var c = {}; ws.forEach(function(w){ Object.keys(w.conc).forEach(function(k){ var e = c[k] || (c[k] = { n:0, vol:0, volU:'' }); e.n += w.conc[k].n; e.vol += w.conc[k].vol; e.volU = w.conc[k].volU || e.volU; }); });
+    return Object.keys(c).map(function(k){
+      var e = c[k], v = e.vol ? (/m³|m3/.test(e.volU) ? e.vol.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' m³' : e.vol.toLocaleString('en-US', { minimumFractionDigits:1, maximumFractionDigits:1 }) + ' cu yd') : fmt(e.n);
+      return '<dt>' + esc(k) + '<small>' + plural(e.n, 'piece') + ', cast in place</small></dt><dd>' + v + '</dd>';
+    }).join('');
+  }
   function rows(q, withRebar){
     var h = '<dl>';
     Object.keys(q.units).filter(function(l){ return q.units[l].n > 0; }).sort(labelOrder).forEach(function(l){
       var u = q.units[l], extra = [];
       if (sizeOf[l]) extra.push(esc(sizeOf[l]));
-      Object.keys(u.colours).forEach(function(c){ extra.push(fmt(u.colours[c]) + ' ' + esc(c)); });
+      Object.keys(u.colours).sort().forEach(function(c){ extra.push(fmt(u.colours[c]) + ' ' + esc(c)); });
       h += '<dt>' + esc(l) + (extra.length ? '<small>' + extra.join(' · ') + '</small>' : '') + '</dt><dd>' + fmt(u.n) + '</dd>';
     });
     h += '<dt class="tot">Total blocks</dt><dd class="tot">' + fmt(q.total) + '</dd>';
@@ -472,16 +543,28 @@ function init(meta, bbuf, rbuf){
   }
   function renderPanel(){
     var h;
-    if (selected !== null){
+    if (selected !== null && bySide){
+      var sd = sides[selected], ws = walls[sd.wall], sq = selLift === null ? sd.whole : sd.lifts[selLift];
+      h = '<h2>' + esc(sd.name) + '</h2><p class="sub">' + esc(ws.name) + ' · ' + esc(describe(ws)) + '</p>';
+      if (selLift !== null) h += '<p class="sub">' + esc(liftRange([ws])) + '</p>';
+      h += sq ? rows(sq, false) : '<p class="empty">No blocks in lift ' + selLift + ' on this side.</p>';
+      var wq = selLift === null ? ws.whole : ws.lifts[selLift];
+      if (sq && sq.grout === null && sq.mortar === null && wq){
+        var gx = []; var gt = groutText(wq); if (gt) gx.push('grout ' + gt); if (wq.mortar !== null) gx.push('mortar ' + fmt(Math.ceil(wq.mortar - 1e-9)) + ' bags');
+        if (gx.length) h += '<p class="sub">Grout and mortar are counted for the whole wall line' + (selLift !== null ? ' in this lift' : '') + ': ' + gx.join(', ') + '.</p>';
+      }
+    } else if (selected !== null){
       var w = walls[selected], q = selLift === null ? w.whole : w.lifts[selLift];
       h = '<h2>' + esc(w.name) + '</h2><p class="sub">' + esc(describe(w)) + '</p>';
       if (selLift !== null) h += '<p class="sub">' + esc(liftRange([w])) + '</p>';
       h += q ? rows(q, selLift === null) : '<p class="empty">No blocks in lift ' + selLift + ' on this wall.</p>';
+      if (selLift === null){ var cr = concRows([w]); if (cr) h = h.replace(/<\/dl>$/, cr + '</dl>'); }
     } else {
       var tot = emptyQ();
       walls.forEach(function(w){ addQ(tot, selLift === null ? w.whole : w.lifts[selLift]); });
       var nb = 0; walls.forEach(function(w){ nb += (selLift === null ? w.whole.total : (w.lifts[selLift] ? w.lifts[selLift].total : 0)); });
-      h = '<h2>Whole job</h2><p class="sub">' + (selLift !== null ? esc(liftRange(walls)) : '') + plural(walls.length, 'wall') + ', ' + fmt(nb) + ' blocks</p>' + rows(tot, selLift === null);
+      h = '<h2>Whole job</h2><p class="sub">' + (selLift !== null ? esc(liftRange(walls)) : '') + plural(walls.length, 'wall') + (bySide ? ', ' + plural(sides.length, 'side') : '') + ', ' + fmt(nb) + ' blocks</p>' + rows(tot, selLift === null);
+      if (selLift === null){ var cr2 = concRows(walls); if (cr2) h = h.replace(/<\/dl>$/, cr2 + '</dl>'); }
     }
     $('detail').innerHTML = h;
     Array.prototype.forEach.call(document.querySelectorAll('#chips .chip'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.w === '' ? null : +b.dataset.w) === selected)); });
@@ -490,12 +573,12 @@ function init(meta, bbuf, rbuf){
   function select(k){ selected = k; paint(); renderPanel(); hash(); }
   function setLift(n){ selLift = n; paint(); renderPanel(); hash(); }
   function hash(){
-    var parts = []; if (selected !== null) parts.push('wall=' + encodeURIComponent(walls[selected].tag)); if (selLift !== null) parts.push('lift=' + selLift);
+    var parts = []; if (selected !== null) parts.push((bySide ? 'side=' : 'wall=') + encodeURIComponent(selGroups[selected].tag)); if (selLift !== null) parts.push('lift=' + selLift);
     try { history.replaceState(null, '', parts.length ? '#' + parts.join('&') : location.pathname + location.search); } catch(e) {}
   }
 
   $('chips').innerHTML = '<button class="chip" data-w="" aria-pressed="true">Whole job</button>' +
-    walls.map(function(w){ return '<button class="chip" data-w="' + w.k + '" aria-pressed="false" title="' + esc(w.tag) + '">' + esc(w.name) + '</button>'; }).join('');
+    selGroups.map(function(w, n){ return '<button class="chip" data-w="' + n + '" aria-pressed="false" title="' + esc(bySide ? walls[w.wall].name : w.tag) + '">' + esc(w.name) + '</button>'; }).join('');
   $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (b) select(b.dataset.w === '' ? null : +b.dataset.w); });
   $('lifts').innerHTML = '<button class="chip" data-l="" aria-pressed="true">All lifts</button>' +
     liftNums.map(function(n){ return '<button class="chip" data-l="' + n + '" aria-pressed="false">Lift ' + n + '</button>'; }).join('');
@@ -506,13 +589,14 @@ function init(meta, bbuf, rbuf){
 
   // deterministic start: #wall=<tag or name>&lift=<n>&rebar=1
   var hp = {}; location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var a = kv.split('='); if (a[0]) hp[a[0]] = decodeURIComponent(a[1] || ''); });
-  if (hp.wall){ walls.forEach(function(w){ if (w.tag === hp.wall || w.name === hp.wall || String(w.k) === hp.wall) selected = w.k; }); }
+  if (hp.wall && !bySide){ walls.forEach(function(w){ if (w.tag === hp.wall || w.name === hp.wall || String(w.k) === hp.wall) selected = w.k; }); }
+  if (hp.side && bySide){ sides.forEach(function(sd, n){ if (sd.seg === hp.side || String(n) === hp.side) selected = n; }); }
   if (hp.lift && liftNums.indexOf(+hp.lift) >= 0) selLift = +hp.lift;
   if (hp.rebar === '1' && rebar){ rebar.visible = true; $('rebarBtn').setAttribute('aria-pressed', 'true'); }
 
   $('status').hidden = true;
   themeScene(); resize(); renderPanel();
-  window.__field = { ready:true, blocks:N, walls:walls.length, lifts:liftNums.slice(), select:select, setLift:setLift,
+  window.__field = { ready:true, blocks:N, concrete:concMeshes.length, sides:sides.map(function(sd){ return sd.seg + ':' + sd.whole.total; }), walls:walls.length, lifts:liftNums.slice(), select:select, setLift:setLift,
     shown:function(){ var c = 0; meshes.forEach(function(m){ c += m.count; }); polys.forEach(function(m){ if (m.visible) c++; }); return c; } };
 }
 })();
