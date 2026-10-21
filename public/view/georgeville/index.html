@@ -104,7 +104,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 
   <div class="stage" id="stage">
     <div class="tools">
-      <button class="tbtn" id="colorBtn" aria-pressed="true"><span class="box"><span>✓</span></span>Color by type</button>
+      <button class="tbtn" id="colorBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Color by type</button>
       <button class="tbtn small" id="rebarBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Rebar</button>
       <div class="legend" id="legend"></div>
     </div>
@@ -387,10 +387,10 @@ function init(meta, bbuf, rbuf){
   }
 
   /* ---------- state + painting ---------- */
-  var selected = null, selLift = null, colorOn = true;
+  var selected = null, selLift = null, colorOn = false;
   var NEUTRAL = [0.84, 0.83, 0.8];
   function blockColour(i, out){
-    var c = colorOn ? typeInfo(bType[i]).col : NEUTRAL, j = jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
+    var c = colorOn ? typeInfo(bType[i]).col : (meta.colours[U[i*5]] || NEUTRAL), j = jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
     if (selLift !== null && bLift[i] === selLift){ r = r*0.5 + sel.r*0.5; g = g*0.5 + sel.g*0.5; b = b*0.5 + sel.b*0.5; }
     if (selected !== null && bWall[i] !== selected){
       var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; r = r*0.15 + f[0]*0.85; g = g*0.15 + f[1]*0.85; b = b*0.15 + f[2]*0.85;
