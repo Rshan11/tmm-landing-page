@@ -91,6 +91,7 @@ dl{margin:12px 0 0;display:grid;grid-template-columns:minmax(0,1fr) auto}
 dt,dd{margin:0;padding:10px 0;border-top:1px solid var(--line)}
 dt small{display:block;color:var(--muted);font-size:.8rem}
 dd{padding-left:12px;font-weight:600;font-size:1.1rem;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+dt.grp,dd.grp{border-top:1.5px solid var(--line)}
 dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 .empty{margin:12px 0 0;padding:10px 0;border-top:1px solid var(--line);color:var(--muted)}
 .made{margin:10px 0 0;font-size:.75rem;color:var(--muted)}
@@ -334,6 +335,7 @@ function init(meta, bbuf, rbuf){
       Object.keys(b.units[l].colours).forEach(function(c){ u.colours[c] = (u.colours[c] || 0) + b.units[l].colours[c]; });
     });
     a.total += b.total;
+    if (b.cuts) Object.keys(b.cuts).forEach(function(k){ a.cuts = a.cuts || {}; var c = a.cuts[k] || (a.cuts[k] = { n:0, len:b.cuts[k].len, pre:b.cuts[k].pre }); c.n += b.cuts[k].n; });
     if (b.grout !== null){ a.grout = (a.grout || 0) + b.grout; a.groutU = b.groutU; }
     if (b.mortar !== null) a.mortar = (a.mortar || 0) + b.mortar;
     if (b.rebarW != null){ a.rebarW = (a.rebarW || 0) + b.rebarW; a.rebarU = b.rebarU; }
@@ -392,6 +394,28 @@ function init(meta, bbuf, rbuf){
         var mo = get(props, 'Mortar (bags)'); if (mo != null) sd.whole.mortar = mo;
       });
     });
+  }
+  /* ---------- cut pieces by real cut length (per-block 'Cut length' column; in or mm) ---------- */
+  var cutKey = null, cutMm = false;
+  keys.forEach(function(k, n){ if (/^Cut length \((in|mm)\)$/.test(k)){ cutKey = n; cutMm = /mm/.test(k); } });
+  function cutText(v){
+    if (cutMm) return Math.round(v) + ' mm';
+    var e = Math.round(v*8), w = Math.floor(e/8), f = e % 8, fr = f ? ['', '1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'][f] : '';
+    return (w || !fr ? w : '') + (w && fr ? '-' : '') + fr + '"';
+  }
+  if (cutKey !== null){
+    var colCut = cols[cutKey];
+    var addCut = function(q, len, pre){
+      if (!q) return; var k = pre + '|' + len; q.cuts = q.cuts || {};
+      var c = q.cuts[k] || (q.cuts[k] = { n:0, len:len, pre:pre }); c.n++;
+    };
+    for (var ic = 0; ic < N; ic++){
+      var pc = U[ic*5+2]; if (pc === 65535) continue; var cv = colCut[pc]; if (cv === null || cv === undefined || cv === '' || !isFinite(+cv)) continue;
+      var cl = cutMm ? Math.round(+cv) : Math.round(+cv*8)/8, cw = walls[bWall[ic]]; if (!cw) continue;
+      var cpm = /^(\d+(?:\.\d+)?\s*(?:"|cm|mm))/.exec(cw.type || ''), cpre = cpm ? cpm[1] + ' ' : '', cL = bLift[ic];
+      addCut(cw.whole, cl, cpre); addCut(cw.lifts[cL], cl, cpre);
+      var cs = bSide[ic]; if (cs >= 0){ addCut(sides[cs].whole, cl, cpre); addCut(sides[cs].lifts[cL], cl, cpre); }
+    }
   }
   var bySide = sides.length > 0;
   var selGroups = bySide ? sides : walls;
@@ -1330,13 +1354,21 @@ function init(meta, bbuf, rbuf){
     }).join('');
   }
   function rows(q, withRebar){
-    var h = '<dl>';
+    var h = '<dl>', cutList = q.cuts ? Object.keys(q.cuts).map(function(k){ return q.cuts[k]; }) : [], cutLeft = 0;
+    cutList.forEach(function(c){ cutLeft += c.n; });
     Object.keys(q.units).filter(function(l){ return q.units[l].n > 0; }).sort(labelOrder).forEach(function(l){
       var u = q.units[l], extra = [];
+      if (cutLeft && /Cut piece$/.test(l)){ var take = Math.min(cutLeft, u.n); cutLeft -= take; if (take >= u.n) return; u = { n:u.n - take, colours:{} }; extra.push('size not in the model'); }
       if (sizeOf[l]) extra.push(esc(sizeOf[l]));
       Object.keys(u.colours).sort().forEach(function(c){ extra.push(fmt(u.colours[c]) + ' ' + esc(c)); });
       h += '<dt>' + esc(l) + (extra.length ? '<small>' + extra.join(' · ') + '</small>' : '') + '</dt><dd>' + fmt(u.n) + '</dd>';
     });
+    if (cutList.length){
+      h += '<dt class="grp">Cuts<small>' + fmt(cutList.reduce(function(a, c){ return a + c.n; }, 0)) + ' cut pieces, longest first. Counted once in the total.</small></dt><dd class="grp"></dd>';
+      cutList.sort(function(a, b){ return (parseFloat(b.pre) || 0) - (parseFloat(a.pre) || 0) || b.len - a.len; }).forEach(function(c){
+        h += '<dt>' + esc((c.pre ? c.pre.trim() + ' ' : '') + 'cut · ' + cutText(c.len)) + '</dt><dd>×' + fmt(c.n) + '</dd>';
+      });
+    }
     h += '<dt class="tot">Total blocks</dt><dd class="tot">' + fmt(q.total) + '</dd>';
     var g = groutText(q); if (g) h += '<dt>Grout</dt><dd>' + g + '</dd>';
     if (q.mortar !== null) h += '<dt>Mortar</dt><dd>' + fmt(Math.ceil(q.mortar - 1e-9)) + ' bags</dd>';
