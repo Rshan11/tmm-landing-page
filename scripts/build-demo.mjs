@@ -8,7 +8,7 @@
 // (it is an iframe target, the homepage is what we want indexed).
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 const SRC = 'public/view/georgeville/index.html', OUT = 'public/demo/pump-station/index.html';
-let h = readFileSync(SRC, 'utf8');
+let h = readFileSync(SRC, 'utf8').replace(/\r\n/g, '\n');
 function sub(a, b) { if (!h.includes(a)) throw new Error('demo patch target missing: ' + a.slice(0, 70)); h = h.replace(a, b); }
 const BASE = '../../view/georgeville/';
 sub("fetch('model.usdz'", "fetch('" + BASE + "model.usdz'");
