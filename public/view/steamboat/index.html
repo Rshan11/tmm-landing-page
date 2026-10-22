@@ -376,7 +376,7 @@ function init(meta, bbuf, rbuf){
   var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:true, preserveDrawingBuffer:true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.localClippingEnabled = true;
-  var clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5), rbPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
+  var rbPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
   var scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a80, 0.8));
   var sun = new THREE.DirectionalLight(0xffffff, 0.6); sun.position.set(0.6, 1, 0.4); scene.add(sun);
@@ -411,7 +411,7 @@ function init(meta, bbuf, rbuf){
       m4.compose(p, q, s); mesh.setMatrixAt(n, m4);
     }
     mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(idx.length*3), 3);
-    mesh.userData = { idx: idx };
+    mesh.userData = { idx: idx, orig: mesh.instanceMatrix.array.slice() };
     meshes.push(mesh); scene.add(mesh);
   });
   // clipped pieces (rake / gable): their own extruded face polygon
@@ -435,15 +435,16 @@ function init(meta, bbuf, rbuf){
     concMeshes.push(mesh); scene.add(mesh);
   });
   // openings: translucent boxes, clipped with the lift
-  var openMesh = null;
-  if (meta.openings.length){
-    openMesh = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ color:0xffffff, transparent:true, opacity:0.3, depthWrite:false, clippingPlanes:[clipPlane] }), meta.openings.length);
-    meta.openings.forEach(function(o, n){
-      p.set(o.c[0] - ctr[0], o.c[2] - ctr[2], -(o.c[1] - ctr[1])); q.setFromAxisAngle(up, o.r); s.set(o.s[0], o.s[2], o.s[1]);
-      m4.compose(p, q, s); openMesh.setMatrixAt(n, m4); openMesh.setColorAt(n, new THREE.Color(0.43, 0.6, 0.72));
-    });
-    openMesh.renderOrder = 2; scene.add(openMesh);
-  }
+  // each opening its own mesh + clip plane: a lift clips only the picked walls' openings (Ryan 10-21)
+  var openMeshes = [];
+  meta.openings.forEach(function(o, n){
+    var pl = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
+    var om = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color:new THREE.Color(0.43, 0.6, 0.72), transparent:true, opacity:0.3, depthWrite:false, clippingPlanes:[pl] }));
+    om.position.set(o.c[0] - ctr[0], o.c[2] - ctr[2], -(o.c[1] - ctr[1])); om.quaternion.setFromAxisAngle(up, o.r); om.scale.set(o.s[0], o.s[2], o.s[1]);
+    var og = o.wall;                                                // side = the side of the nearest block on its wall
+    if (bySide){ var bd = 1e18; og = -1; for (var i7 = 0; i7 < N; i7++){ if (bWall[i7] !== o.wall || bSide[i7] < 0) continue; var dx7 = F[i7*7] - o.c[0], dy7 = F[i7*7+1] - o.c[1], d7 = dx7*dx7 + dy7*dy7; if (d7 < bd){ bd = d7; og = bSide[i7]; } } }
+    om.userData = { plane:pl, g:og }; om.renderOrder = 2; openMeshes.push(om); scene.add(om);
+  });
   // rebar: bar axes as lines, off by default
   var rebar = null, rebarPos = null;
   if (meta.nRebarSegs){
@@ -551,16 +552,22 @@ function init(meta, bbuf, rbuf){
       barLap[b3] = lap;
     }
   }
-  function rebarLift(top){
+  var barGroup = null;
+  if (segBar){ barGroup = new Int32Array(nB).fill(-1); var segIdx = {}; sides.forEach(function(sd, n){ segIdx[sd.wall + '|' + sd.seg] = n; });
+    for (var b8 = 0; b8 < nB; b8++){ if (!bySide) barGroup[b8] = BARS.wall[b8];
+      else if (BARS.side[b8] >= 0 && BARS.sideNames){ var sg8 = segIdx[BARS.wall[b8] + '|' + BARS.sideNames[BARS.side[b8]]]; if (sg8 !== undefined) barGroup[b8] = sg8; } } }
+  // topOf(group) -> lift top for that group, or null = draw it whole; allTop = the whole-job lift top (null = all lifts)
+  function rebarLift(topOf, allTop){
     if (!rebar) return;
     segOn = null; rbPlane.constant = 1e5;
     if (rebarOrig){ rebarPos.set(rebarOrig); rebar.geometry.attributes.position.needsUpdate = true; }
-    if (top === null) rebar.geometry.setIndex(null);
-    else if (!segBar) rbPlane.constant = top + 1.2192, rebar.geometry.setIndex(null);   // no bar map: clip rebar only, top + 48"
+    if (allTop === null) rebar.geometry.setIndex(null);
+    else if (!segBar){ if (!selList.length) rbPlane.constant = allTop + 1.2192; rebar.geometry.setIndex(null); }   // no bar map: clip rebar only, top + 48"
     else {
       var n = meta.nRebarSegs, idx = [], b; segOn = new Uint8Array(n);
       for (var q = 0; q < n; q++){
-        b = segBar[q]; var o = q*6, y0 = rebarPos[o+1], y1 = rebarPos[o+4];
+        b = segBar[q]; var o = q*6, y0 = rebarPos[o+1], y1 = rebarPos[o+4], top = topOf(b >= 0 ? barGroup[b] : -1);
+        if (top === null){ segOn[q] = 1; idx.push(q*2, q*2+1); continue; }
         if (b >= 0 ? barLow[b] > top : Math.min(y0, y1) > top) continue;
         if (b >= 0){
           var cap = top + barLap[b];
@@ -629,30 +636,41 @@ function init(meta, bbuf, rbuf){
     }
     out[0] = Math.min(1, r); out[1] = Math.min(1, g); out[2] = Math.min(1, b);
   }
-  var tmp = [0, 0, 0], sel = new THREE.Color();
+  var tmp = [0, 0, 0], sel = new THREE.Color(), lastVKey = null;
+  var HIDE = new Float32Array([1e-6,0,0,0, 0,1e-6,0,0, 0,0,1e-6,0, 0,-1e4,0,1]);   // a hidden instance: tiny, far below
+  function shownBlock(i){ return selLift === null || bLift[i] <= selLift || (selList.length > 0 && !inSel[groupOf(i)]); }
   function paint(){
     sel.set(getComputedStyle(document.documentElement).getPropertyValue('--select').trim() || '#E9B824');
+    // a lift cuts only the picked walls (all walls when none is picked); the others stay whole (Ryan 10-21)
+    var vkey = selLift + '|' + selList.join(','), vchg = vkey !== lastVKey; lastVKey = vkey;
     meshes.forEach(function(mesh){
-      var idx = mesh.userData.idx, a = mesh.instanceColor.array, cnt = 0;
+      var idx = mesh.userData.idx, a = mesh.instanceColor.array, cnt = 0, M = mesh.instanceMatrix.array, O = mesh.userData.orig;
       for (var n = 0; n < idx.length; n++){
         var i = idx[n]; blockColour(i, tmp); a[n*3] = tmp[0]; a[n*3+1] = tmp[1]; a[n*3+2] = tmp[2];
-        if (selLift === null || bLift[i] <= selLift) cnt = n + 1;
+        if (!vchg) continue;
+        var v = shownBlock(i); if (v) cnt = n + 1;
+        if (v) for (var k6 = 0; k6 < 16; k6++) M[n*16+k6] = O[n*16+k6]; else M.set(HIDE, n*16);
       }
-      mesh.count = cnt; mesh.instanceColor.needsUpdate = true;
+      if (vchg){ mesh.count = cnt; mesh.instanceMatrix.needsUpdate = true; }
+      mesh.instanceColor.needsUpdate = true;
     });
     polys.forEach(function(mesh){
       var i = mesh.userData.gi; blockColour(i, tmp); mesh.material.color.setRGB(tmp[0], tmp[1], tmp[2]);
-      mesh.visible = selLift === null || bLift[i] <= selLift;
+      mesh.visible = shownBlock(i);
     });
     concMeshes.forEach(function(mesh){
       var c = [0.64, 0.64, 0.64], selW = {}; selList.forEach(function(g){ selW[bySide ? sides[g].wall : g] = 1; });
       if (selList.length && !selW[mesh.userData.wall]){ var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; c = c.map(function(v, j){ return v*0.15 + f[j]*0.85; }); }
       mesh.material.color.setRGB(c[0], c[1], c[2]);
     });
-    // clip openings + rebar at the top of the highest block shown
-    if (selLift === null) clipPlane.constant = 1e5;
-    else { var top = -1e9; for (var i = 0; i < N; i++) if (bLift[i] <= selLift && bTop[i] > top) top = bTop[i]; clipPlane.constant = top + 0.005; }
-    rebarLift(selLift === null ? null : clipPlane.constant);
+    // clip openings + rebar at the top of the highest block shown, per picked wall
+    if (vchg){
+      var allTop = null, gTop = {};
+      if (selLift !== null){ allTop = -1e9; for (var i = 0; i < N; i++) if (bLift[i] <= selLift){ if (bTop[i] > allTop) allTop = bTop[i]; var gg = groupOf(i); if (gTop[gg] === undefined || bTop[i] > gTop[gg]) gTop[gg] = bTop[i]; } }
+      var topOf = function(g){ if (allTop === null || (selList.length && !inSel[g])) return null; return selList.length && gTop[g] !== undefined ? gTop[g] + 0.005 : allTop + 0.005; };
+      openMeshes.forEach(function(om){ var t = topOf(om.userData.g); om.userData.plane.constant = t === null ? 1e5 : t; });
+      rebarLift(topOf, allTop === null ? null : allTop + 0.005);
+    }
     legend(); paintRebar();
     schedule();
   }
@@ -1029,7 +1047,7 @@ function init(meta, bbuf, rbuf){
     pct:function(){ var o = stat(null, null); return { n:o.n, B:pctOf(o, 'B'), R:pctOf(o, 'R'), G:pctOf(o, 'G') }; }, selList:function(){ return selList.slice(); }, multi:function(on){ multiOn = !!on; renderPanel(); },
     blockXY:function(g, l){ var lst = glist[g*1000 + l] || [], r = canvas.getBoundingClientRect(); camera.updateMatrixWorld();
       return lst.map(function(i){ var v = new THREE.Vector3(F[i*7] - ctr[0], F[i*7+2] - ctr[2], -(F[i*7+1] - ctr[1])), sp = toScreen(v, r); return { i:i, x:r.left + sp.x, y:r.top + sp.y, a:along[i], run:runOf[i] }; }); },
-    shown:function(){ var c = 0; meshes.forEach(function(m){ c += m.count; }); polys.forEach(function(m){ if (m.visible) c++; }); return c; } };
+    shown:function(){ var c = 0; for (var i = 0; i < N; i++) if (shownBlock(i)) c++; return c; } };
 }
 })();
 </script>
