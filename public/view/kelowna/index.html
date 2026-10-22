@@ -93,6 +93,8 @@ dt small{display:block;color:var(--muted);font-size:.8rem}
 dd{padding-left:12px;font-weight:600;font-size:1.1rem;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 .empty{margin:12px 0 0;padding:10px 0;border-top:1px solid var(--line);color:var(--muted)}
+.made{margin:10px 0 0;font-size:.75rem;color:var(--muted)}
+.made a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .note{margin:14px 0 0;font-size:.8rem;color:var(--muted)}
 
 .chip.add{border-style:dashed}
@@ -191,6 +193,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
       <p class="sync" id="sync"></p>
     </div>
     <p class="note" id="note">This field view shows quantities only. Prices and labor stay in the office.</p>
+    <p class="made"><a href="https://themasonrymodeler.com/" target="_blank" rel="noopener">Built with The Masonry Modeler</a> · <a href="https://themasonrymodeler.com/" target="_blank" rel="noopener">Get this for your job &rarr;</a></p>
   </aside>
 </div>
 
@@ -544,21 +547,6 @@ function init(meta, bbuf, rbuf){
       }
     });
   }
-  // a chip on a big job flies the camera to that wall (Whole job = back to the overview)
-  var fly = null;
-  function flyTo(k){
-    if (!BIG) return;
-    var ch = k === null ? null : chunkOfWall[bySide ? sides[k].wall : k];
-    var t1 = ch ? ch.sphere.center.clone() : new THREE.Vector3(0, tall*0.3, 0);
-    var r1 = ch ? Math.max(4, ch.sphere.radius / Math.sin(camera.fov*Math.PI/360) * 1.3) : R0;
-    var t0 = target.clone(), r0 = radius, st = performance.now(); fly = st;
-    (function step(){
-      if (fly !== st) return;
-      var u = Math.min(1, (performance.now() - st)/450), e = u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2)/2;
-      target.lerpVectors(t0, t1, e); radius = r0 + (r1 - r0)*e; updateCam(); schedule();
-      if (u < 1) requestAnimationFrame(step); else fly = null;
-    })();
-  }
   // clipped pieces (rake / gable): their own extruded face polygon
   var toThree = new THREE.Matrix4().set(1,0,0,-ctr[0], 0,0,1,-ctr[2], 0,-1,0,ctr[1], 0,0,0,1), polys = [];
   (meta.polys || []).forEach(function(pp){
@@ -616,24 +604,59 @@ function init(meta, bbuf, rbuf){
   }
   var pending = false;
   function schedule(){ if (!pending){ pending = true; requestAnimationFrame(function(){ pending = false; chooseLod(); renderer.render(scene, camera); if (window.__field) window.__field.renders = (window.__field.renders || 0) + 1; }); } }
-  var fitted = false;
-  function fitCam(){
-    var dx = bb[3] - bb[0], dy = bb[4] - bb[1];
-    if (camera.aspect < 1 && Math.max(dx, dy) > 1.6*Math.min(dx, dy)){ theta = dx > dy ? Math.PI/2 - 0.35 : 0.35; phi = 0.8; }
-    var xs = [bb[0] - ctr[0], bb[3] - ctr[0]], ys = [0, tall], zs = [-(bb[1] - ctr[1]), -(bb[4] - ctr[1])], v = new THREE.Vector3();
-    target.set(0, tall*0.3, 0);
-    for (radius = span*0.3; radius < span*6; radius *= 1.06){
-      updateCam(); camera.updateMatrixWorld(); var ok = true;
-      for (var a = 0; a < 8 && ok; a++){ v.set(xs[a & 1], ys[(a >> 1) & 1], zs[(a >> 2) & 1]).project(camera); if (Math.abs(v.x) > 0.92 || v.y > 0.8 || v.y < -0.92) ok = false; }
-      if (ok) break;
+  var fitted = false, moved0 = false, fly = null, lastAsp = 0, wbox = {};
+  function wallBox(w){
+    if (wbox[w]) return wbox[w];
+    var lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+    for (var j = 0; j < N; j++){ if (bWall[j] !== w) continue; var b = j*7, e = Math.max(F[b+3], F[b+4])/2,
+      c = [F[b] - ctr[0], F[b+2] - ctr[2], -(F[b+1] - ctr[1])], h = [e, F[b+5]/2, e];
+      for (var a = 0; a < 3; a++){ if (c[a] - h[a] < lo[a]) lo[a] = c[a] - h[a]; if (c[a] + h[a] > hi[a]) hi[a] = c[a] + h[a]; } }
+    return wbox[w] = hi[0] < lo[0] ? null : [lo, hi];
+  }
+  function frameBox(){
+    var lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9], n = 0;
+    selList.forEach(function(g){ var bx = wallBox(bySide ? sides[g].wall : g); if (!bx) return; n++;
+      for (var a = 0; a < 3; a++){ if (bx[0][a] < lo[a]) lo[a] = bx[0][a]; if (bx[1][a] > hi[a]) hi[a] = bx[1][a]; } });
+    return n ? [lo, hi] : [[bb[0] - ctr[0], -0.1, -(bb[4] - ctr[1])], [bb[3] - ctr[0], tall + 0.1, -(bb[1] - ctr[1])]];
+  }
+  // smallest radius (and centre) that puts the box's 8 corners inside 85% of the canvas at the current angle
+  function solveFit(bx){
+    var lo = bx[0], hi = bx[1], v = new THREE.Vector3(), t = new THREE.Vector3((lo[0]+hi[0])/2, (lo[1]+hi[1])/2, (lo[2]+hi[2])/2), r = span, sp = 0;
+    for (var a = 0; a < 3; a++) sp = Math.max(sp, hi[a] - lo[a]);
+    var pj = function(){ target.copy(t); radius = r; updateCam(); camera.updateMatrixWorld();
+      var m = [1e9, -1e9, 1e9, -1e9];
+      for (var c = 0; c < 8; c++){ v.set(c & 1 ? hi[0] : lo[0], c & 2 ? hi[1] : lo[1], c & 4 ? hi[2] : lo[2]).project(camera);
+        if (v.x < m[0]) m[0] = v.x; if (v.x > m[1]) m[1] = v.x; if (v.y < m[2]) m[2] = v.y; if (v.y > m[3]) m[3] = v.y; }
+      return m; };
+    for (var it = 0; it < 4; it++){
+      var l = Math.max(0.5, sp*0.05), h = span*12, m;
+      for (var k = 0; k < 24; k++){ r = (l + h)/2; m = pj(); if (Math.max(Math.abs(m[0]), Math.abs(m[1]), Math.abs(m[2]), Math.abs(m[3])) > 0.85) l = r; else h = r; }
+      r = h; m = pj();
+      var hw = r*Math.tan(camera.fov*Math.PI/360), rt = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0), up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+      t.addScaledVector(rt, (m[0] + m[1])/2*hw*camera.aspect).addScaledVector(up, (m[2] + m[3])/2*hw);
     }
-    R0 = radius;
+    r = Math.max(1, r); var out = { t:t.clone(), r:r }; return out;
+  }
+  function fitTo(anim){
+    var t0 = target.clone(), r0 = radius, sv = solveFit(frameBox()), st = performance.now(); fly = anim ? st : null;
+    R0 = Math.max(R0, sv.r);
+    if (!anim){ target.copy(sv.t); radius = sv.r; updateCam(); return; }
+    target.copy(t0); radius = r0;
+    (function step(){
+      if (fly !== st) return;
+      var u = Math.min(1, (performance.now() - st)/450), e = u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2)/2;
+      target.lerpVectors(t0, sv.t, e); radius = r0 + (sv.r - r0)*e; updateCam(); schedule();
+      if (u < 1) requestAnimationFrame(step); else fly = null;
+    })();
   }
   function resize(){
     var w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
     renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = w < 520 ? 52 : 40; camera.updateProjectionMatrix();
-    if (BIG && !fitted){ fitted = true; fitCam(); }
-    updateCam(); schedule();
+    var flip = lastAsp && (lastAsp < 1) !== (w/h < 1);
+    if (!fitted){ var dx = bb[3] - bb[0], dy = bb[4] - bb[1];
+      if (camera.aspect < 1 && Math.max(dx, dy) > 1.6*Math.min(dx, dy)){ theta = dx > dy ? Math.PI/2 - 0.35 : 0.35; phi = 0.8; } }
+    if (!fitted || !moved0 || flip){ fitted = true; moved0 = false; fitTo(false); R0 = radius; }
+    lastAsp = w/h; updateCam(); schedule();
   }
   new ResizeObserver(resize).observe(stage);
 
@@ -663,9 +686,9 @@ function init(meta, bbuf, rbuf){
     }
     if (pointers.size === 1){
       var dx = cur.x - prev.x, dy = cur.y - prev.y; moved += Math.abs(dx) + Math.abs(dy); if (moved < 6) return;
-      if (panBtn) pan(dx, dy); else { theta -= dx*0.008; phi = clamp(phi - dy*0.008, 0.15, 1.5); }
+      moved0 = true; fly = null; if (panBtn) pan(dx, dy); else { theta -= dx*0.008; phi = clamp(phi - dy*0.008, 0.15, 1.5); }
     } else if (pointers.size === 2 && pinch0){
-      var t = two(); radius = clamp(rad0*pinch0/t.d, R0*0.08, R0*3); pan(t.x - mid0.x, t.y - mid0.y); mid0 = t;
+      moved0 = true; fly = null; var t = two(); radius = clamp(rad0*pinch0/t.d, R0*0.08, R0*3); pan(t.x - mid0.x, t.y - mid0.y); mid0 = t;
     }
     hideHint(); updateCam(); schedule();
   });
@@ -678,7 +701,7 @@ function init(meta, bbuf, rbuf){
   }
   canvas.addEventListener('pointerup', function(e){ endPointer(e, true); });
   canvas.addEventListener('pointercancel', function(e){ endPointer(e, false); });
-  canvas.addEventListener('wheel', function(e){ e.preventDefault(); radius = clamp(radius*(1 + e.deltaY*0.001), R0*0.08, R0*3); hideHint(); updateCam(); schedule(); }, { passive:false });
+  canvas.addEventListener('wheel', function(e){ e.preventDefault(); moved0 = true; fly = null; radius = clamp(radius*(1 + e.deltaY*0.001), R0*0.08, R0*3); hideHint(); updateCam(); schedule(); }, { passive:false });
 
   var ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   /* ---------- tap a bar: nearest bar axis on screen, fatter pick radius for fingers ---------- */
@@ -788,7 +811,7 @@ function init(meta, bbuf, rbuf){
         var d = Math.hypot((v.x + 1)/2*r2.width - mx, (1 - v.y)/2*r2.height - my); if (d < bd){ bd = d; best = rn.rep; } } });
       if (best !== null){ var gb = groupOf(best); select(gb >= 0 ? gb : null); return; }
     }
-    if (!hit) { if (!multiOn) select(null); return; }
+    if (!hit) { if (!multiOn) select(null, false, true); return; }
     if (hit.object.userData.conc !== undefined){ select(!bySide && hit.object.userData.wall >= 0 ? hit.object.userData.wall : null); return; }
     var gi = hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.lod ? hit.object.userData.tile.slots[hit.instanceId].rep : hit.object.userData.idx[hit.instanceId];
     var gk = groupOf(gi); select(gk >= 0 ? gk : null);
@@ -1181,11 +1204,12 @@ function init(meta, bbuf, rbuf){
       if (on) row.scrollLeft = Math.max(0, on.offsetLeft - row.offsetLeft - (row.clientWidth - on.offsetWidth)/2); }
   }
   function setSel(list){ selList = list; inSel = {}; list.forEach(function(g){ inSel[g] = 1; }); selected = list.length === 1 ? list[0] : null; }
-  function select(k, add){
+  function select(k, add, still){
     if (k === null || k === undefined) setSel([]);
     else if (multiOn || add){ var l2 = selList.slice(), at = l2.indexOf(k); if (at >= 0) l2.splice(at, 1); else l2.push(k); setSel(l2); }
     else setSel([k]);
     paint(); renderPanel(); hash();
+    if (!still && fitted) fitTo(true);
   }
   function setLift(n){ selLift = n; paint(); renderPanel(); hash(); }
   function hash(){
@@ -1200,8 +1224,7 @@ function init(meta, bbuf, rbuf){
   $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return;
     if (b.id === 'multiBtn'){ multiOn = !multiOn; $('hint').hidden = !multiOn; if (multiOn) $('hint').textContent = 'Tap ' + (bySide ? 'sides' : 'walls') + ' to add or remove'; renderPanel(); return; }
     select(b.dataset.w === '' ? null : +b.dataset.w); });
-  if (BIG){ $('chips').classList.add('scroll');   // big job: one scrolling row; a chip flies the camera to that wall
-    $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b || b.id === 'multiBtn' || multiOn) return; flyTo(b.dataset.w === '' ? null : +b.dataset.w); }); }
+  if (BIG) $('chips').classList.add('scroll');   // big job: one scrolling row
   $('lifts').innerHTML = '<button class="chip" data-l="" aria-pressed="true">All lifts</button>' +
     liftNums.map(function(n){ return '<button class="chip" data-l="' + n + '" aria-pressed="false">Lift ' + n + '</button>'; }).join('');
   $('lifts').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (b) setLift(b.dataset.l === '' ? null : +b.dataset.l); });
