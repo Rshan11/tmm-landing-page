@@ -166,6 +166,22 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 .slist button small{color:var(--muted);margin-right:6px}
 .slist button[aria-current="true"]{background:var(--select);color:var(--selectInk);border-radius:8px}
 .slist button[aria-current="true"] small{color:inherit}
+.smode{display:flex;gap:6px;margin:0 0 8px}
+.smode button{flex:1;min-height:44px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;font-weight:600;padding:4px 8px;line-height:1.2}
+.smode button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.srevin{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin:0 0 8px}
+.srevin label{font-size:.78rem;color:var(--muted);display:block}
+.srevin input,.srevin select,.sgrid select{width:100%;font:inherit;font-size:16px;padding:8px 9px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin-top:2px}
+.screw{display:flex;align-items:flex-end;gap:1px;height:46px;margin:0 2px;border-bottom:1.5px solid var(--line)}
+.cb{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;opacity:.55}
+.cb.on{opacity:1;outline:1.5px solid var(--select);outline-offset:1px}
+.cb i{display:block;width:100%}.cb i.m{background:var(--ink)}.cb i.t{background:var(--muted);opacity:.6}
+.sleg i.cm{background:var(--ink)}.sleg i.ct{background:var(--muted);opacity:.6}
+.srev{list-style:none;margin:0;padding:0;font-size:.88rem}
+.srev li{padding:6px 0;border-top:1px solid var(--line)}
+.srev li.bad{color:#c62828;font-weight:600}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .srev li.bad{color:#ff8a80}}
+:root[data-theme="dark"] .srev li.bad{color:#ff8a80}
 @media (max-width:520px){
   .legend{font-size:.75rem;padding:5px 8px}
   .tbtn{padding:6px 10px;font-size:.85rem}
@@ -1169,14 +1185,18 @@ function init(meta, bbuf, rbuf){
 
   /* ---------- schedule: the build planned day by day (lay a lift, rebar, grout it, go up), animated ---------- */
   // PLANNING ASSUMPTIONS, not field facts: every number is a default the user changes (kept on this device only)
-  var SDEF = { crew:4, r8:120, r4:150, r12:90, brick:500, grout:1, bb:0.5, area:3 };
-  var SKEYS = [['crew', 'Masons on the crew', 1, 1], ['r8', '8" CMU per mason-day (6", 20 cm too)', 1, 1], ['r4', '4" CMU per mason-day', 1, 1],
-    ['r12', '12" CMU per mason-day (10" too)', 1, 1], ['brick', 'Brick per mason-day', 1, 1], ['grout', 'Days per grout pour', 0.5, 0],
-    ['bb', 'Extra rebar days, lift with bond beams', 0.5, 0], ['area', 'Pour area = days of laying per lift', 0.5, 0.5]];
+  var SDEF = { crew:4, r8:120, r4:150, r12:90, brick:500, grout:1, bb:0.5, area:3, cure:1, after:1, mpt:2, maxm:6, revT:30, revA:5 };
+  // [key, label, step, min, max]  (after / revT / revA are drawn elsewhere)
+  var SKEYS = [['crew', 'Masons on the crew (forward mode)', 1, 1, 99], ['r8', '8" CMU per mason-day (6", 20 cm too)', 1, 1, 9999], ['r4', '4" CMU per mason-day', 1, 1, 9999],
+    ['r12', '12" CMU per mason-day (10" too)', 1, 1, 9999], ['brick', 'Brick per mason-day', 1, 1, 9999], ['grout', 'Days per grout pour', 0.5, 0, 10],
+    ['bb', 'Extra rebar days, lift with bond beams', 0.5, 0, 10], ['area', 'Pour area = days of laying per lift', 0.5, 0.5, 99],
+    ['cure', 'Cure before grout (nights, 0 to 3)', 1, 0, 3], ['mpt', 'Masons per tender (0 = no tenders)', 0.5, 0, 99], ['maxm', 'Max masons per wall / pour area', 1, 1, 99],
+    ['after', '', 1, 0, 2], ['revT', '', 1, 1, 999], ['revA', '', 1, 1, 99]];
   var SP = {}, schedOn = false, schedDay = 1, ghostOn = false, S = null, schedVer = 0, playT = null, setOpen = false;
-  function loadSP(){ var s = jget('tmm-sched', {}) || {}; SKEYS.forEach(function(k){ var v = parseFloat(s[k[0]]); SP[k[0]] = isFinite(v) && v >= k[3] ? v : SDEF[k[0]]; });
+  function loadSP(){ var s = jget('tmm-sched', {}) || {}; SKEYS.forEach(function(k){ var v = parseFloat(s[k[0]]); SP[k[0]] = isFinite(v) && v >= k[3] && v <= k[4] ? v : SDEF[k[0]]; });
+    SP.mode = s.mode === 'rev' ? 'rev' : 'fwd'; SP.kind = s.kind === 'area' ? 'area' : 'total';
     SP.start = LS.get('tmm-sched-start-' + JOB) || ''; }
-  function saveSP(){ var o = {}; SKEYS.forEach(function(k){ o[k[0]] = SP[k[0]]; }); LS.set('tmm-sched', JSON.stringify(o)); LS.set('tmm-sched-start-' + JOB, SP.start || null); }
+  function saveSP(){ var o = {}; SKEYS.forEach(function(k){ o[k[0]] = SP[k[0]]; }); o.mode = SP.mode; o.kind = SP.kind; LS.set('tmm-sched', JSON.stringify(o)); LS.set('tmm-sched-start-' + JOB, SP.start || null); }
   loadSP();
   function rateOf(w){                                              // units per mason-day from the wall type
     var t = String(w.type || ''); if (/brick/i.test(t)) return SP.brick;
@@ -1194,6 +1214,7 @@ function init(meta, bbuf, rbuf){
     for (i = 0; i < N; i++){ g = groupOf(i); if (g < 0) continue; var e = Math.hypot(F[i*7] - ax[g], F[i*7+1] - ay[g]); if (e > d2[g]){ d2[g] = e; bx[g] = F[i*7]; by[g] = F[i*7+1]; } }
     return gGeo = { n:n, ends:[[ax, ay], [bx, by]] };
   }
+  function areaName(a){ var s = ''; a++; while (a > 0){ var r = (a - 1) % 26; s = String.fromCharCode(65 + r) + s; a = Math.floor((a - 1)/26); } return s; }
   function buildPlan(){
     var gg = groupGeo(), todo = [], g;
     for (g = 0; g < selGroups.length; g++) if (gg.n[g]) todo.push(g);
@@ -1205,41 +1226,104 @@ function init(meta, bbuf, rbuf){
       var gb = todo.splice(best, 1)[0]; order.push(gb); px = gg.ends[1 - be][0][gb]; py = gg.ends[1 - be][1][gb]; first = false;
     }
     // SEAM (later): a wall order the user drags replaces `order` here
-    var perDay = function(g2){ return Math.max(1, SP.crew) * Math.max(1, rateOf(walls[bySide ? sides[g2].wall : g2])); };
-    var areas = [], cur = null, acc = null;
+    var rateG = function(g2){ return Math.max(1, rateOf(walls[bySide ? sides[g2].wall : g2])); };
+    var perDay = function(g2){ return Math.max(1, SP.crew) * rateG(g2); };
+    var areas = [], cur = null, acc = null;                          // pour areas (sized by the reference crew, as before)
     order.forEach(function(g2){
       if (!cur){ cur = []; acc = {}; } cur.push(g2); var mx = 0;
       liftNums.forEach(function(l){ var lst = glist[g2*1000 + l]; acc[l] = (acc[l] || 0) + (lst ? lst.length/perDay(g2) : 0); if (acc[l] > mx) mx = acc[l]; });
       if (mx >= SP.area){ areas.push(cur); cur = null; }
     });
     if (cur) areas.push(cur);
-    var day = new Int16Array(N), gd0 = new Int16Array(N), gd1 = new Int16Array(N), tasks = [], t = 0;
-    areas.forEach(function(ar, an){
+    var rev = SP.mode === 'rev', cure = Math.round(clamp(SP.cure, 0, 3)), gl = SP.grout > 0 ? Math.max(1, Math.ceil(SP.grout - 1e-9)) : 0, after = Math.round(clamp(SP.after, 0, 2));
+    var AL = areas.map(function(ar){                                // each area: its lifts, their blocks in laying order, the work in mason-days
+      var lifts = [], W = 0, bbd = 0, nb = 0;
       liftNums.forEach(function(l){
         var gs = ar.filter(function(g2){ return glist[g2*1000 + l]; }); if (!gs.length) return;
-        var bbLift = false, laid = [];
-        gs.forEach(function(g2){                                    // lay: course by course, block by block along the wall
+        var segs = [], bb = false;
+        gs.forEach(function(g2){
           var lst = glist[g2*1000 + l].slice().sort(function(a, b){ return F[a*7+2] - F[b*7+2] || runOf[a] - runOf[b] || along[a] - along[b]; });
-          var n = lst.length, dur = n/perDay(g2), tk = { k:'L', g:g2, l:l, a:an, n:n, t0:t, t1:t + dur, by:{} }, d0 = Math.floor(t + 1e-9) + 1;
-          lst.forEach(function(i, k){ var d = Math.max(d0, Math.ceil(t + (k + 1)/n*dur - 1e-6)); day[i] = d; tk.by[d] = (tk.by[d] || 0) + 1; if (bType[i] === 3 || bType[i] === 4) bbLift = true; });
-          tasks.push(tk); t += dur; laid.push(lst);
+          lst.forEach(function(i){ if (bType[i] === 3 || bType[i] === 4) bb = true; });
+          segs.push({ k:'L', g:g2, lst:lst, n:lst.length, r:rateG(g2), done:0, out:0 }); W += lst.length/rateG(g2); nb += lst.length;
         });
-        if (bbLift && SP.bb > 0){ tasks.push({ k:'R', l:l, a:an, gs:gs, t0:t, t1:t + SP.bb }); t += SP.bb; }   // rebar: in the lay days, + extra when the lift has bond beams
-        if (SP.grout > 0){                                          // one pour for the area's lift, on a fresh day; the next lift starts the day after
-          var s0 = Math.ceil(t - 1e-6), s1 = Math.ceil(s0 + SP.grout - 1e-6);
-          tasks.push({ k:'G', l:l, a:an, gs:gs, t0:s0, t1:s0 + SP.grout });
-          laid.forEach(function(lst){ lst.forEach(function(i){ gd0[i] = s0 + 1; gd1[i] = s1; }); }); t = s0 + SP.grout;
-        } else t = Math.ceil(t - 1e-6);
+        if (bb && SP.bb > 0){ segs.push({ k:'R', gs:gs, done:0 }); bbd += SP.bb; }
+        lifts.push({ l:l, gs:gs, segs:segs });
       });
+      return { lifts:lifts, W:W, bbd:bbd, nb:nb };
     });
-    var T = Math.max(1, Math.ceil(t - 1e-6)), days = [];
-    for (var d = 0; d <= T; d++) days.push([]);
-    tasks.forEach(function(tk){
-      if (tk.k === 'L'){ Object.keys(tk.by).forEach(function(d2){ days[+d2].push({ k:'L', l:tk.l, g:tk.g, n:tk.by[d2] }); }); return; }
-      for (var d3 = Math.floor(tk.t0 + 1e-9) + 1; d3 <= Math.ceil(tk.t1 - 1e-6); d3++) days[d3].push({ k:tk.k, l:tk.l, gs:tk.gs });
+    // reverse mode: size the crew from the days allowed (laying days = days allowed less the cure + grout gaps)
+    var gap = gl ? Math.max(0, cure + gl + after - 2) : 0, tail = gl ? Math.max(0, cure + gl - 1) : 0, totW = 0, shares = [];
+    AL.forEach(function(x){ totW += x.W; });
+    AL.forEach(function(x, n){ shares[n] = totW ? x.W/totW : 1/AL.length; });
+    var runSim = function(Da){
+    var mA = [], flags = [];
+    AL.forEach(function(x){ x.lifts.forEach(function(lf){ lf.segs.forEach(function(s3){ s3.done = 0; s3.out = 0; delete s3.tk; }); }); });
+    AL.forEach(function(x, n){
+      if (!rev){ mA[n] = Math.max(1, SP.crew); return; }
+      var lay = Da[n] - (x.lifts.length - 1)*gap - tail - x.bbd, need = lay > 0 ? Math.max(1, Math.ceil(x.W/lay - 1e-9)) : 0, nm = areaName(n);
+      if (lay <= 0){ mA[n] = SP.maxm; flags.push({ a:n, bad:1, txt:'Area ' + nm + ' cannot be done in ' + Da[n] + ' day' + (Da[n] === 1 ? '' : 's') + ': cure, grout and rebar alone take ' + (Da[n] - lay) }); }
+      else if (need > SP.maxm){ mA[n] = SP.maxm; flags.push({ a:n, bad:1, txt:'Area ' + nm + ' needs ' + need + ' masons in ' + Da[n] + ' days' }); }
+      else mA[n] = need;
     });
+    // simulate day by day: one crew, the first area that is ready; an area that sits to cure leaves the crew free to lay another (leapfrog)
+    var day = new Int16Array(N), gd0 = new Int16Array(N), gd1 = new Int16Array(N), tasks = [], days = [[]], crewM = [0], idle = [], li = [], si = [], ready = [], act = 0, lastLay = 0, lastG = 0, leaps = 0, prevA = -1, spans = [];
+    var DD = function(d){ while (days.length <= d) days.push([]); return days[d]; };
+    AL.forEach(function(x, n){ li[n] = 0; si[n] = 0; ready[n] = 1; spans[n] = { a:0, b:0 }; if (x.lifts.length) act++; });
+    var d = 0;
+    for (d = 1; act > 0 && d < 4000; d++){
+      var cap = 1, usedM = 0, row = DD(d), dayA = -1, guard = 0;
+      while (cap > 1e-9 && guard++ < 500){
+        var a = -1; for (var q = 0; q < AL.length; q++) if (li[q] < AL[q].lifts.length && ready[q] <= d){ a = q; break; }
+        if (a < 0) break;
+        var lf = AL[a].lifts[li[a]], sg = lf.segs[si[a]], tot = sg.k === 'L' ? sg.n/(mA[a]*sg.r) : SP.bb, take = Math.min(cap, tot - sg.done);
+        if (dayA < 0 && prevA >= 0 && prevA !== a && li[prevA] < AL[prevA].lifts.length) leaps++;
+        if (dayA < 0) dayA = a;
+        if (!spans[a].a) spans[a].a = d;
+        sg.done += take; cap -= take; usedM += take*mA[a]; lastLay = d;
+        var fin = sg.done >= tot - 1e-9;
+        if (sg.k === 'L'){
+          if (!sg.tk){ sg.tk = { k:'L', g:sg.g, l:lf.l, a:a, n:sg.n, by:{} }; tasks.push(sg.tk); }
+          var k1 = fin ? sg.n : Math.floor(sg.done/tot*sg.n + 1e-9), c = k1 - sg.out;
+          for (var kk = sg.out; kk < k1; kk++) day[sg.lst[kk]] = d;
+          sg.out = k1; if (c > 0){ sg.tk.by[d] = (sg.tk.by[d] || 0) + c; row.push({ k:'L', a:a, l:lf.l, g:sg.g, n:c }); }
+        } else if (!row.some(function(e){ return e.k === 'R' && e.a === a && e.l === lf.l; })){ row.push({ k:'R', a:a, l:lf.l, gs:lf.gs }); tasks.push({ k:'R', l:lf.l, a:a, gs:lf.gs }); }
+        if (fin){
+          si[a]++;
+          if (si[a] >= lf.segs.length){                             // lift laid: it sits `cure` nights, then one pour; the next lift follows `after` days later
+            var s0 = d + cure, s1 = s0 + gl - 1; spans[a].b = d;
+            if (gl){
+              tasks.push({ k:'G', l:lf.l, a:a, gs:lf.gs, d0:s0, d1:s1 });
+              for (var gd = s0; gd <= s1; gd++) DD(gd).push({ k:'G', a:a, l:lf.l, gs:lf.gs });
+              if (cure > 0) row.push({ k:'C', a:a, l:lf.l, d0:s0 });
+              lf.segs.forEach(function(s3){ if (s3.k === 'L') s3.lst.forEach(function(i){ gd0[i] = s0; gd1[i] = s1; }); });
+              ready[a] = s1 + after; if (s1 > lastG) lastG = s1; spans[a].b = s1;
+            } else ready[a] = d + 1;
+            li[a]++; si[a] = 0; if (li[a] >= AL[a].lifts.length) act--;
+          }
+        }
+      }
+      if (dayA >= 0) prevA = dayA;
+      crewM[d] = Math.ceil(usedM - 1e-6);
+    }
+    var T = Math.max(1, lastLay, lastG); DD(T);
+    for (d = 1; d <= T; d++){ if (crewM[d] === undefined) crewM[d] = 0; if (!crewM[d] && d < lastLay) idle[d] = 1; }
+    var tn = function(m){ return SP.mpt > 0 ? Math.ceil(m/SP.mpt - 1e-9) : 0; }, peakM = 0, peakT = 0, nIdle = 0;
+    for (d = 1; d <= T; d++){ if (crewM[d] > peakM) peakM = crewM[d]; if (tn(crewM[d]) > peakT) peakT = tn(crewM[d]); if (idle[d]) nIdle++; }
     // SEAM (later, plan vs actual): production marks (marks[]: m.t 'B'/'G', m.d date) will replace planned days for the blocks they cover, here
-    return { day:day, gd0:gd0, gd1:gd1, tasks:tasks, days:days, T:T, areas:areas, order:order, ver:++schedVer };
+    return { day:day, gd0:gd0, gd1:gd1, tasks:tasks, days:days, T:T, areas:areas, order:order, ver:++schedVer, rev:rev, mA:mA, Da:Da, flags:flags, crewM:crewM, tenders:crewM.map(tn), idle:idle, nIdle:nIdle,
+      leaps:leaps, peakM:peakM, peakT:peakT, spans:spans, cure:cure, AL:AL };
+    };
+    var P;
+    if (!rev) P = runSim([]);
+    else if (SP.kind === 'area') P = runSim(AL.map(function(){ return Math.round(SP.revA); }));
+    else {                                                          // whole-job days: the most days each area may take (the fewest masons) that still finishes inside the budget
+      var budget = Math.round(SP.revT), at = function(sc){ return runSim(shares.map(function(sh){ return Math.max(1, Math.round(budget*sh*sc)); })); };
+      P = at(1);
+      if (P.T <= budget){ var lo = 1, hi = 6, best = P; for (var it = 0; it < 12; it++){ var mid = (lo + hi)/2, Pm = at(mid); if (Pm.T <= budget){ lo = mid; best = Pm; } else hi = mid; } P = best; P.flags = []; }
+      else P.flags.push({ a:-1, bad:1, txt:'The whole job takes ' + P.T + ' days even with ' + SP.maxm + ' masons per area, over your ' + budget });
+    }
+    return P;
+
   }
   function segsTxt(segs){
     var L = segs.map(function(s){ var m = /^Side (\S+)$/.exec(s); return m ? m[1] : null; });
@@ -1257,12 +1341,18 @@ function init(meta, bbuf, rbuf){
   }
   function dayTxt(d){
     if (!S || !S.days[d]) return '';
-    var L = {}, lo = [], out = [];
-    S.days[d].forEach(function(e){ if (e.k !== 'L') return; if (!L[e.l]){ L[e.l] = { gs:[], n:0 }; lo.push(e.l); } L[e.l].gs.push(e.g); L[e.l].n += e.n; });
-    lo.forEach(function(l){ out.push('Lay L' + l + ' on ' + groupsTxt(L[l].gs) + ' (' + fmt(L[l].n) + ' blocks)'); });
-    S.days[d].forEach(function(e){ if (e.k === 'R') out.push('Rebar L' + e.l + ' bond beams on ' + groupsTxt(e.gs)); else if (e.k === 'G') out.push('Grout L' + e.l + ' on ' + groupsTxt(e.gs)); });
-    return out.join(', ');
+    var L = {}, lo = [], out = [], pre = function(a){ return S.areas.length > 1 ? 'Area ' + areaName(a) + ': ' : ''; };
+    S.days[d].forEach(function(e){ if (e.k !== 'L') return; var key = e.a + '|' + e.l; if (!L[key]){ L[key] = { a:e.a, l:e.l, gs:[], n:0 }; lo.push(key); } L[key].gs.push(e.g); L[key].n += e.n; });
+    lo.forEach(function(key){ var x = L[key]; out.push(pre(x.a) + 'lay L' + x.l + ' on ' + groupsTxt(x.gs) + ' (' + fmt(x.n) + ' blocks)'); });
+    S.days[d].forEach(function(e){
+      if (e.k === 'R') out.push(pre(e.a) + 'rebar L' + e.l + ' bond beams on ' + groupsTxt(e.gs));
+      else if (e.k === 'G') out.push(pre(e.a) + 'grout L' + e.l + ' on ' + groupsTxt(e.gs));
+      else if (e.k === 'C') out.push(pre(e.a) + 'L' + e.l + ' sits ' + plural(S.cure, 'night') + ', grouted Day ' + e.d0);
+    });
+    if (S.idle[d]) out.push('crew waits, nothing is ready to lay');
+    var t = out.join('; '); return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
   }
+  function crewTxt(d){ var m = S.crewM[d], t = S.tenders[d]; return m ? plural(m, 'mason') + (t ? ' + ' + plural(t, 'tender') : '') : 'no crew'; }
   function dateOf(d){
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(SP.start || ''); if (!m) return '';
     var dt = new Date(+m[1], +m[2] - 1, +m[3]), wk = function(){ var w = dt.getDay(); return w === 0 || w === 6; };
@@ -1275,27 +1365,48 @@ function init(meta, bbuf, rbuf){
     var g = selList[0], per = {};
     S.tasks.forEach(function(tk){ var on = tk.k === 'L' ? tk.g === g : tk.k === 'G' && tk.gs.indexOf(g) >= 0; if (!on) return;
       var e = per[tk.l] || (per[tk.l] = { a:1e9, b:0, gr:0 });
-      if (tk.k === 'L') Object.keys(tk.by).forEach(function(d){ d = +d; if (d < e.a) e.a = d; if (d > e.b) e.b = d; }); else e.gr = Math.floor(tk.t0 + 1e-9) + 1; });
+      if (tk.k === 'L') Object.keys(tk.by).forEach(function(d){ d = +d; if (d < e.a) e.a = d; if (d > e.b) e.b = d; }); else e.gr = tk.d0; });
     var ls = Object.keys(per).map(Number).sort(function(a, b){ return a - b; });
     if (!ls.length) return '';
     return '<p class="sub"><b>' + esc(glabel(g)) + ':</b> ' + ls.map(function(l){ var e = per[l]; return 'L' + l + ' laid Day ' + e.a + (e.b > e.a ? '–' + e.b : '') + (e.gr ? ', grouted Day ' + e.gr : ''); }).join('; ') + '.</p>';
   }
+  function crewBars(){
+    var mx = Math.max(1, S.peakM + S.peakT), h = '';
+    for (var d = 1; d <= S.T; d++){ var m = S.crewM[d], t = S.tenders[d];
+      h += '<span class="cb' + (d === schedDay ? ' on' : '') + '" data-cd="' + d + '" title="Day ' + d + ': ' + esc(crewTxt(d)) + '"><i class="t" style="height:' + (t/mx*100).toFixed(1) + '%"></i><i class="m" style="height:' + (m/mx*100).toFixed(1) + '%"></i></span>'; }
+    return h;
+  }
   function renderSched(){
     if (!S) S = buildPlan();
-    var h = '<div class="sbar"><button class="play" id="sPlay">' + (playT ? 'Pause' : 'Play') + '</button><input type="range" id="sDay" min="1" max="' + S.T + '" step="1" value="' + schedDay + '" aria-label="Day of the build"></div>';
+    var rev = SP.mode === 'rev';
+    var h = '<div class="smode" role="group" aria-label="Plan direction"><button id="sModeF" aria-pressed="' + !rev + '">I have this crew, how many days?</button><button id="sModeR" aria-pressed="' + rev + '">I have these days, what crew?</button></div>';
+    if (rev) h += '<div class="srevin"><label>Days allowed<select data-sk="kind"><option value="total"' + (SP.kind === 'total' ? ' selected' : '') + '>for the whole job</option><option value="area"' + (SP.kind === 'area' ? ' selected' : '') + '>per pour area</option></select></label>' +
+      '<label>Working days<input type="number" inputmode="numeric" min="1" max="' + (SP.kind === 'area' ? 99 : 999) + '" step="1" data-sk="' + (SP.kind === 'area' ? 'revA' : 'revT') + '" value="' + (SP.kind === 'area' ? SP.revA : SP.revT) + '"></label></div>';
+    h += '<div class="sbar"><button class="play" id="sPlay">' + (playT ? 'Pause' : 'Play') + '</button><input type="range" id="sDay" min="1" max="' + S.T + '" step="1" value="' + schedDay + '" aria-label="Day of the build"></div>';
+    h += '<div class="screw" id="sCrew" aria-hidden="true">' + crewBars() + '</div><p class="sleg" style="margin-top:2px"><span><i class="cm"></i>Masons</span><span><i class="ct"></i>Tenders</span><span id="sCrewNow"></span></p>';
     h += '<h2 id="sHead"></h2><p class="sub" id="sToday"></p>';
     h += '<p class="sleg"><span><i class="lay"></i>Laying today</span><span><i class="gr"></i>Grouting today</span><span>' + (ghostOn ? 'Pale = still to build' : 'Still to build is hidden') + '</span></p>';
     h += '<div class="acts"><button class="tbtn small" id="sGhost" aria-pressed="' + ghostOn + '"><span class="box"><span>✓</span></span>Show the rest pale</button></div>';
     h += selLine();
-    h += '<p class="sub" style="margin-top:10px"><b>' + plural(S.T, 'working day') + '</b>' + (SP.start ? ', ' + dateOf(1) + ' to ' + dateOf(S.T) : '') + '. ' + plural(S.areas.length, 'pour area') + ', worked in order around the building, a lift at a time.</p>';
-    h += '<p class="loud"><b>ASSUMED, NOT YOUR CREW\'S REAL PACE:</b> ' + SP.crew + ' masons · 8" CMU ' + SP.r8 + ', 4" ' + SP.r4 + ', 12" ' + SP.r12 + ', brick ' + SP.brick + ' per mason-day · ' +
-      SP.grout + ' day per grout pour · rebar in the lay days, +' + SP.bb + ' day for a lift with bond beams · pour areas of about ' + SP.area + ' days of laying per lift. Change them below.</p>';
+    h += '<p class="sub" style="margin-top:10px"><b>' + plural(S.T, 'working day') + '</b>' + (SP.start ? ', ' + dateOf(1) + ' to ' + dateOf(S.T) : '') + '. ' + plural(S.areas.length, 'pour area') + ', worked in order around the building, a lift at a time' +
+      (S.leaps ? '; the crew leapfrogs to another area ' + plural(S.leaps, 'time') + ' while a lift sits' : '') + (S.nIdle ? '; ' + plural(S.nIdle, 'day') + ' the crew waits on cure' : '') + '. Peak crew ' + plural(S.peakM, 'mason') + (S.peakT ? ' + ' + plural(S.peakT, 'tender') : '') + '.</p>';
+    if (rev){
+      h += '<h3>Crew needed</h3><ul class="srev">';
+      S.areas.forEach(function(ar, n){ var fl = S.flags.filter(function(f){ return f.a === n; })[0], sp = S.spans[n], tn = SP.mpt > 0 ? Math.ceil(S.mA[n]/SP.mpt - 1e-9) : 0, crew = plural(S.mA[n], 'mason') + (tn ? ' + ' + plural(tn, 'tender') : '');
+        h += '<li' + (fl ? ' class="bad"' : '') + '><b>Area ' + areaName(n) + '</b> ' + (fl ? esc(fl.txt) + ' (over the ' + SP.maxm + '-mason limit: ' + crew + ' take ' + plural(sp.b - sp.a + 1, 'day') + ')' : crew + (SP.kind === 'area' ? ' in ' + plural(S.Da[n], 'day') : ', Day ' + sp.a + ' to ' + sp.b)) + '</li>'; });
+      if (SP.kind === 'total' && !S.flags.length) h += '<li>The whole job fits in ' + plural(Math.round(SP.revT), 'day') + ' (plan: ' + plural(S.T, 'day') + ').</li>';
+      S.flags.forEach(function(f){ if (f.a < 0) h += '<li class="bad">' + esc(f.txt) + '</li>'; });
+      h += '</ul>';
+    }
+    h += '<p class="loud"><b>ASSUMED, NOT YOUR CREW\'S REAL PACE:</b> ' + (rev ? 'crew sized from your days, up to ' + SP.maxm + ' masons per area, 1 tender per ' + SP.mpt + ' masons' : SP.crew + ' masons') + ' · 8" CMU ' + SP.r8 + ', 4" ' + SP.r4 + ', 12" ' + SP.r12 + ', brick ' + SP.brick + ' per mason-day · cure before grout: ' + plural(S.cure, 'night') + ' · ' +
+      SP.grout + ' day per grout pour · next lift after grout: ' + (['the same day', 'next day', 'two days later'][Math.round(SP.after)] || 'next day') + ' · rebar in the lay days, +' + SP.bb + ' day for a lift with bond beams · pour areas of about ' + SP.area + ' days of laying per lift. Change them below.</p>';
     h += '<details class="sset" id="sSet"' + (setOpen ? ' open' : '') + '><summary>Planning assumptions</summary><div class="sgrid">' +
-      SKEYS.map(function(k){ return '<label>' + esc(k[1]) + '<input type="number" inputmode="decimal" min="' + k[3] + '" step="' + k[2] + '" data-sk="' + k[0] + '" value="' + SP[k[0]] + '"></label>'; }).join('') +
+      SKEYS.filter(function(k){ return k[1]; }).map(function(k){ return '<label>' + esc(k[1]) + '<input type="number" inputmode="decimal" min="' + k[3] + '" max="' + k[4] + '" step="' + k[2] + '" data-sk="' + k[0] + '" value="' + SP[k[0]] + '"></label>'; }).join('') +
+      '<label>Next lift after grout<select data-sk="after">' + ['Same day', 'Next day', 'Two days later'].map(function(t, n){ return '<option value="' + n + '"' + (Math.round(SP.after) === n ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>' +
       '<label>Start date (optional, skips weekends)<input type="date" data-sk="start" value="' + esc(SP.start || '') + '"></label>' +
       '<label>&nbsp;<button class="tbtn small" id="sReset" style="width:100%;min-height:42px;margin-top:2px">Reset to defaults</button></label></div></details>';
     h += '<h3>Day by day</h3><ol class="slist" id="sList">';
-    for (var d = 1; d <= S.T; d++){ var tx = dayTxt(d); h += '<li><button data-day="' + d + '" aria-current="false"><b>Day ' + d + '</b>' + (SP.start ? '<small>' + dateOf(d) + '</small>' : '') + esc(tx || 'No work planned') + '</button></li>'; }
+    for (var d = 1; d <= S.T; d++){ var tx = dayTxt(d); h += '<li><button data-day="' + d + '" aria-current="false"><b>Day ' + d + '</b>' + (SP.start ? '<small>' + dateOf(d) + '</small>' : '') + '<small>' + esc(crewTxt(d)) + '</small> ' + esc(tx || 'No work planned') + '</button></li>'; }
     return h + '</ol>';
   }
   function updDay(){
@@ -1303,6 +1414,9 @@ function init(meta, bbuf, rbuf){
     $('sDay').max = S.T; $('sDay').value = schedDay;
     $('sHead').textContent = 'Day ' + schedDay + ' of ' + S.T + (SP.start ? ' · ' + dateOf(schedDay) : '');
     $('sToday').textContent = dayTxt(schedDay) || 'No work planned this day.';
+    $('sCrewNow').textContent = 'Day ' + schedDay + ': ' + crewTxt(schedDay);
+    var oc = document.querySelector('#sCrew .cb.on'); if (oc) oc.className = 'cb';
+    var nc = document.querySelector('#sCrew .cb[data-cd="' + schedDay + '"]'); if (nc) nc.className = 'cb on';
     var on = document.querySelector('#sList button[aria-current="true"]'); if (on) on.setAttribute('aria-current', 'false');
     var nb = document.querySelector('#sList button[data-day="' + schedDay + '"]'); if (nb) nb.setAttribute('aria-current', 'true');
     $('sPlay').textContent = playT ? 'Pause' : 'Play';
@@ -1320,18 +1434,21 @@ function init(meta, bbuf, rbuf){
     if (on){ if (prodOn) setProd(false, true); selLift = null; if (!S) S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); $('hint').hidden = true; }
     if (!quiet){ paint(); renderPanel(); hash(); }
   }
+  function replan(){ saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash(); }
   function schedClick(b){
     if (b.id === 'sPlay'){ togglePlay(); return; }
     if (b.id === 'sGhost'){ ghostOn = !ghostOn; paint(); renderPanel(); hash(); return; }
-    if (b.id === 'sReset'){ SKEYS.forEach(function(k){ SP[k[0]] = SDEF[k[0]]; }); saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash(); return; }
+    if (b.id === 'sModeF' || b.id === 'sModeR'){ SP.mode = b.id === 'sModeR' ? 'rev' : 'fwd'; replan(); return; }
+    if (b.id === 'sReset'){ SKEYS.forEach(function(k){ SP[k[0]] = SDEF[k[0]]; }); SP.kind = 'total'; replan(); return; }
     if (b.dataset.day){ stopPlay(); setDay(+b.dataset.day); }
   }
   $('detail').addEventListener('input', function(e){ if (schedOn && e.target.id === 'sDay'){ stopPlay(); setDay(+e.target.value); } });
   $('detail').addEventListener('change', function(e){
     var k = e.target.dataset && e.target.dataset.sk; if (!schedOn || !k) return;
     if (k === 'start') SP.start = /^\d{4}-\d{2}-\d{2}$/.test(e.target.value) ? e.target.value : '';
-    else { var v = parseFloat(e.target.value), mn = 0; SKEYS.forEach(function(x){ if (x[0] === k) mn = x[3]; }); if (!isFinite(v) || v < mn) v = SDEF[k]; SP[k] = v; }
-    saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash();
+    else if (k === 'kind') SP.kind = e.target.value === 'area' ? 'area' : 'total';
+    else { var v = parseFloat(e.target.value), mn = 0, mx = 1e9; SKEYS.forEach(function(x){ if (x[0] === k){ mn = x[3]; mx = x[4]; } }); if (!isFinite(v) || v < mn || v > mx) v = SDEF[k]; SP[k] = v; }
+    replan();
   });
   $('detail').addEventListener('toggle', function(e){ if (e.target.id === 'sSet') setOpen = e.target.open; }, true);
 
