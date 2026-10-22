@@ -54,6 +54,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .tbtn.small{padding:6px 10px;font-size:.82rem;gap:8px}
 .tbtn .box{width:18px;height:18px;border:1.5px solid var(--ink);border-radius:4px;display:grid;place-items:center;font-size:12px;line-height:1;flex:none}
 .tbtn.small .box{width:15px;height:15px;font-size:10px}
+.tbtn.ar{text-decoration:none;padding:6px 10px}
+.tbtn.ar img{display:block}
 .tbtn[aria-pressed="false"] .box span{visibility:hidden}
 .legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.8rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);
   border-radius:10px;padding:6px 10px;max-width:100%}
@@ -81,6 +83,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .chip{font-weight:500;font-size:.9rem;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;max-width:100%;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding-bottom:4px}
+.chips.scroll .chip{flex:none}
 .panel h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.7rem;margin:0;line-height:1.1;overflow-wrap:anywhere}
 .sub{margin:3px 0 0;color:var(--muted)}
 dl{margin:12px 0 0;display:grid;grid-template-columns:minmax(0,1fr) auto}
@@ -167,6 +171,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
       <button class="tbtn small" id="rebarBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Rebar</button>
       <button class="tbtn prod" id="prodBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Production</button>
       <button class="tbtn small" id="dragBtn" aria-pressed="true" hidden><span class="box"><span>✓</span></span>Drag marks work</button>
+      <a class="tbtn small ar" id="arBtn" rel="ar" href="model.usdz" hidden><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='22' viewBox='0 0 84 22'%3E%3Cg fill='none' stroke='%23787E82' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M11 2.5l7.5 4.2v8.6L11 19.5l-7.5-4.2V6.7z'/%3E%3Cpath d='M3.5 6.7L11 11l7.5-4.3M11 11v8.5'/%3E%3C/g%3E%3Ctext x='26' y='15.5' font-family='Barlow,Segoe UI,system-ui,sans-serif' font-size='14' font-weight='600' fill='%23787E82'%3EView in AR%3C/text%3E%3C/svg%3E" width="84" height="22" alt="View in AR"></a>
       <div class="legend" id="legend"></div>
     </div>
     <p class="status" id="status">Loading the model…</p>
@@ -198,6 +203,12 @@ var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return {
 function b64buf(s){ var b = atob(s.trim()), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u.buffer; }
 window.__field = { ready: false };
 
+// AR: iPhone / iPad Quick Look only, and only when this job has a model.usdz next to the page
+(function(){ try {
+  var a = document.createElement('a');
+  if (!(a.relList && a.relList.supports && a.relList.supports('ar'))) return;
+  fetch('model.usdz', { method:'HEAD' }).then(function(r){ if (r.ok) $('arBtn').hidden = false; }).catch(function(){});
+} catch(e) {} })();
 Promise.all([
   fetch('meta.json').then(function(r){ return r.json(); }),
   fetch('blocks.b64.txt').then(function(r){ return r.text(); }).then(b64buf),
@@ -373,8 +384,10 @@ function init(meta, bbuf, rbuf){
   var stage = $('stage'), canvas = document.createElement('canvas');
   canvas.setAttribute('aria-label', '3D view of the masonry walls. Tap a wall to see its counts.');
   stage.insertBefore(canvas, stage.firstChild);
-  var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:true, preserveDrawingBuffer:true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  // big jobs: an overview of merged course runs per wall, full blocks only for the selected wall and walls you zoom into
+  var BIG = /[?&]big=1/.test(location.search) || (N > 6000 && !/[?&]big=0/.test(location.search));
+  var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:true, preserveDrawingBuffer:!BIG });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, BIG ? 1.5 : 2));
   renderer.localClippingEnabled = true;
   var rbPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
   var scene = new THREE.Scene();
@@ -402,7 +415,7 @@ function init(meta, bbuf, rbuf){
   var groups = {};
   for (i = 0; i < N; i++){ if (polySet[i]) continue; var L = U[i*5+4]; (groups[L] = groups[L] || []).push(i); }
   var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), s = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
-  Object.keys(groups).forEach(function(L){
+  if (!BIG) Object.keys(groups).forEach(function(L){
     var idx = groups[L].sort(function(a, b){ return bLift[a] - bLift[b] || a - b; });
     var mesh = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ color:0xffffff }), idx.length);
     for (var n = 0; n < idx.length; n++){
@@ -414,6 +427,138 @@ function init(meta, bbuf, rbuf){
     mesh.userData = { idx: idx, orig: mesh.instanceMatrix.array.slice() };
     meshes.push(mesh); scene.add(mesh);
   });
+  var chunks = [], FULL_BUDGET = 24000, paintVer = 0, _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _m = new THREE.Matrix4();
+  function chunkMesh(ch, n){
+    var g = geo.clone(); g.boundingSphere = ch.sphere.clone();
+    var mesh = new THREE.InstancedMesh(g, new THREE.MeshLambertMaterial({ color:0xffffff }), n);
+    mesh.frustumCulled = true; mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(n*3), 3);
+    return mesh;
+  }
+  // blocks in one course of one wall/side, same size (+ type when colouring by type; the middle block gives the colour), touching end to end -> one long box
+  function runsOf(idx){
+    var byKey = {}, out = [];
+    idx.forEach(function(j){
+      var b = j*7, r = F[b+6] % Math.PI; if (r < 0) r += Math.PI; if (r > Math.PI - 1e-3) r -= Math.PI;
+      var cs = Math.cos(r), sn = Math.sin(r), t = -F[b]*sn + F[b+1]*cs, zk = Math.round(F[b+2]*100);
+      var key = bLift[j] + '|' + Math.round(r*1000) + '|' + Math.round(t*100) + '|' + zk + '|' + Math.round(F[b+4]*100) + '|' + Math.round(F[b+5]*100) + '|' + (colorOn ? bType[j] : '') + '|' + groupOf(j);
+      var e = byKey[key]; if (!e) e = byKey[key] = { r:r, cs:cs, sn:sn, t:t, zk:zk, js:[] };
+      var sv = F[b]*cs + F[b+1]*sn, hl = F[b+3]/2; e.js.push({ j:j, a:sv - hl, b:sv + hl });
+    });
+    Object.keys(byKey).forEach(function(k){
+      var e = byKey[k], cur = null;
+      e.js.sort(function(x, y){ return x.a - y.a; }).forEach(function(o){
+        if (cur && o.a - cur.b < 0.03){ if (o.b > cur.b) cur.b = o.b; cur.js.push(o.j); return; }
+        cur = { a:o.a, b:o.b, e:e, js:[o.j] }; out.push(cur);
+      });
+    });
+    out.forEach(function(rn){
+      var e = rn.e, mid = (rn.a + rn.b)/2; rn.rep = rn.js[rn.js.length >> 1]; var b = rn.rep*7;
+      rn.x = mid*e.cs - e.t*e.sn; rn.y = mid*e.sn + e.t*e.cs; rn.z = F[b+2]; rn.rot = e.r; rn.len = rn.b - rn.a; rn.w = F[b+4]; rn.h = F[b+5];
+      rn.jit = 1 + (((e.zk*2654435761 + bWall[rn.rep]*40503) >>> 0) % 1000 / 1000 - 0.5)*0.05; rn.e = rn.js = null;
+    });
+    return out;
+  }
+  // overview = a few spatial tiles of merged runs (few draw calls); a wall shown in full hides its runs in its tile
+  var tiles = [], ZERO = new THREE.Matrix4().makeScale(0, 0, 0), lodColour = null;
+  function buildLod(){
+    tiles.forEach(function(tl){ scene.remove(tl.mesh); tl.mesh.geometry.dispose(); tl.mesh.material.dispose(); }); tiles = [];
+    var cell = Math.max(24, span/4), byCell = {};
+    chunks.forEach(function(ch){
+      ch.runs = runsOf(ch.idx); ch.lodOn = true; ch.runs.forEach(function(rn){ rn.ch = ch; });
+      var key = Math.floor(ch.sphere.center.x/cell) + ',' + Math.floor(ch.sphere.center.z/cell); (byCell[key] = byCell[key] || []).push(ch);
+    });
+    Object.keys(byCell).forEach(function(key){
+      var chs = byCell[key], slots = [], sph = chs[0].sphere.clone();
+      chs.forEach(function(ch){ sph.union(ch.sphere); ch.runs.forEach(function(rn){ slots.push(rn); }); });
+      slots.sort(function(x, y){ return bLift[x.rep] - bLift[y.rep]; });
+      var tl = { chunks:chs, slots:slots, mesh:chunkMesh({ sphere:sph }, slots.length) };
+      slots.forEach(function(rn, n){
+        _p.set(rn.x - ctr[0], rn.z - ctr[2], -(rn.y - ctr[1])); _q.setFromAxisAngle(up, rn.rot); _s.set(rn.len, rn.h, rn.w);
+        rn.m = new THREE.Matrix4().compose(_p, _q, _s); rn.slot = n; tl.mesh.setMatrixAt(n, rn.m);
+      });
+      chs.forEach(function(ch){ ch.tile = tl; });
+      tl.mesh.userData = { tile:tl, lod:true }; tiles.push(tl); scene.add(tl.mesh);
+    });
+    lodColour = !!colorOn;
+  }
+  if (BIG){
+    var byWall = {};
+    for (i = 0; i < N; i++){ if (polySet[i]) continue; (byWall[bWall[i]] = byWall[bWall[i]] || []).push(i); }
+    Object.keys(byWall).forEach(function(wk){
+      var idx = byWall[wk].sort(function(a, b){ return bLift[a] - bLift[b] || a - b; }), lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+      idx.forEach(function(j){
+        var b = j*7, c3 = [F[b] - ctr[0], F[b+2] - ctr[2], -(F[b+1] - ctr[1])], e3 = [Math.max(F[b+3], F[b+4])/2, F[b+5]/2, Math.max(F[b+3], F[b+4])/2];
+        for (var a = 0; a < 3; a++){ if (c3[a] - e3[a] < lo[a]) lo[a] = c3[a] - e3[a]; if (c3[a] + e3[a] > hi[a]) hi[a] = c3[a] + e3[a]; }
+      });
+      chunks.push({ wall:+wk, idx:idx, full:null, fullVer:-1, want:false,
+        sphere:new THREE.Sphere(new THREE.Vector3((lo[0]+hi[0])/2, (lo[1]+hi[1])/2, (lo[2]+hi[2])/2), Math.hypot(hi[0]-lo[0], hi[1]-lo[1], hi[2]-lo[2])/2 + 0.05) });
+    });
+    buildLod();
+  }
+  var chunkOfWall = {}; chunks.forEach(function(ch){ chunkOfWall[ch.wall] = ch; });
+  function buildFull(ch){
+    var idx = ch.idx, mesh = chunkMesh(ch, idx.length);
+    for (var n = 0; n < idx.length; n++){
+      var b = idx[n]*7;
+      _p.set(F[b] - ctr[0], F[b+2] - ctr[2], -(F[b+1] - ctr[1])); _q.setFromAxisAngle(up, F[b+6]); _s.set(F[b+3], F[b+5], F[b+4]);
+      _m.compose(_p, _q, _s); mesh.setMatrixAt(n, _m);
+    }
+    mesh.userData = { idx:idx, chunk:ch }; ch.orig = mesh.instanceMatrix.array.slice(); ch.full = mesh; scene.add(mesh);
+  }
+  function colourFull(ch){
+    var idx = ch.idx, a = ch.full.instanceColor.array, M = ch.full.instanceMatrix.array, O = ch.orig;
+    for (var n = 0; n < idx.length; n++){
+      var i = idx[n]; blockColour(i, tmp); a[n*3] = tmp[0]; a[n*3+1] = tmp[1]; a[n*3+2] = tmp[2];
+      if (shownBlock(i)) for (var k6 = 0; k6 < 16; k6++) M[n*16+k6] = O[n*16+k6]; else M.set(HIDE, n*16);
+    }
+    ch.full.instanceColor.needsUpdate = true; ch.full.instanceMatrix.needsUpdate = true; ch.fullVer = paintVer;
+  }
+  function tileMatrices(tl){
+    for (var n = 0; n < tl.slots.length; n++){ var rn = tl.slots[n]; tl.mesh.setMatrixAt(n, rn.ch.lodOn && shownBlock(rn.rep) ? rn.m : ZERO); }
+    tl.mesh.instanceMatrix.needsUpdate = true;
+  }
+  function colourLod(tl){
+    var a = tl.mesh.instanceColor.array;
+    for (var n = 0; n < tl.slots.length; n++){ var rn = tl.slots[n]; blockColour(rn.rep, tmp, rn.jit); a[n*3] = tmp[0]; a[n*3+1] = tmp[1]; a[n*3+2] = tmp[2]; }
+    tl.mesh.instanceColor.needsUpdate = true; tileMatrices(tl);
+  }
+  // per render: full blocks for the selected wall, then the nearest on-screen walls whose blocks are >= 9 px long
+  var _fr = new THREE.Frustum(), _pm = new THREE.Matrix4();
+  function chooseLod(){
+    if (!BIG) return;
+    camera.updateMatrixWorld(); _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_pm);
+    var selW = {}, cand = [], used = 0; selList.forEach(function(g){ selW[bySide ? sides[g].wall : g] = 1; });
+    var ppm = (stage.clientHeight || 600) / (2*Math.tan(camera.fov*Math.PI/360));
+    chunks.forEach(function(ch){
+      ch.want = false; if (!_fr.intersectsSphere(ch.sphere)) return;
+      var d = Math.max(0.5, camera.position.distanceTo(ch.sphere.center) - ch.sphere.radius);
+      if (selW[ch.wall]) cand.push({ ch:ch, d:-1 }); else if (0.4*ppm/d >= 9) cand.push({ ch:ch, d:d });
+    });
+    cand.sort(function(a, b){ return a.d - b.d; }).forEach(function(c){ if (c.d >= 0 && used + c.ch.idx.length > FULL_BUDGET) return; used += c.ch.idx.length; c.ch.want = true; });
+    chunks.forEach(function(ch){
+      if (ch.want){ if (!ch.full) buildFull(ch); if (ch.fullVer !== paintVer) colourFull(ch); }
+      if (ch.full) ch.full.visible = ch.want;
+      if (ch.lodOn === ch.want){
+        ch.lodOn = !ch.want; var tm = ch.tile.mesh;
+        ch.runs.forEach(function(rn){ tm.setMatrixAt(rn.slot, ch.lodOn && shownBlock(rn.rep) ? rn.m : ZERO); }); tm.instanceMatrix.needsUpdate = true;
+      }
+    });
+  }
+  // a chip on a big job flies the camera to that wall (Whole job = back to the overview)
+  var fly = null;
+  function flyTo(k){
+    if (!BIG) return;
+    var ch = k === null ? null : chunkOfWall[bySide ? sides[k].wall : k];
+    var t1 = ch ? ch.sphere.center.clone() : new THREE.Vector3(0, tall*0.3, 0);
+    var r1 = ch ? Math.max(4, ch.sphere.radius / Math.sin(camera.fov*Math.PI/360) * 1.3) : R0;
+    var t0 = target.clone(), r0 = radius, st = performance.now(); fly = st;
+    (function step(){
+      if (fly !== st) return;
+      var u = Math.min(1, (performance.now() - st)/450), e = u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2)/2;
+      target.lerpVectors(t0, t1, e); radius = r0 + (r1 - r0)*e; updateCam(); schedule();
+      if (u < 1) requestAnimationFrame(step); else fly = null;
+    })();
+  }
   // clipped pieces (rake / gable): their own extruded face polygon
   var toThree = new THREE.Matrix4().set(1,0,0,-ctr[0], 0,0,1,-ctr[2], 0,-1,0,ctr[1], 0,0,0,1), polys = [];
   (meta.polys || []).forEach(function(pp){
@@ -470,10 +615,25 @@ function init(meta, bbuf, rbuf){
     camera.lookAt(target);
   }
   var pending = false;
-  function schedule(){ if (!pending){ pending = true; requestAnimationFrame(function(){ pending = false; renderer.render(scene, camera); }); } }
+  function schedule(){ if (!pending){ pending = true; requestAnimationFrame(function(){ pending = false; chooseLod(); renderer.render(scene, camera); if (window.__field) window.__field.renders = (window.__field.renders || 0) + 1; }); } }
+  var fitted = false;
+  function fitCam(){
+    var dx = bb[3] - bb[0], dy = bb[4] - bb[1];
+    if (camera.aspect < 1 && Math.max(dx, dy) > 1.6*Math.min(dx, dy)){ theta = dx > dy ? Math.PI/2 - 0.35 : 0.35; phi = 0.8; }
+    var xs = [bb[0] - ctr[0], bb[3] - ctr[0]], ys = [0, tall], zs = [-(bb[1] - ctr[1]), -(bb[4] - ctr[1])], v = new THREE.Vector3();
+    target.set(0, tall*0.3, 0);
+    for (radius = span*0.3; radius < span*6; radius *= 1.06){
+      updateCam(); camera.updateMatrixWorld(); var ok = true;
+      for (var a = 0; a < 8 && ok; a++){ v.set(xs[a & 1], ys[(a >> 1) & 1], zs[(a >> 2) & 1]).project(camera); if (Math.abs(v.x) > 0.92 || v.y > 0.8 || v.y < -0.92) ok = false; }
+      if (ok) break;
+    }
+    R0 = radius;
+  }
   function resize(){
     var w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
-    renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = w < 520 ? 52 : 40; camera.updateProjectionMatrix(); updateCam(); schedule();
+    renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = w < 520 ? 52 : 40; camera.updateProjectionMatrix();
+    if (BIG && !fitted){ fitted = true; fitCam(); }
+    updateCam(); schedule();
   }
   new ResizeObserver(resize).observe(stage);
 
@@ -539,11 +699,15 @@ function init(meta, bbuf, rbuf){
     var vert = new Uint8Array(nB);
     for (var b3 = 0; b3 < nB; b3++){ if (bn[b3]){ bx[b3] /= bn[b3]; bz[b3] /= bn[b3]; } vert[b3] = bTopY[b3] - barLow[b3] > 0.3 && Math.max(bxb[b3] - bxa[b3], bzb[b3] - bza[b3]) < 0.2 ? 1 : 0; }
     barLap = new Float32Array(nB);
+    var vgrid = {}; for (b3 = 0; b3 < nB; b3++) if (vert[b3]){ var gk3 = Math.floor(bx[b3]/0.12) + ',' + Math.floor(bz[b3]/0.12); (vgrid[gk3] = vgrid[gk3] || []).push(b3); }
     for (b3 = 0; b3 < nB; b3++){
       var lap = -1;
-      if (vert[b3]) for (var c3 = 0; c3 < nB; c3++){   // the next bar up in the same cell: overlap = the lap
-        if (c3 === b3 || !vert[c3] || Math.hypot(bx[c3] - bx[b3], bz[c3] - bz[b3]) > 0.12) continue;
-        if (barLow[c3] > barLow[b3] + 0.05 && barLow[c3] < bTopY[b3] - 0.01){ var ov = bTopY[b3] - barLow[c3]; if (lap < 0 || ov > lap) lap = ov; }
+      if (vert[b3]) for (var gx3 = Math.floor(bx[b3]/0.12) - 1; gx3 <= Math.floor(bx[b3]/0.12) + 1; gx3++) for (var gz3 = Math.floor(bz[b3]/0.12) - 1; gz3 <= Math.floor(bz[b3]/0.12) + 1; gz3++){
+        var cell3 = vgrid[gx3 + ',' + gz3] || [];   // the next bar up in the same cell: overlap = the lap
+        for (var k3 = 0; k3 < cell3.length; k3++){ var c3 = cell3[k3];
+          if (c3 === b3 || !vert[c3] || Math.hypot(bx[c3] - bx[b3], bz[c3] - bz[b3]) > 0.12) continue;
+          if (barLow[c3] > barLow[b3] + 0.05 && barLow[c3] < bTopY[b3] - 0.01){ var ov = bTopY[b3] - barLow[c3]; if (lap < 0 || ov > lap) lap = ov; }
+        }
       }
       if (lap < 0){   // 48 bar diameters from the size
         var sz = BARS.facts[BARS.fact[b3]] ? String(BARS.facts[BARS.fact[b3]].size) : '', dm = DB_MM[sz] ? DB_MM[sz]/1000 : (DB_IN[sz] ? DB_IN[sz]*0.0254 : 0.625*0.0254);
@@ -561,12 +725,13 @@ function init(meta, bbuf, rbuf){
     if (!rebar) return;
     segOn = null; rbPlane.constant = 1e5;
     if (rebarOrig){ rebarPos.set(rebarOrig); rebar.geometry.attributes.position.needsUpdate = true; }
-    if (allTop === null) rebar.geometry.setIndex(null);
+    var selOnly = BIG && segBar && selList.length > 0;   // big job: only the picked walls' bars
+    if (allTop === null && !selOnly) rebar.geometry.setIndex(null);
     else if (!segBar){ if (!selList.length) rbPlane.constant = allTop + 1.2192; rebar.geometry.setIndex(null); }   // no bar map: clip rebar only, top + 48"
     else {
       var n = meta.nRebarSegs, idx = [], b; segOn = new Uint8Array(n);
       for (var q = 0; q < n; q++){
-        b = segBar[q]; var o = q*6, y0 = rebarPos[o+1], y1 = rebarPos[o+4], top = topOf(b >= 0 ? barGroup[b] : -1);
+        b = segBar[q]; if (selOnly && (b < 0 || !inSel[barGroup[b]])) continue; var o = q*6, y0 = rebarPos[o+1], y1 = rebarPos[o+4], top = topOf(b >= 0 ? barGroup[b] : -1);
         if (top === null){ segOn[q] = 1; idx.push(q*2, q*2+1); continue; }
         if (b >= 0 ? barLow[b] > top : Math.min(y0, y1) > top) continue;
         if (b >= 0){
@@ -601,7 +766,9 @@ function init(meta, bbuf, rbuf){
   function rayBlock(x, y){
     var r = canvas.getBoundingClientRect();
     ndc.set((x - r.left)/r.width*2 - 1, -(y - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
-    var hit = ray.intersectObjects(meshes.concat(polys.filter(function(m){ return m.visible; })), false)[0];
+    var cands = meshes.concat(polys.filter(function(m){ return m.visible; }));
+    if (BIG) chunks.forEach(function(ch){ if (ch.full && ch.full.visible && ray.ray.intersectsSphere(ch.sphere)) cands.push(ch.full); });   // big job: marks land on walls drawn in full
+    var hit = ray.intersectObjects(cands, false)[0];
     if (!hit) return null;
     return hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.idx[hit.instanceId];
   }
@@ -612,10 +779,18 @@ function init(meta, bbuf, rbuf){
     var r = canvas.getBoundingClientRect();
     ndc.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
     var objs = meshes.concat(polys.filter(function(m){ return m.visible; }), concMeshes);
+    if (BIG){ tiles.forEach(function(tl){ if (ray.ray.intersectsSphere(tl.mesh.geometry.boundingSphere)) objs.push(tl.mesh); });
+      chunks.forEach(function(ch){ if (ch.full && ch.full.visible && ray.ray.intersectsSphere(ch.sphere)) objs.push(ch.full); }); }
     var hit = ray.intersectObjects(objs, false)[0]; hideHint();
+    if (!hit && BIG){   // big job: a thin wall far away is hard to hit with a finger -> nearest course run within 28 px
+      var best = null, bd = 28, r2 = canvas.getBoundingClientRect(), mx = e.clientX - r2.left, my = e.clientY - r2.top, v = new THREE.Vector3(); camera.updateMatrixWorld();
+      tiles.forEach(function(tl){ for (var n = 0; n < tl.slots.length; n++){ var rn = tl.slots[n]; if (!shownBlock(rn.rep)) continue; v.set(rn.x - ctr[0], rn.z - ctr[2], -(rn.y - ctr[1])).project(camera); if (v.z < -1 || v.z > 1) continue;
+        var d = Math.hypot((v.x + 1)/2*r2.width - mx, (1 - v.y)/2*r2.height - my); if (d < bd){ bd = d; best = rn.rep; } } });
+      if (best !== null){ var gb = groupOf(best); select(gb >= 0 ? gb : null); return; }
+    }
     if (!hit) { if (!multiOn) select(null); return; }
     if (hit.object.userData.conc !== undefined){ select(!bySide && hit.object.userData.wall >= 0 ? hit.object.userData.wall : null); return; }
-    var gi = hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.idx[hit.instanceId];
+    var gi = hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.lod ? hit.object.userData.tile.slots[hit.instanceId].rep : hit.object.userData.idx[hit.instanceId];
     var gk = groupOf(gi); select(gk >= 0 ? gk : null);
   }
 
@@ -624,8 +799,8 @@ function init(meta, bbuf, rbuf){
   var selList = [], inSel = {}, multiOn = false;                 // multi-select (Ryan 10-21: "multi select walls")
   var prodOn = false, dragOn = true, showT = 'B', dragSet = null, mk = null;
   var NEUTRAL = [0.84, 0.83, 0.8];
-  function blockColour(i, out){
-    var c = colorOn ? typeInfo(bType[i]).col : shadeOf(meta.colours[U[i*5]] || NEUTRAL, bType[i]), j = jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
+  function blockColour(i, out, jj){
+    var c = colorOn ? typeInfo(bType[i]).col : shadeOf(meta.colours[U[i*5]] || NEUTRAL, bType[i]), j = jj || jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
     if (prodOn){
       if (dragSet && dragSet[i]){ r = sel.r; g = sel.g; b = sel.b; }
       else if (done[showT][i]){ var tc = TCOL[showT]; r = r*0.6 + tc[0]*0.4; g = g*0.6 + tc[1]*0.4; b = b*0.6 + tc[2]*0.4; }   // done: its own colour, tinted so white block still reads
@@ -654,6 +829,7 @@ function init(meta, bbuf, rbuf){
       if (vchg){ mesh.count = cnt; mesh.instanceMatrix.needsUpdate = true; }
       mesh.instanceColor.needsUpdate = true;
     });
+    if (BIG){ paintVer++; if (lodColour !== colorOn) buildLod(); tiles.forEach(colourLod); }
     polys.forEach(function(mesh){
       var i = mesh.userData.gi; blockColour(i, tmp); mesh.material.color.setRGB(tmp[0], tmp[1], tmp[2]);
       mesh.visible = shownBlock(i);
@@ -996,6 +1172,8 @@ function init(meta, bbuf, rbuf){
     Array.prototype.forEach.call(document.querySelectorAll('#chips .chip[data-w]'), function(b){ b.setAttribute('aria-pressed', String(b.dataset.w === '' ? selList.length === 0 : !!inSel[+b.dataset.w])); });
     $('multiBtn').setAttribute('aria-pressed', String(multiOn));
     Array.prototype.forEach.call(document.querySelectorAll('#lifts .chip'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.l === '' ? null : +b.dataset.l) === selLift)); });
+    if (BIG){ var on = document.querySelector('#chips .chip[aria-pressed="true"]'), row = $('chips');
+      if (on) row.scrollLeft = Math.max(0, on.offsetLeft - row.offsetLeft - (row.clientWidth - on.offsetWidth)/2); }
   }
   function setSel(list){ selList = list; inSel = {}; list.forEach(function(g){ inSel[g] = 1; }); selected = list.length === 1 ? list[0] : null; }
   function select(k, add){
@@ -1012,11 +1190,13 @@ function init(meta, bbuf, rbuf){
   }
 
   $('chips').innerHTML = '<button class="chip" data-w="" aria-pressed="true">Whole job</button>' +
-    selGroups.map(function(w, n){ return '<button class="chip" data-w="' + n + '" aria-pressed="false" title="' + esc(bySide ? walls[w.wall].name : w.tag) + '">' + esc(w.name) + '</button>'; }).join('') +
+    selGroups.map(function(w, n){ return '<button class="chip" data-w="' + n + '" aria-pressed="false" title="' + esc(bySide ? walls[w.wall].name : w.tag) + '">' + esc(BIG && bySide ? (walls[w.wall].tag || walls[w.wall].name) + ' · ' + w.name : w.name) + '</button>'; }).join('') +
     (selGroups.length > 1 ? '<button class="chip add" id="multiBtn" aria-pressed="false" title="Tap more ' + (bySide ? 'sides' : 'walls') + ' to add or remove">+ Select more</button>' : '<span id="multiBtn" hidden></span>');
   $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return;
     if (b.id === 'multiBtn'){ multiOn = !multiOn; $('hint').hidden = !multiOn; if (multiOn) $('hint').textContent = 'Tap ' + (bySide ? 'sides' : 'walls') + ' to add or remove'; renderPanel(); return; }
     select(b.dataset.w === '' ? null : +b.dataset.w); });
+  if (BIG){ $('chips').classList.add('scroll');   // big job: one scrolling row; a chip flies the camera to that wall
+    $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b || b.id === 'multiBtn' || multiOn) return; flyTo(b.dataset.w === '' ? null : +b.dataset.w); }); }
   $('lifts').innerHTML = '<button class="chip" data-l="" aria-pressed="true">All lifts</button>' +
     liftNums.map(function(n){ return '<button class="chip" data-l="' + n + '" aria-pressed="false">Lift ' + n + '</button>'; }).join('');
   $('lifts').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (b) setLift(b.dataset.l === '' ? null : +b.dataset.l); });
@@ -1047,7 +1227,11 @@ function init(meta, bbuf, rbuf){
     pct:function(){ var o = stat(null, null); return { n:o.n, B:pctOf(o, 'B'), R:pctOf(o, 'R'), G:pctOf(o, 'G') }; }, selList:function(){ return selList.slice(); }, multi:function(on){ multiOn = !!on; renderPanel(); },
     blockXY:function(g, l){ var lst = glist[g*1000 + l] || [], r = canvas.getBoundingClientRect(); camera.updateMatrixWorld();
       return lst.map(function(i){ var v = new THREE.Vector3(F[i*7] - ctr[0], F[i*7+2] - ctr[2], -(F[i*7+1] - ctr[1])), sp = toScreen(v, r); return { i:i, x:r.left + sp.x, y:r.top + sp.y, a:along[i], run:runOf[i] }; }); },
-    shown:function(){ var c = 0; for (var i = 0; i < N; i++) if (shownBlock(i)) c++; return c; } };
+    shown:function(){ var c = 0; for (var i = 0; i < N; i++) if (shownBlock(i)) c++; return c; },
+    mode:BIG ? 'big' : 'full', runs:tiles.reduce(function(a, tl){ return a + tl.slots.length; }, 0), tiles:tiles.length, span:span,
+    cam:function(x, z, r){ target.set(x, target.y, z); radius = r; updateCam(); schedule(); },
+    wallScreen:function(w){ var ch = chunkOfWall[w]; if (!ch) return null; var r = canvas.getBoundingClientRect(), v = ch.sphere.center.clone(); camera.updateMatrixWorld(); v.project(camera); return { x:r.left + (v.x + 1)/2*r.width, y:r.top + (1 - v.y)/2*r.height }; },
+    fullShown:function(){ var c = 0; chunks.forEach(function(ch){ if (ch.full && ch.full.visible) ch.idx.forEach(function(i){ if (shownBlock(i)) c++; }); }); return c; } };
 }
 })();
 </script>

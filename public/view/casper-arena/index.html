@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TMM Field View</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E6E4DF; --surface:#FBFAF7; --ink:#1F2326; --muted:#5B6165; --line:#D3D0C8;
+  --select:#E9B824; --selectInk:#332600;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1E20; --surface:#25282B; --ink:#ECEAE5; --muted:#A4A9AC; --line:#3A3E41;
+    --select:#F0C43A; --selectInk:#2A2000; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1E20; --surface:#25282B; --ink:#ECEAE5; --muted:#A4A9AC; --line:#3A3E41;
+  --select:#F0C43A; --selectInk:#2A2000; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+  font-family:Barlow,"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--select);outline-offset:2px}
+
+.app{display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);height:100%}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line);min-width:0}
+.job{min-width:0}
+.job h1{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.4rem;margin:0;line-height:1.1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.job p{margin:2px 0 0;font-size:.875rem;color:var(--muted)}
+.rev{font-weight:600;font-size:.875rem;padding:4px 12px;border:1.5px solid var(--ink);border-radius:999px;white-space:nowrap;flex:none}
+
+.stage{position:relative;min-height:0;overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.tools{position:absolute;top:12px;left:12px;right:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;pointer-events:none}
+.tools>*{pointer-events:auto}
+.tbtn{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:8px 12px;font-weight:500;font-size:.9rem}
+.tbtn.small{padding:6px 10px;font-size:.82rem;gap:8px}
+.tbtn .box{width:18px;height:18px;border:1.5px solid var(--ink);border-radius:4px;display:grid;place-items:center;font-size:12px;line-height:1;flex:none}
+.tbtn.small .box{width:15px;height:15px;font-size:10px}
+.tbtn.ar{text-decoration:none;padding:6px 10px}
+.tbtn.ar img{display:block}
+.tbtn[aria-pressed="false"] .box span{visibility:hidden}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.8rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);
+  border-radius:10px;padding:6px 10px;max-width:100%}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);margin:0;padding:6px 12px;border-radius:999px;
+  background:var(--surface);color:var(--muted);font-size:.85rem;white-space:nowrap;border:1px solid var(--line);max-width:calc(100% - 24px);
+  overflow:hidden;text-overflow:ellipsis}
+.barcard{position:absolute;left:12px;bottom:12px;z-index:2;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px 8px;min-width:220px;max-width:calc(100% - 24px);box-shadow:0 4px 16px rgba(0,0,0,.14)}
+.barcard .bh{display:flex;align-items:baseline;gap:10px}
+.barcard .mk{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.7rem;line-height:1}
+.barcard .sz{font-weight:600;font-size:1.05rem}
+.barcard .x{margin-left:auto;align-self:flex-start;border:none;background:transparent;font-size:1.3rem;line-height:1;padding:2px 4px;color:var(--muted)}
+.barcard .kd{margin:2px 0 0;color:var(--muted);font-size:.82rem}
+.barcard dl{margin:6px 0 0}
+.barcard dt,.barcard dd{padding:6px 0;font-size:.92rem}
+.barcard dd{font-size:.98rem}
+.barcard .cnt{margin:6px 0 2px;padding-top:6px;border-top:1px solid var(--line);font-size:.9rem}
+.status{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:var(--muted);margin:0}
+
+.panel{background:var(--surface);border-top:1px solid var(--line);padding:14px 16px 18px;max-height:44vh;overflow:auto;min-width:0;
+  -webkit-overflow-scrolling:touch}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chips+.chips{margin-bottom:14px}
+.chip{font-weight:500;font-size:.9rem;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding-bottom:4px}
+.chips.scroll .chip{flex:none}
+.panel h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.7rem;margin:0;line-height:1.1;overflow-wrap:anywhere}
+.sub{margin:3px 0 0;color:var(--muted)}
+dl{margin:12px 0 0;display:grid;grid-template-columns:minmax(0,1fr) auto}
+dt,dd{margin:0;padding:10px 0;border-top:1px solid var(--line)}
+dt small{display:block;color:var(--muted);font-size:.8rem}
+dd{padding-left:12px;font-weight:600;font-size:1.1rem;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
+.empty{margin:12px 0 0;padding:10px 0;border-top:1px solid var(--line);color:var(--muted)}
+.note{margin:14px 0 0;font-size:.8rem;color:var(--muted)}
+
+.chip.add{border-style:dashed}
+.chip.add[aria-pressed="true"]{background:var(--select);color:var(--selectInk);border-color:var(--select);border-style:solid}
+.tbtn.prod[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tbtn.prod[aria-pressed="true"] .box{border-color:var(--surface)}
+/* production */
+.pbars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 12px}
+.pb{font-size:.82rem;color:var(--muted)}
+.pb b{display:block;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-size:1.6rem;line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
+.pb i{display:block;height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}
+.pb i em{display:block;height:100%;background:var(--ink)}
+.pb.B i em{background:#4f8a4b}.pb.R i em{background:#b03a2e}.pb.G i em{background:#5b7fa3}
+.cell span.on.B{background:#4f8a4b;border-color:#4f8a4b}.cell span.on.R{background:#b03a2e;border-color:#b03a2e}.cell span.on.G{background:#5b7fa3;border-color:#5b7fa3}
+.cell span.part.B{border-color:#4f8a4b}.cell span.part.R{border-color:#b03a2e}.cell span.part.G{border-color:#5b7fa3}
+.seg{display:flex;border:1.5px solid var(--ink);border-radius:12px;overflow:hidden;margin:0 0 12px}
+.seg button{flex:1;min-height:44px;border:none;background:transparent;font-weight:600;font-size:.95rem}
+.seg button+button{border-left:1.5px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.checks{display:grid;gap:8px;margin:12px 0 0}
+.ck{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:1.5px solid var(--line);border-radius:12px;background:transparent;text-align:left;width:100%}
+.ck .box{width:28px;height:28px;border:2px solid var(--ink);border-radius:6px;display:grid;place-items:center;font-size:18px;font-weight:700;flex:none}
+.ck[aria-pressed="true"]{border-color:var(--ink)}
+.ck[aria-pressed="true"] .box{background:var(--ink);color:var(--surface)}
+.ck[aria-pressed="false"] .box span{visibility:hidden}
+.ck .lbl{flex:1;min-width:0;font-weight:600;font-size:1.05rem}
+.ck .lbl small{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
+.ck .pct{font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
+.acts{display:flex;gap:8px;margin:10px 0 0;flex-wrap:wrap}
+.acts .tbtn{min-height:44px}
+.acts .tbtn:disabled{opacity:.45;cursor:default}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 0}
+.who label{font-size:.8rem;color:var(--muted);display:block}
+.who input{width:100%;font:inherit;font-size:16px;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin-top:2px}
+.sync{margin:8px 0 0;font-size:.85rem;color:var(--muted)}
+.sync.warn{color:#b03a2e}
+.panel h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.25rem;margin:18px 0 6px}
+.ptw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pt{border-collapse:collapse;width:100%;font-size:.85rem}
+.pt th,.pt td{padding:3px 2px;border-top:1px solid var(--line);text-align:center;white-space:nowrap}
+.pt th:first-child{text-align:left;font-weight:600;padding-right:6px;position:sticky;left:0;background:var(--surface);z-index:1}
+.pt thead th{color:var(--muted);font-weight:500;border-top:none}
+.pt td.pc{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;padding-left:6px}
+.cell{display:inline-flex;gap:1px;border:1.5px solid transparent;background:transparent;padding:5px 2px;border-radius:8px;min-height:40px;align-items:center}
+.cell[aria-pressed="true"]{border-color:var(--select)}
+.cell span{width:16px;height:18px;border-radius:4px;display:grid;place-items:center;font-size:.66rem;font-weight:700;border:1.5px solid var(--line);color:var(--muted)}
+.cell span.part{border-color:var(--ink);color:var(--ink);background:linear-gradient(to top,var(--line) 50%,transparent 50%)}
+.cell span.on{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.pt tr.tot th,.pt tr.tot td{border-top:1.5px solid var(--ink);font-weight:600}
+.pkey{margin:6px 0 0;font-size:.78rem;color:var(--muted)}
+@media (max-width:520px){
+  .legend{font-size:.75rem;padding:5px 8px}
+  .tbtn{padding:6px 10px;font-size:.85rem}
+}
+@media (min-width:900px){
+  .app{grid-template-columns:minmax(0,1fr) 400px;grid-template-rows:auto minmax(0,1fr)}
+  header{grid-column:1/-1}
+  .stage{grid-column:1;grid-row:2}
+  .panel{grid-column:2;grid-row:2;max-height:none;border-top:none;border-left:1px solid var(--line);padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="job">
+      <h1 id="job">Loading…</h1>
+      <p id="pub">Field view</p>
+    </div>
+    <span class="rev" id="rev" hidden></span>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="tools">
+      <button class="tbtn" id="colorBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Color by type</button>
+      <button class="tbtn small" id="rebarBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Rebar</button>
+      <button class="tbtn prod" id="prodBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Production</button>
+      <button class="tbtn small" id="dragBtn" aria-pressed="true" hidden><span class="box"><span>✓</span></span>Drag marks work</button>
+      <a class="tbtn small ar" id="arBtn" rel="ar" href="model.usdz" hidden><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='22' viewBox='0 0 84 22'%3E%3Cg fill='none' stroke='%23787E82' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M11 2.5l7.5 4.2v8.6L11 19.5l-7.5-4.2V6.7z'/%3E%3Cpath d='M3.5 6.7L11 11l7.5-4.3M11 11v8.5'/%3E%3C/g%3E%3Ctext x='26' y='15.5' font-family='Barlow,Segoe UI,system-ui,sans-serif' font-size='14' font-weight='600' fill='%23787E82'%3EView in AR%3C/text%3E%3C/svg%3E" width="84" height="22" alt="View in AR"></a>
+      <div class="legend" id="legend"></div>
+    </div>
+    <p class="status" id="status">Loading the model…</p>
+    <div class="barcard" id="barcard" hidden></div>
+    <p class="hint" id="hint">Drag to turn, pinch or scroll to zoom, tap a wall</p>
+  </div>
+
+  <aside class="panel" aria-live="polite">
+    <div class="chips" id="chips"></div>
+    <div class="chips" id="lifts"></div>
+    <div id="detail"></div>
+    <div id="prodWho" hidden>
+      <div class="who">
+        <div><label for="whoName">Your name (optional)</label><input id="whoName" autocomplete="name" maxlength="40" placeholder="Name"></div>
+        <div><label for="whoPin">Crew PIN</label><input id="whoPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN to save"></div>
+      </div>
+      <p class="sync" id="sync"></p>
+    </div>
+    <p class="note" id="note">This field view shows quantities only. Prices and labor stay in the office.</p>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+function b64buf(s){ var b = atob(s.trim()), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u.buffer; }
+window.__field = { ready: false };
+
+// AR: iPhone / iPad Quick Look only, and only when this job has a model.usdz next to the page
+(function(){ try {
+  var a = document.createElement('a');
+  if (!(a.relList && a.relList.supports && a.relList.supports('ar'))) return;
+  fetch('model.usdz', { method:'HEAD' }).then(function(r){ if (r.ok) $('arBtn').hidden = false; }).catch(function(){});
+} catch(e) {} })();
+Promise.all([
+  fetch('meta.json').then(function(r){ return r.json(); }),
+  fetch('blocks.b64.txt').then(function(r){ return r.text(); }).then(b64buf),
+  fetch('rebar.b64.txt').then(function(r){ return r.text(); }).then(b64buf)
+]).then(function(res){ init(res[0], res[1], res[2]); })
+  .catch(function(e){ $('status').textContent = 'Could not load the model: ' + e; });
+
+/* ---------- unit types: order + colours ---------- */
+var TYPES = [
+  { key:'Stretcher',      label:'Stretcher',      col:[0.66,0.67,0.65] },
+  { key:'Half',           label:'Half',           col:[0.46,0.62,0.78] },
+  { key:'Corner',         label:'Corner',         col:[0.85,0.66,0.26] },
+  { key:'Bond beam',      label:'Bond beam',      col:[0.42,0.66,0.40] },
+  { key:'Bond beam half', label:'Bond beam half', col:[0.30,0.53,0.33] },
+  { key:'Lintel',         label:'Lintel',         col:[0.58,0.47,0.75] },
+  { key:'Cut piece',      label:'Cut piece',      col:[0.50,0.50,0.47] }
+];
+var OTHER = { key:'Other', label:'Other', col:[0.55,0.55,0.55] };
+// one hue per real colour; piece types are shades of it (Ryan 10-21: no orange cuts)
+var SHADE = [0, 0.08, 0.16, -0.07, 0.03, 0.12, 0.22, 0];
+function shadeOf(c, t){ var k = SHADE[t] || 0, lum = 0.3*c[0] + 0.59*c[1] + 0.11*c[2];
+  if (lum < 0.45) return c.map(function(v){ return k >= 0 ? v + (1 - v)*k*1.4 : v*(1 + k); });
+  return c.map(function(v){ return k >= 0 ? v*(1 - k) : v + (1 - v)*(-k); }); }
+function typeOf(unit){ for (var i = 0; i < TYPES.length; i++) if (TYPES[i].key === unit) return i; return TYPES.length; }
+function typeInfo(t){ return TYPES[t] || OTHER; }
+function rgbCss(c){ return 'rgb(' + c.map(function(v){ return Math.round(v*255); }).join(',') + ')'; }
+
+function init(meta, bbuf, rbuf){
+  var N = meta.nBlocks, F = new Float32Array(bbuf, 0, N*7), U = new Uint16Array(bbuf, N*28, N*5);
+  var keys = meta.blockPsetKeys, cols = meta.blockPsetCols;
+  var colUnit = cols[keys.indexOf('Unit')], colLift = cols[keys.indexOf('Lift')];
+  var colColour = keys.indexOf('Colour') >= 0 ? cols[keys.indexOf('Colour')] : null;
+
+  /* ---------- header ---------- */
+  var jobName = (meta.project && meta.project.name) || 'Masonry job';
+  $('job').textContent = jobName; document.title = jobName + ' – field view';
+  var ex = meta.export || {}, rev = ex['Revision'], exd = ex['Exported (UTC)'], dateTxt = '', dateShort = '';
+  if (exd){ var dm = /^(\d{4})-(\d{2})-(\d{2})/.exec(exd); if (dm){ dateShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+dm[2]-1] + ' ' + (+dm[3]); dateTxt = dateShort + ', ' + dm[1]; } }
+  if (rev != null){ $('rev').textContent = 'Rev ' + rev + (dateShort ? ' · ' + dateShort : ''); $('rev').hidden = false; }
+  $('pub').textContent = 'Field view' + (rev != null ? ' · Rev ' + rev : '') + (dateTxt ? ' · ' + dateTxt : '');
+
+  /* ---------- per-block facts ---------- */
+  var bLift = new Int16Array(N), bType = new Uint8Array(N), bWall = new Int16Array(N);
+  for (var i = 0; i < N; i++){
+    var pk = U[i*5+2];
+    bLift[i] = pk === 65535 ? 0 : (+colLift[pk] || 0);
+    bType[i] = pk === 65535 ? TYPES.length : typeOf(colUnit[pk]);
+    bWall[i] = U[i*5+1];
+  }
+
+  /* ---------- psets -> plain quantities ---------- */
+  function pmap(obj){ var m = {}; (obj.psets || []).forEach(function(p){ m[p[0]] = p[1]; }); return m; }
+  function get(props, k){ var v; (props || []).forEach(function(p){ if (p[0] === k) v = p[1]; }); return v; } // last wins (rounded duplicates)
+  function first(props, ks){ for (var i = 0; i < ks.length; i++){ var v = get(props, ks[i]); if (v !== undefined && v !== null) return v; } return undefined; }
+  function find(props, re){ var v, kk; (props || []).forEach(function(p){ if (re.test(p[0])){ v = p[1]; kk = p[0]; } }); return v === undefined ? null : { k: kk, v: v }; }
+
+  var walls = meta.walls.map(function(w, k){
+    var ps = pmap(w), wp = ps['TMM Wall'] || [], wt = ps['TMM Wall Totals'] || [];
+    var lifts = {};
+    Object.keys(ps).forEach(function(name){
+      var m = /^TMM Lift (\d+)/.exec(name); if (!m) return;
+      var p = ps[name], n = +m[1], q = qtyFrom(p, first(p, ['Total blocks', 'Lift total pieces']));
+      q.lo = get(p, 'Lift bottom'); q.hi = get(p, 'Lift top');
+      if (q.total > 0) lifts[n] = q;
+    });
+    var whole = qtyFrom(wt, first(wt, ['Total blocks', 'Total pieces (sum of the lifts)']));
+    if (whole.grout === null){ var g = find(ps['TMM Grout'], /^Wall grout \((CY|m³|m3)\)$/); if (g){ whole.grout = g.v; whole.groutU = g.k; } }
+    var rw = find(wt, /^Rebar \((lbs|kg)/) || find(ps['TMM Rebar'], /^Rebar \((lbs|kg)/);
+    var bars = first(wt, ['Bars']) || first(ps['TMM Rebar'], ['Bars']) || 0;
+    if (!bars) (ps['TMM Rebar'] || []).forEach(function(p){ var m = /^(\d+)\s*x\s/.exec(String(p[1])); if (m) bars += +m[1]; });
+    whole.rebarW = rw ? rw.v : null; whole.rebarU = rw ? (/kg/.test(rw.k) ? 'kg' : 'lb') : '';
+    whole.bars = bars;
+    var ops = meta.openings.filter(function(o){ return o.wall === k; }).map(function(o){ return get((pmap(o)['TMM Opening']), 'Type') || 'Opening'; });
+    var conc = {}; (meta.concrete || []).forEach(function(c){ if (c.wall !== k) return; var cp = pmap(c)['TMM Concrete'] || [], kind = get(cp, 'Kind') || 'Concrete';
+      var e = conc[kind] || (conc[kind] = { n:0, vol:0, volU:'' }); e.n++; var v = find(cp, /^Volume \((CY|m³|m3)\)$/); if (v){ e.vol += +v.v || 0; e.volU = v.k; } });
+    return { k:k, name:get(wp, 'Wall line') || w.name, tag:w.tag, type:get(wp, 'Wall type') || w.objtype, len:get(wp, 'Length'), h:first(wp, ['Height', 'Height (tallest)']),
+      bond:get(wp, 'Bond'), grout:first(wp, ['Grout', 'Grout mode']), liftH:get(wp, 'Lift height'), lifts:lifts, whole:whole, ops:ops, conc:conc };
+  });
+
+  // a Pset (lift or wall totals) -> {rows:{label:{n, colours}}, total, grout, mortar}
+  function qtyFrom(p, total){
+    var q = { units:{}, total: total || 0, grout:null, groutU:'', mortar:null };
+    (p || []).forEach(function(e){
+      if (e[0].indexOf('Blocks: ') === 0){
+        var s = e[0].slice(8), d = s.lastIndexOf(' - '), label = d > 0 ? s.slice(0, d) : s, colour = d > 0 ? s.slice(d+3) : '';
+        var u = q.units[label] || (q.units[label] = { n:0, colours:{} });
+        u.n += e[1] || 0; if (colour) u.colours[colour] = (u.colours[colour] || 0) + (e[1] || 0);
+      }
+    });
+    var g = find(p, /^Grout \((CY|m³|m3)\)$/); if (g){ q.grout = g.v; q.groutU = g.k; }
+    var m = get(p, 'Mortar (bags)'); if (m !== undefined) q.mortar = m;
+    if (!q.total){ var t = 0; Object.keys(q.units).forEach(function(l){ t += q.units[l].n; }); q.total = t; }
+    return q;
+  }
+  function addQ(a, b){
+    if (!b) return a;
+    Object.keys(b.units).forEach(function(l){
+      var u = a.units[l] || (a.units[l] = { n:0, colours:{} }); u.n += b.units[l].n;
+      Object.keys(b.units[l].colours).forEach(function(c){ u.colours[c] = (u.colours[c] || 0) + b.units[l].colours[c]; });
+    });
+    a.total += b.total;
+    if (b.grout !== null){ a.grout = (a.grout || 0) + b.grout; a.groutU = b.groutU; }
+    if (b.mortar !== null) a.mortar = (a.mortar || 0) + b.mortar;
+    if (b.rebarW != null){ a.rebarW = (a.rebarW || 0) + b.rebarW; a.rebarU = b.rebarU; }
+    if (b.bars) a.bars = (a.bars || 0) + b.bars;
+    return a;
+  }
+  function emptyQ(){ return { units:{}, total:0, grout:null, groutU:'', mortar:null, rebarW:null, rebarU:'', bars:0 }; }
+
+  // sizes per pset label ('8" Stretcher' -> '8x8x16'), learned from the drawn blocks
+  var sizeOf = {};
+  (function(){
+    var colSize = keys.indexOf('Size') >= 0 ? cols[keys.indexOf('Size')] : null, seen = {};
+    for (var i = 0; i < N; i++){
+      var pk = U[i*5+2]; if (pk === 65535 || !colSize) continue;
+      var unit = colUnit[pk], nm = meta.names[U[i*5+3]] || '', size = nm.indexOf(unit + ' ') === 0 ? nm.slice(unit.length + 1) : '';
+      var m = /\(([\d.]+)\s*x/.exec(colSize[pk] || ''); if (!m || !size) continue;
+      var w = +m[1], cand = [Math.round(w + 0.375) + '"', Math.round((w*25.4 + 10)/10) + ' cm'];
+      cand.forEach(function(c){ var l = c + ' ' + unit; (seen[l] = seen[l] || {})[size] = 1; });
+    }
+    Object.keys(seen).forEach(function(l){ var s = Object.keys(seen[l]); if (s.length <= 2) sizeOf[l] = s.join(', '); });
+  })();
+
+  /* ---------- sides: per-block "Segment" -> one chip per side; else one chip per wall line ---------- */
+  var colSeg = keys.indexOf('Segment') >= 0 ? cols[keys.indexOf('Segment')] : null;
+  var sides = [], bSide = new Int16Array(N); bSide.fill(-1);
+  if (colSeg){
+    var seen = {};
+    for (var i2 = 0; i2 < N; i2++){
+      var pk2 = U[i2*5+2]; if (pk2 === 65535) continue; var sv = colSeg[pk2]; if (sv == null || sv === '') continue;
+      var key = bWall[i2] + '|' + sv; if (!(key in seen)){ seen[key] = 1; sides.push({ wall:bWall[i2], seg:String(sv) }); }
+    }
+    var nat = function(a, b){ return a.wall - b.wall || a.seg.localeCompare(b.seg, 'en', { numeric:true }); };
+    sides.sort(nat); var sIdx = {}; sides.forEach(function(sd, n){ sIdx[sd.wall + '|' + sd.seg] = n; });
+    var multiColour = colColour && colColour.some(function(c){ return c && c !== colColour[0]; });
+    var prefixOf = function(w){ var m = /^(\d+(?:\.\d+)?\s*(?:"|cm|mm))/.exec(w.type || ''); return m ? m[1] + ' ' : ''; };
+    var addBlock = function(q, label, colour){ var u = q.units[label] || (q.units[label] = { n:0, colours:{} }); u.n++; q.total++; if (multiColour && colour) u.colours[colour] = (u.colours[colour] || 0) + 1; };
+    var sideQ = function(){ return { units:{}, total:0, grout:null, groutU:'', mortar:null }; };
+    sides.forEach(function(sd){ sd.whole = sideQ(); sd.lifts = {}; sd.name = sd.seg; sd.tag = sd.seg; });
+    for (i2 = 0; i2 < N; i2++){
+      pk2 = U[i2*5+2]; if (pk2 === 65535) continue; sv = colSeg[pk2]; if (sv == null || sv === '') continue;
+      var sd = sides[sIdx[bWall[i2] + '|' + sv]]; bSide[i2] = sIdx[bWall[i2] + '|' + sv];
+      var w2 = walls[sd.wall], label = prefixOf(w2) + colUnit[pk2], colour = colColour ? colColour[pk2] : '';
+      addBlock(sd.whole, label, colour);
+      var L2 = bLift[i2], lq = sd.lifts[L2] || (sd.lifts[L2] = sideQ());
+      if (w2.lifts[L2]){ lq.lo = w2.lifts[L2].lo; lq.hi = w2.lifts[L2].hi; }
+      addBlock(lq, label, colour);
+    }
+    // grout / mortar per side only when a "TMM Side" pset carries them
+    (meta.sides || []).forEach(function(sp){
+      var props = sp.props || [];
+      sides.forEach(function(sd){
+        var w3 = walls[sd.wall], hit = props.some(function(e){ return String(e[1]) === sd.seg; });
+        var wl = get(props, 'Wall'); if (wl && String(wl).indexOf(w3.tag) < 0 && String(wl).indexOf(w3.name) < 0) hit = false;
+        if (!hit) return;
+        var g = find(props, /^Grout \((CY|m³|m3)\)$/); if (g){ sd.whole.grout = g.v; sd.whole.groutU = g.k; }
+        var mo = get(props, 'Mortar (bags)'); if (mo != null) sd.whole.mortar = mo;
+      });
+    });
+  }
+  var bySide = sides.length > 0;
+  var selGroups = bySide ? sides : walls;
+  function groupOf(i){ return bySide ? bSide[i] : bWall[i]; }
+
+  // lift numbers that have blocks anywhere
+  var liftNums = {};
+  walls.forEach(function(w){ Object.keys(w.lifts).forEach(function(n){ liftNums[n] = 1; }); });
+  liftNums = Object.keys(liftNums).map(Number).sort(function(a, b){ return a - b; });
+  var liftHs = []; walls.forEach(function(w){ if (w.liftH && liftHs.indexOf(w.liftH) < 0) liftHs.push(w.liftH); });
+  $('note').textContent = (liftHs.length ? 'Lifts are ' + liftHs.join(' / ') + '. ' : '') + 'This field view shows quantities only. Prices and labor stay in the office.';
+
+  /* ---------- three.js ---------- */
+  var stage = $('stage'), canvas = document.createElement('canvas');
+  canvas.setAttribute('aria-label', '3D view of the masonry walls. Tap a wall to see its counts.');
+  stage.insertBefore(canvas, stage.firstChild);
+  // big jobs: an overview of merged course runs per wall, full blocks only for the selected wall and walls you zoom into
+  var BIG = /[?&]big=1/.test(location.search) || (N > 6000 && !/[?&]big=0/.test(location.search));
+  var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:true, preserveDrawingBuffer:!BIG });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, BIG ? 1.5 : 2));
+  renderer.localClippingEnabled = true;
+  var rbPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
+  var scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a80, 0.8));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.6); sun.position.set(0.6, 1, 0.4); scene.add(sun);
+  var sun2 = new THREE.DirectionalLight(0xffffff, 0.18); sun2.position.set(-0.7, 0.4, -0.5); scene.add(sun2);
+
+  var bb = [1e9,1e9,1e9,-1e9,-1e9,-1e9];
+  for (i = 0; i < N; i++) for (var k = 0; k < 3; k++){ var v = F[i*7+k]; if (v < bb[k]) bb[k] = v; if (v > bb[k+3]) bb[k+3] = v; }
+  var ctr = [(bb[0]+bb[3])/2, (bb[1]+bb[4])/2, bb[2]];
+  var span = Math.max(bb[3]-bb[0], bb[4]-bb[1], 1), tall = bb[5]-bb[2];
+  var camera = new THREE.PerspectiveCamera(40, 1, 0.05, span * 30);
+
+  // top of each block in scene units, so the clip sits at a lift's top
+  var bTop = new Float32Array(N);
+  for (i = 0; i < N; i++) bTop[i] = F[i*7+2] - ctr[2] + F[i*7+5]/2;
+  var floorY = -(ctr[2] - 0) ; // IFC z = 0
+
+  var polySet = {}; (meta.polys || []).forEach(function(pp){ polySet[pp.i] = 1; });
+  var jit = new Float32Array(N);
+  for (i = 0; i < N; i++) jit[i] = 1 + (((i * 2654435761) >>> 0) % 1000 / 1000 - 0.5) * 0.07;
+
+  // one InstancedMesh per IFC layer, instances sorted by lift so a lift view = a shorter draw count
+  var geo = new THREE.BoxGeometry(1, 1, 1), meshes = [];
+  var groups = {};
+  for (i = 0; i < N; i++){ if (polySet[i]) continue; var L = U[i*5+4]; (groups[L] = groups[L] || []).push(i); }
+  var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), s = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+  if (!BIG) Object.keys(groups).forEach(function(L){
+    var idx = groups[L].sort(function(a, b){ return bLift[a] - bLift[b] || a - b; });
+    var mesh = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ color:0xffffff }), idx.length);
+    for (var n = 0; n < idx.length; n++){
+      var b = idx[n]*7;
+      p.set(F[b] - ctr[0], F[b+2] - ctr[2], -(F[b+1] - ctr[1])); q.setFromAxisAngle(up, F[b+6]); s.set(F[b+3], F[b+5], F[b+4]);
+      m4.compose(p, q, s); mesh.setMatrixAt(n, m4);
+    }
+    mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(idx.length*3), 3);
+    mesh.userData = { idx: idx, orig: mesh.instanceMatrix.array.slice() };
+    meshes.push(mesh); scene.add(mesh);
+  });
+  var chunks = [], FULL_BUDGET = 24000, paintVer = 0, _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _m = new THREE.Matrix4();
+  function chunkMesh(ch, n){
+    var g = geo.clone(); g.boundingSphere = ch.sphere.clone();
+    var mesh = new THREE.InstancedMesh(g, new THREE.MeshLambertMaterial({ color:0xffffff }), n);
+    mesh.frustumCulled = true; mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(n*3), 3);
+    return mesh;
+  }
+  // blocks in one course of one wall/side, same size (+ type when colouring by type; the middle block gives the colour), touching end to end -> one long box
+  function runsOf(idx){
+    var byKey = {}, out = [];
+    idx.forEach(function(j){
+      var b = j*7, r = F[b+6] % Math.PI; if (r < 0) r += Math.PI; if (r > Math.PI - 1e-3) r -= Math.PI;
+      var cs = Math.cos(r), sn = Math.sin(r), t = -F[b]*sn + F[b+1]*cs, zk = Math.round(F[b+2]*100);
+      var key = bLift[j] + '|' + Math.round(r*1000) + '|' + Math.round(t*100) + '|' + zk + '|' + Math.round(F[b+4]*100) + '|' + Math.round(F[b+5]*100) + '|' + (colorOn ? bType[j] : '') + '|' + groupOf(j);
+      var e = byKey[key]; if (!e) e = byKey[key] = { r:r, cs:cs, sn:sn, t:t, zk:zk, js:[] };
+      var sv = F[b]*cs + F[b+1]*sn, hl = F[b+3]/2; e.js.push({ j:j, a:sv - hl, b:sv + hl });
+    });
+    Object.keys(byKey).forEach(function(k){
+      var e = byKey[k], cur = null;
+      e.js.sort(function(x, y){ return x.a - y.a; }).forEach(function(o){
+        if (cur && o.a - cur.b < 0.03){ if (o.b > cur.b) cur.b = o.b; cur.js.push(o.j); return; }
+        cur = { a:o.a, b:o.b, e:e, js:[o.j] }; out.push(cur);
+      });
+    });
+    out.forEach(function(rn){
+      var e = rn.e, mid = (rn.a + rn.b)/2; rn.rep = rn.js[rn.js.length >> 1]; var b = rn.rep*7;
+      rn.x = mid*e.cs - e.t*e.sn; rn.y = mid*e.sn + e.t*e.cs; rn.z = F[b+2]; rn.rot = e.r; rn.len = rn.b - rn.a; rn.w = F[b+4]; rn.h = F[b+5];
+      rn.jit = 1 + (((e.zk*2654435761 + bWall[rn.rep]*40503) >>> 0) % 1000 / 1000 - 0.5)*0.05; rn.e = rn.js = null;
+    });
+    return out;
+  }
+  // overview = a few spatial tiles of merged runs (few draw calls); a wall shown in full hides its runs in its tile
+  var tiles = [], ZERO = new THREE.Matrix4().makeScale(0, 0, 0), lodColour = null;
+  function buildLod(){
+    tiles.forEach(function(tl){ scene.remove(tl.mesh); tl.mesh.geometry.dispose(); tl.mesh.material.dispose(); }); tiles = [];
+    var cell = Math.max(24, span/4), byCell = {};
+    chunks.forEach(function(ch){
+      ch.runs = runsOf(ch.idx); ch.lodOn = true; ch.runs.forEach(function(rn){ rn.ch = ch; });
+      var key = Math.floor(ch.sphere.center.x/cell) + ',' + Math.floor(ch.sphere.center.z/cell); (byCell[key] = byCell[key] || []).push(ch);
+    });
+    Object.keys(byCell).forEach(function(key){
+      var chs = byCell[key], slots = [], sph = chs[0].sphere.clone();
+      chs.forEach(function(ch){ sph.union(ch.sphere); ch.runs.forEach(function(rn){ slots.push(rn); }); });
+      slots.sort(function(x, y){ return bLift[x.rep] - bLift[y.rep]; });
+      var tl = { chunks:chs, slots:slots, mesh:chunkMesh({ sphere:sph }, slots.length) };
+      slots.forEach(function(rn, n){
+        _p.set(rn.x - ctr[0], rn.z - ctr[2], -(rn.y - ctr[1])); _q.setFromAxisAngle(up, rn.rot); _s.set(rn.len, rn.h, rn.w);
+        rn.m = new THREE.Matrix4().compose(_p, _q, _s); rn.slot = n; tl.mesh.setMatrixAt(n, rn.m);
+      });
+      chs.forEach(function(ch){ ch.tile = tl; });
+      tl.mesh.userData = { tile:tl, lod:true }; tiles.push(tl); scene.add(tl.mesh);
+    });
+    lodColour = !!colorOn;
+  }
+  if (BIG){
+    var byWall = {};
+    for (i = 0; i < N; i++){ if (polySet[i]) continue; (byWall[bWall[i]] = byWall[bWall[i]] || []).push(i); }
+    Object.keys(byWall).forEach(function(wk){
+      var idx = byWall[wk].sort(function(a, b){ return bLift[a] - bLift[b] || a - b; }), lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+      idx.forEach(function(j){
+        var b = j*7, c3 = [F[b] - ctr[0], F[b+2] - ctr[2], -(F[b+1] - ctr[1])], e3 = [Math.max(F[b+3], F[b+4])/2, F[b+5]/2, Math.max(F[b+3], F[b+4])/2];
+        for (var a = 0; a < 3; a++){ if (c3[a] - e3[a] < lo[a]) lo[a] = c3[a] - e3[a]; if (c3[a] + e3[a] > hi[a]) hi[a] = c3[a] + e3[a]; }
+      });
+      chunks.push({ wall:+wk, idx:idx, full:null, fullVer:-1, want:false,
+        sphere:new THREE.Sphere(new THREE.Vector3((lo[0]+hi[0])/2, (lo[1]+hi[1])/2, (lo[2]+hi[2])/2), Math.hypot(hi[0]-lo[0], hi[1]-lo[1], hi[2]-lo[2])/2 + 0.05) });
+    });
+    buildLod();
+  }
+  var chunkOfWall = {}; chunks.forEach(function(ch){ chunkOfWall[ch.wall] = ch; });
+  function buildFull(ch){
+    var idx = ch.idx, mesh = chunkMesh(ch, idx.length);
+    for (var n = 0; n < idx.length; n++){
+      var b = idx[n]*7;
+      _p.set(F[b] - ctr[0], F[b+2] - ctr[2], -(F[b+1] - ctr[1])); _q.setFromAxisAngle(up, F[b+6]); _s.set(F[b+3], F[b+5], F[b+4]);
+      _m.compose(_p, _q, _s); mesh.setMatrixAt(n, _m);
+    }
+    mesh.userData = { idx:idx, chunk:ch }; ch.orig = mesh.instanceMatrix.array.slice(); ch.full = mesh; scene.add(mesh);
+  }
+  function colourFull(ch){
+    var idx = ch.idx, a = ch.full.instanceColor.array, M = ch.full.instanceMatrix.array, O = ch.orig;
+    for (var n = 0; n < idx.length; n++){
+      var i = idx[n]; blockColour(i, tmp); a[n*3] = tmp[0]; a[n*3+1] = tmp[1]; a[n*3+2] = tmp[2];
+      if (shownBlock(i)) for (var k6 = 0; k6 < 16; k6++) M[n*16+k6] = O[n*16+k6]; else M.set(HIDE, n*16);
+    }
+    ch.full.instanceColor.needsUpdate = true; ch.full.instanceMatrix.needsUpdate = true; ch.fullVer = paintVer;
+  }
+  function tileMatrices(tl){
+    for (var n = 0; n < tl.slots.length; n++){ var rn = tl.slots[n]; tl.mesh.setMatrixAt(n, rn.ch.lodOn && shownBlock(rn.rep) ? rn.m : ZERO); }
+    tl.mesh.instanceMatrix.needsUpdate = true;
+  }
+  function colourLod(tl){
+    var a = tl.mesh.instanceColor.array;
+    for (var n = 0; n < tl.slots.length; n++){ var rn = tl.slots[n]; blockColour(rn.rep, tmp, rn.jit); a[n*3] = tmp[0]; a[n*3+1] = tmp[1]; a[n*3+2] = tmp[2]; }
+    tl.mesh.instanceColor.needsUpdate = true; tileMatrices(tl);
+  }
+  // per render: full blocks for the selected wall, then the nearest on-screen walls whose blocks are >= 9 px long
+  var _fr = new THREE.Frustum(), _pm = new THREE.Matrix4();
+  function chooseLod(){
+    if (!BIG) return;
+    camera.updateMatrixWorld(); _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_pm);
+    var selW = {}, cand = [], used = 0; selList.forEach(function(g){ selW[bySide ? sides[g].wall : g] = 1; });
+    var ppm = (stage.clientHeight || 600) / (2*Math.tan(camera.fov*Math.PI/360));
+    chunks.forEach(function(ch){
+      ch.want = false; if (!_fr.intersectsSphere(ch.sphere)) return;
+      var d = Math.max(0.5, camera.position.distanceTo(ch.sphere.center) - ch.sphere.radius);
+      if (selW[ch.wall]) cand.push({ ch:ch, d:-1 }); else if (0.4*ppm/d >= 9) cand.push({ ch:ch, d:d });
+    });
+    cand.sort(function(a, b){ return a.d - b.d; }).forEach(function(c){ if (c.d >= 0 && used + c.ch.idx.length > FULL_BUDGET) return; used += c.ch.idx.length; c.ch.want = true; });
+    chunks.forEach(function(ch){
+      if (ch.want){ if (!ch.full) buildFull(ch); if (ch.fullVer !== paintVer) colourFull(ch); }
+      if (ch.full) ch.full.visible = ch.want;
+      if (ch.lodOn === ch.want){
+        ch.lodOn = !ch.want; var tm = ch.tile.mesh;
+        ch.runs.forEach(function(rn){ tm.setMatrixAt(rn.slot, ch.lodOn && shownBlock(rn.rep) ? rn.m : ZERO); }); tm.instanceMatrix.needsUpdate = true;
+      }
+    });
+  }
+  // a chip on a big job flies the camera to that wall (Whole job = back to the overview)
+  var fly = null;
+  function flyTo(k){
+    if (!BIG) return;
+    var ch = k === null ? null : chunkOfWall[bySide ? sides[k].wall : k];
+    var t1 = ch ? ch.sphere.center.clone() : new THREE.Vector3(0, tall*0.3, 0);
+    var r1 = ch ? Math.max(4, ch.sphere.radius / Math.sin(camera.fov*Math.PI/360) * 1.3) : R0;
+    var t0 = target.clone(), r0 = radius, st = performance.now(); fly = st;
+    (function step(){
+      if (fly !== st) return;
+      var u = Math.min(1, (performance.now() - st)/450), e = u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2)/2;
+      target.lerpVectors(t0, t1, e); radius = r0 + (r1 - r0)*e; updateCam(); schedule();
+      if (u < 1) requestAnimationFrame(step); else fly = null;
+    })();
+  }
+  // clipped pieces (rake / gable): their own extruded face polygon
+  var toThree = new THREE.Matrix4().set(1,0,0,-ctr[0], 0,0,1,-ctr[2], 0,-1,0,ctr[1], 0,0,0,1), polys = [];
+  (meta.polys || []).forEach(function(pp){
+    var shape = new THREE.Shape(pp.pts.map(function(v){ return new THREE.Vector2(v[0], v[1]); }));
+    var g = new THREE.ExtrudeGeometry(shape, { depth:pp.d, bevelEnabled:false, steps:1 });
+    var m = pp.m, M = new THREE.Matrix4().set(m[0],m[1],m[2],m[3], m[4],m[5],m[6],m[7], m[8],m[9],m[10],m[11], 0,0,0,1);
+    var mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color:0xffffff }));
+    mesh.matrixAutoUpdate = false; mesh.matrix.multiplyMatrices(toThree, M); mesh.userData = { gi: pp.i };
+    polys.push(mesh); scene.add(mesh);
+  });
+  // cast-in-place concrete (curbs, pours): grey solids, shown at every lift
+  var concMeshes = [];
+  (meta.concrete || []).forEach(function(cc, n){
+    var shape = new THREE.Shape(cc.pts.map(function(v){ return new THREE.Vector2(v[0], v[1]); }));
+    var g = new THREE.ExtrudeGeometry(shape, { depth:cc.d, bevelEnabled:false, steps:1 });
+    var m = cc.m, M = new THREE.Matrix4().set(m[0],m[1],m[2],m[3], m[4],m[5],m[6],m[7], m[8],m[9],m[10],m[11], 0,0,0,1);
+    var mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color:0xa3a3a3 }));
+    mesh.matrixAutoUpdate = false; mesh.matrix.multiplyMatrices(toThree, M); mesh.userData = { conc:n, wall:cc.wall };
+    concMeshes.push(mesh); scene.add(mesh);
+  });
+  // openings: translucent boxes, clipped with the lift
+  // each opening its own mesh + clip plane: a lift clips only the picked walls' openings (Ryan 10-21)
+  var openMeshes = [];
+  meta.openings.forEach(function(o, n){
+    var pl = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
+    var om = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color:new THREE.Color(0.43, 0.6, 0.72), transparent:true, opacity:0.3, depthWrite:false, clippingPlanes:[pl] }));
+    om.position.set(o.c[0] - ctr[0], o.c[2] - ctr[2], -(o.c[1] - ctr[1])); om.quaternion.setFromAxisAngle(up, o.r); om.scale.set(o.s[0], o.s[2], o.s[1]);
+    var og = o.wall;                                                // side = the side of the nearest block on its wall
+    if (bySide){ var bd = 1e18; og = -1; for (var i7 = 0; i7 < N; i7++){ if (bWall[i7] !== o.wall || bSide[i7] < 0) continue; var dx7 = F[i7*7] - o.c[0], dy7 = F[i7*7+1] - o.c[1], d7 = dx7*dx7 + dy7*dy7; if (d7 < bd){ bd = d7; og = bSide[i7]; } } }
+    om.userData = { plane:pl, g:og }; om.renderOrder = 2; openMeshes.push(om); scene.add(om);
+  });
+  // rebar: bar axes as lines, off by default
+  var rebar = null, rebarPos = null;
+  if (meta.nRebarSegs){
+    var segs = meta.nRebarSegs, rp = new Float32Array(rbuf, 0, segs*6), pos = new Float32Array(segs*6);
+    for (i = 0; i < segs*2; i++){ pos[i*3] = rp[i*3] - ctr[0]; pos[i*3+1] = rp[i*3+2] - ctr[2]; pos[i*3+2] = -(rp[i*3+1] - ctr[1]); }
+    var rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    rg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(segs*6), 3));
+    rebarPos = pos;
+    rebar = new THREE.LineSegments(rg, new THREE.LineBasicMaterial({ color:0xffffff, vertexColors:true, depthTest:false, transparent:true, opacity:0.9, clippingPlanes:[rbPlane] }));
+    rebar.renderOrder = 3; rebar.visible = false; scene.add(rebar);
+  } else $('rebarBtn').hidden = true;
+
+  var grid = new THREE.GridHelper(Math.ceil(span*1.5/3.048)*3.048, Math.ceil(span*1.5/3.048), 0x999999, 0x999999);
+  grid.material.transparent = true; grid.material.opacity = 0.5; grid.position.y = floorY - 0.003; scene.add(grid);
+  function dark(){ var a = document.documentElement.getAttribute('data-theme'); return a ? a === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; }
+  function themeScene(){ grid.material.color.set(dark() ? 0x4a4e51 : 0xb9b6ae); paint(); }
+
+  /* ---------- camera orbit (drag turn, pinch / wheel zoom, right-drag or two-finger pan) ---------- */
+  var target = new THREE.Vector3(0, tall*0.3, 0), theta = 0.75, phi = 1.05, radius = span*1.25, R0 = radius;
+  var clamp = function(v, a, b){ return Math.min(b, Math.max(a, v)); };
+  function updateCam(){
+    camera.position.set(target.x + radius*Math.sin(phi)*Math.sin(theta), target.y + radius*Math.cos(phi), target.z + radius*Math.sin(phi)*Math.cos(theta));
+    camera.lookAt(target);
+  }
+  var pending = false;
+  function schedule(){ if (!pending){ pending = true; requestAnimationFrame(function(){ pending = false; chooseLod(); renderer.render(scene, camera); if (window.__field) window.__field.renders = (window.__field.renders || 0) + 1; }); } }
+  var fitted = false;
+  function fitCam(){
+    var dx = bb[3] - bb[0], dy = bb[4] - bb[1];
+    if (camera.aspect < 1 && Math.max(dx, dy) > 1.6*Math.min(dx, dy)){ theta = dx > dy ? Math.PI/2 - 0.35 : 0.35; phi = 0.8; }
+    var xs = [bb[0] - ctr[0], bb[3] - ctr[0]], ys = [0, tall], zs = [-(bb[1] - ctr[1]), -(bb[4] - ctr[1])], v = new THREE.Vector3();
+    target.set(0, tall*0.3, 0);
+    for (radius = span*0.3; radius < span*6; radius *= 1.06){
+      updateCam(); camera.updateMatrixWorld(); var ok = true;
+      for (var a = 0; a < 8 && ok; a++){ v.set(xs[a & 1], ys[(a >> 1) & 1], zs[(a >> 2) & 1]).project(camera); if (Math.abs(v.x) > 0.92 || v.y > 0.8 || v.y < -0.92) ok = false; }
+      if (ok) break;
+    }
+    R0 = radius;
+  }
+  function resize(){
+    var w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
+    renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = w < 520 ? 52 : 40; camera.updateProjectionMatrix();
+    if (BIG && !fitted){ fitted = true; fitCam(); }
+    updateCam(); schedule();
+  }
+  new ResizeObserver(resize).observe(stage);
+
+  var pointers = new Map(), moved = 0, pinch0 = 0, rad0 = radius, mid0 = null, panBtn = false;
+  function hideHint(){ $('hint').hidden = true; }
+  function two(){ var a = Array.from(pointers.values()); return { d: Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y), x:(a[0].x+a[1].x)/2, y:(a[0].y+a[1].y)/2 }; }
+  function pan(dx, dy){
+    var k = radius * 2 * Math.tan(camera.fov*Math.PI/360) / stage.clientHeight;
+    var right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0), upv = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+    target.addScaledVector(right, -dx*k).addScaledVector(upv, dy*k);
+  }
+  canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  canvas.addEventListener('pointerdown', function(e){
+    canvas.setPointerCapture(e.pointerId); pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if (pointers.size === 1){ moved = 0; panBtn = e.button === 2 || e.shiftKey; mk = null;
+      if (prodOn && dragOn && !panBtn){ var hb0 = rayBlock(e.clientX, e.clientY); if (hb0 !== null){ mk = { lift:bLift[hb0], hits:{}, last:{ x:e.clientX, y:e.clientY }, on:false }; mkHit(hb0); } } }
+    if (pointers.size === 2){ var t = two(); pinch0 = t.d; rad0 = radius; mid0 = t; moved = 99; if (mk){ mk = null; dragSet = null; paint(); } }
+  });
+  canvas.addEventListener('pointermove', function(e){
+    if (!pointers.has(e.pointerId)) return;
+    var prev = pointers.get(e.pointerId), cur = { x:e.clientX, y:e.clientY }; pointers.set(e.pointerId, cur);
+    if (pointers.size === 1 && mk){
+      moved += Math.abs(cur.x - prev.x) + Math.abs(cur.y - prev.y); if (moved < 6) return;
+      mk.on = true; var sx = mk.last.x, sy = mk.last.y, st = Math.max(1, Math.ceil(Math.hypot(cur.x - sx, cur.y - sy)/5));
+      for (var k5 = 1; k5 <= st; k5++){ var hb5 = rayBlock(sx + (cur.x - sx)*k5/st, sy + (cur.y - sy)*k5/st); if (hb5 !== null) mkHit(hb5); }
+      mk.last = cur; dragSet = coverHits(mk.lift, mk.hits); paint(); hideHint(); return;
+    }
+    if (pointers.size === 1){
+      var dx = cur.x - prev.x, dy = cur.y - prev.y; moved += Math.abs(dx) + Math.abs(dy); if (moved < 6) return;
+      if (panBtn) pan(dx, dy); else { theta -= dx*0.008; phi = clamp(phi - dy*0.008, 0.15, 1.5); }
+    } else if (pointers.size === 2 && pinch0){
+      var t = two(); radius = clamp(rad0*pinch0/t.d, R0*0.08, R0*3); pan(t.x - mid0.x, t.y - mid0.y); mid0 = t;
+    }
+    hideHint(); updateCam(); schedule();
+  });
+  function endPointer(e, tap){
+    if (mk && pointers.size === 1){ var m0 = mk; mk = null; dragSet = null;
+      if (tap && m0.on) commitDrag(m0); else if (tap && moved < 6) pick(e); else paint();
+      pointers.delete(e.pointerId); return; }
+    if (tap && pointers.size === 1 && moved < 6 && !panBtn) pick(e);
+    pointers.delete(e.pointerId); if (pointers.size < 2) pinch0 = 0;
+  }
+  canvas.addEventListener('pointerup', function(e){ endPointer(e, true); });
+  canvas.addEventListener('pointercancel', function(e){ endPointer(e, false); });
+  canvas.addEventListener('wheel', function(e){ e.preventDefault(); radius = clamp(radius*(1 + e.deltaY*0.001), R0*0.08, R0*3); hideHint(); updateCam(); schedule(); }, { passive:false });
+
+  var ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  /* ---------- tap a bar: nearest bar axis on screen, fatter pick radius for fingers ---------- */
+  var BARS = meta.bars || null, nB = BARS ? BARS.mark.length : 0, selBar = null, barHi = null;
+  var segBar = null;
+  if (BARS && rebar){ segBar = new Int32Array(meta.nRebarSegs).fill(-1); for (var bi = 0; bi < nB; bi++) for (var sj = BARS.seg0[bi]; sj < BARS.seg0[bi+1]; sj++) segBar[sj] = bi; }
+  var pa = new THREE.Vector3(), pb = new THREE.Vector3(), segOn = null, barLow = null;
+  if (segBar){ barLow = new Float32Array(nB).fill(1e9); for (var q = 0; q < meta.nRebarSegs; q++) if (segBar[q] >= 0) barLow[segBar[q]] = Math.min(barLow[segBar[q]], rebarPos[q*6+1], rebarPos[q*6+4]); }
+  // a lift keeps every bar that starts at or below its top, drawn up to lift top + its lap (Ryan 10-21: "just the lap lengths"); bars starting above stay hidden
+  var rebarOrig = rebarPos ? rebarPos.slice() : null, barLap = null;
+  if (segBar){
+    var DB_IN = { '#3':0.375, '#4':0.5, '#5':0.625, '#6':0.75, '#7':0.875, '#8':1, '#9':1.128, '#10':1.27, '#11':1.41 }, DB_MM = { '10M':11.3, '15M':16, '20M':19.5, '25M':25.2, '30M':29.9, '35M':35.7 };
+    var bTopY = new Float32Array(nB).fill(-1e9), bx = new Float32Array(nB), bz = new Float32Array(nB), bn = new Float32Array(nB), bxa = new Float32Array(nB).fill(1e9), bxb = new Float32Array(nB).fill(-1e9), bza = new Float32Array(nB).fill(1e9), bzb = new Float32Array(nB).fill(-1e9);
+    for (var q2 = 0; q2 < meta.nRebarSegs; q2++){ var b2 = segBar[q2]; if (b2 < 0) continue;
+      for (var e2 = 0; e2 < 2; e2++){ var o2 = q2*6 + e2*3, X = rebarPos[o2], Y = rebarPos[o2+1], Z = rebarPos[o2+2];
+        if (Y > bTopY[b2]) bTopY[b2] = Y; bx[b2] += X; bz[b2] += Z; bn[b2]++;
+        if (X < bxa[b2]) bxa[b2] = X; if (X > bxb[b2]) bxb[b2] = X; if (Z < bza[b2]) bza[b2] = Z; if (Z > bzb[b2]) bzb[b2] = Z; } }
+    var vert = new Uint8Array(nB);
+    for (var b3 = 0; b3 < nB; b3++){ if (bn[b3]){ bx[b3] /= bn[b3]; bz[b3] /= bn[b3]; } vert[b3] = bTopY[b3] - barLow[b3] > 0.3 && Math.max(bxb[b3] - bxa[b3], bzb[b3] - bza[b3]) < 0.2 ? 1 : 0; }
+    barLap = new Float32Array(nB);
+    var vgrid = {}; for (b3 = 0; b3 < nB; b3++) if (vert[b3]){ var gk3 = Math.floor(bx[b3]/0.12) + ',' + Math.floor(bz[b3]/0.12); (vgrid[gk3] = vgrid[gk3] || []).push(b3); }
+    for (b3 = 0; b3 < nB; b3++){
+      var lap = -1;
+      if (vert[b3]) for (var gx3 = Math.floor(bx[b3]/0.12) - 1; gx3 <= Math.floor(bx[b3]/0.12) + 1; gx3++) for (var gz3 = Math.floor(bz[b3]/0.12) - 1; gz3 <= Math.floor(bz[b3]/0.12) + 1; gz3++){
+        var cell3 = vgrid[gx3 + ',' + gz3] || [];   // the next bar up in the same cell: overlap = the lap
+        for (var k3 = 0; k3 < cell3.length; k3++){ var c3 = cell3[k3];
+          if (c3 === b3 || !vert[c3] || Math.hypot(bx[c3] - bx[b3], bz[c3] - bz[b3]) > 0.12) continue;
+          if (barLow[c3] > barLow[b3] + 0.05 && barLow[c3] < bTopY[b3] - 0.01){ var ov = bTopY[b3] - barLow[c3]; if (lap < 0 || ov > lap) lap = ov; }
+        }
+      }
+      if (lap < 0){   // 48 bar diameters from the size
+        var sz = BARS.facts[BARS.fact[b3]] ? String(BARS.facts[BARS.fact[b3]].size) : '', dm = DB_MM[sz] ? DB_MM[sz]/1000 : (DB_IN[sz] ? DB_IN[sz]*0.0254 : 0.625*0.0254);
+        lap = 48*dm;
+      }
+      barLap[b3] = lap;
+    }
+  }
+  var barGroup = null;
+  if (segBar){ barGroup = new Int32Array(nB).fill(-1); var segIdx = {}; sides.forEach(function(sd, n){ segIdx[sd.wall + '|' + sd.seg] = n; });
+    for (var b8 = 0; b8 < nB; b8++){ if (!bySide) barGroup[b8] = BARS.wall[b8];
+      else if (BARS.side[b8] >= 0 && BARS.sideNames){ var sg8 = segIdx[BARS.wall[b8] + '|' + BARS.sideNames[BARS.side[b8]]]; if (sg8 !== undefined) barGroup[b8] = sg8; } } }
+  // topOf(group) -> lift top for that group, or null = draw it whole; allTop = the whole-job lift top (null = all lifts)
+  function rebarLift(topOf, allTop){
+    if (!rebar) return;
+    segOn = null; rbPlane.constant = 1e5;
+    if (rebarOrig){ rebarPos.set(rebarOrig); rebar.geometry.attributes.position.needsUpdate = true; }
+    var selOnly = BIG && segBar && selList.length > 0;   // big job: only the picked walls' bars
+    if (allTop === null && !selOnly) rebar.geometry.setIndex(null);
+    else if (!segBar){ if (!selList.length) rbPlane.constant = allTop + 1.2192; rebar.geometry.setIndex(null); }   // no bar map: clip rebar only, top + 48"
+    else {
+      var n = meta.nRebarSegs, idx = [], b; segOn = new Uint8Array(n);
+      for (var q = 0; q < n; q++){
+        b = segBar[q]; if (selOnly && (b < 0 || !inSel[barGroup[b]])) continue; var o = q*6, y0 = rebarPos[o+1], y1 = rebarPos[o+4], top = topOf(b >= 0 ? barGroup[b] : -1);
+        if (top === null){ segOn[q] = 1; idx.push(q*2, q*2+1); continue; }
+        if (b >= 0 ? barLow[b] > top : Math.min(y0, y1) > top) continue;
+        if (b >= 0){
+          var cap = top + barLap[b];
+          if (y0 > cap && y1 > cap) continue;
+          if (y0 > cap || y1 > cap){ var lo = y0 > cap ? 3 : 0, hi = y0 > cap ? 0 : 3, t = (cap - rebarPos[o+lo+1]) / (rebarPos[o+hi+1] - rebarPos[o+lo+1]);
+            for (var k2 = 0; k2 < 3; k2++) rebarPos[o+hi+k2] = rebarPos[o+lo+k2] + (rebarPos[o+hi+k2] - rebarPos[o+lo+k2])*t; }
+        }
+        segOn[q] = 1; idx.push(q*2, q*2+1);
+      }
+      rebar.geometry.setIndex(idx); rebar.geometry.attributes.position.needsUpdate = true;
+    }
+  }
+  function toScreen(v, r){ v.project(camera); return { x:(v.x + 1)/2*r.width, y:(1 - v.y)/2*r.height, ok: v.z > -1 && v.z < 1 }; }
+  function pickBar(e){
+    if (!rebar || !rebar.visible || !segBar) return null;
+    var r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    var coarse = e.pointerType === 'touch' || e.pointerType === 'pen' || (window.matchMedia && matchMedia('(pointer: coarse)').matches);
+    var rad = coarse ? 24 : 10, best = null, bestD = rad;
+    camera.updateMatrixWorld();
+    for (var j = 0; j < meta.nRebarSegs; j++){
+      if (segBar[j] < 0) continue;
+      pa.set(rebarPos[j*6], rebarPos[j*6+1], rebarPos[j*6+2]); pb.set(rebarPos[j*6+3], rebarPos[j*6+4], rebarPos[j*6+5]);
+      if (segOn && !segOn[j]) continue;                          // bar starts above the lift shown
+      var A = toScreen(pa, r), B = toScreen(pb, r); if (!A.ok || !B.ok) continue;
+      var dx = B.x - A.x, dy = B.y - A.y, L2 = dx*dx + dy*dy, t = L2 ? clamp(((mx - A.x)*dx + (my - A.y)*dy)/L2, 0, 1) : 0;
+      var d = Math.hypot(mx - (A.x + t*dx), my - (A.y + t*dy));
+      if (d < bestD){ bestD = d; best = segBar[j]; }
+    }
+    return best;
+  }
+  function rayBlock(x, y){
+    var r = canvas.getBoundingClientRect();
+    ndc.set((x - r.left)/r.width*2 - 1, -(y - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
+    var cands = meshes.concat(polys.filter(function(m){ return m.visible; }));
+    if (BIG) chunks.forEach(function(ch){ if (ch.full && ch.full.visible && ray.ray.intersectsSphere(ch.sphere)) cands.push(ch.full); });   // big job: marks land on walls drawn in full
+    var hit = ray.intersectObjects(cands, false)[0];
+    if (!hit) return null;
+    return hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.idx[hit.instanceId];
+  }
+  function pick(e){
+    var hb = pickBar(e);
+    if (hb !== null){ hideHint(); selectBar(hb); return; }
+    if (selBar !== null) selectBar(null, true);
+    var r = canvas.getBoundingClientRect();
+    ndc.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
+    var objs = meshes.concat(polys.filter(function(m){ return m.visible; }), concMeshes);
+    if (BIG){ tiles.forEach(function(tl){ if (ray.ray.intersectsSphere(tl.mesh.geometry.boundingSphere)) objs.push(tl.mesh); });
+      chunks.forEach(function(ch){ if (ch.full && ch.full.visible && ray.ray.intersectsSphere(ch.sphere)) objs.push(ch.full); }); }
+    var hit = ray.intersectObjects(objs, false)[0]; hideHint();
+    if (!hit && BIG){   // big job: a thin wall far away is hard to hit with a finger -> nearest course run within 28 px
+      var best = null, bd = 28, r2 = canvas.getBoundingClientRect(), mx = e.clientX - r2.left, my = e.clientY - r2.top, v = new THREE.Vector3(); camera.updateMatrixWorld();
+      tiles.forEach(function(tl){ for (var n = 0; n < tl.slots.length; n++){ var rn = tl.slots[n]; if (!shownBlock(rn.rep)) continue; v.set(rn.x - ctr[0], rn.z - ctr[2], -(rn.y - ctr[1])).project(camera); if (v.z < -1 || v.z > 1) continue;
+        var d = Math.hypot((v.x + 1)/2*r2.width - mx, (1 - v.y)/2*r2.height - my); if (d < bd){ bd = d; best = rn.rep; } } });
+      if (best !== null){ var gb = groupOf(best); select(gb >= 0 ? gb : null); return; }
+    }
+    if (!hit) { if (!multiOn) select(null); return; }
+    if (hit.object.userData.conc !== undefined){ select(!bySide && hit.object.userData.wall >= 0 ? hit.object.userData.wall : null); return; }
+    var gi = hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.lod ? hit.object.userData.tile.slots[hit.instanceId].rep : hit.object.userData.idx[hit.instanceId];
+    var gk = groupOf(gi); select(gk >= 0 ? gk : null);
+  }
+
+  /* ---------- state + painting ---------- */
+  var selected = null, selLift = null, colorOn = false;
+  var selList = [], inSel = {}, multiOn = false;                 // multi-select (Ryan 10-21: "multi select walls")
+  var prodOn = false, dragOn = true, showT = 'B', dragSet = null, mk = null;
+  var NEUTRAL = [0.84, 0.83, 0.8];
+  function blockColour(i, out, jj){
+    var c = colorOn ? typeInfo(bType[i]).col : shadeOf(meta.colours[U[i*5]] || NEUTRAL, bType[i]), j = jj || jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
+    if (prodOn){
+      if (dragSet && dragSet[i]){ r = sel.r; g = sel.g; b = sel.b; }
+      else if (done[showT][i]){ var tc = TCOL[showT]; r = r*0.6 + tc[0]*0.4; g = g*0.6 + tc[1]*0.4; b = b*0.6 + tc[2]*0.4; }   // done: its own colour, tinted so white block still reads
+      else { var gf = dark() ? [0.31, 0.33, 0.34] : [0.95, 0.945, 0.93]; r = r*0.22 + gf[0]*0.78; g = g*0.22 + gf[1]*0.78; b = b*0.22 + gf[2]*0.78; }
+    } else if (selLift !== null && bLift[i] === selLift){ r = r*0.5 + sel.r*0.5; g = g*0.5 + sel.g*0.5; b = b*0.5 + sel.b*0.5; }
+    if (selList.length && !inSel[groupOf(i)]){
+      var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; r = r*0.15 + f[0]*0.85; g = g*0.15 + f[1]*0.85; b = b*0.15 + f[2]*0.85;
+    }
+    out[0] = Math.min(1, r); out[1] = Math.min(1, g); out[2] = Math.min(1, b);
+  }
+  var tmp = [0, 0, 0], sel = new THREE.Color(), lastVKey = null;
+  var HIDE = new Float32Array([1e-6,0,0,0, 0,1e-6,0,0, 0,0,1e-6,0, 0,-1e4,0,1]);   // a hidden instance: tiny, far below
+  function shownBlock(i){ return selLift === null || bLift[i] <= selLift || (selList.length > 0 && !inSel[groupOf(i)]); }
+  function paint(){
+    sel.set(getComputedStyle(document.documentElement).getPropertyValue('--select').trim() || '#E9B824');
+    // a lift cuts only the picked walls (all walls when none is picked); the others stay whole (Ryan 10-21)
+    var vkey = selLift + '|' + selList.join(','), vchg = vkey !== lastVKey; lastVKey = vkey;
+    meshes.forEach(function(mesh){
+      var idx = mesh.userData.idx, a = mesh.instanceColor.array, cnt = 0, M = mesh.instanceMatrix.array, O = mesh.userData.orig;
+      for (var n = 0; n < idx.length; n++){
+        var i = idx[n]; blockColour(i, tmp); a[n*3] = tmp[0]; a[n*3+1] = tmp[1]; a[n*3+2] = tmp[2];
+        if (!vchg) continue;
+        var v = shownBlock(i); if (v) cnt = n + 1;
+        if (v) for (var k6 = 0; k6 < 16; k6++) M[n*16+k6] = O[n*16+k6]; else M.set(HIDE, n*16);
+      }
+      if (vchg){ mesh.count = cnt; mesh.instanceMatrix.needsUpdate = true; }
+      mesh.instanceColor.needsUpdate = true;
+    });
+    if (BIG){ paintVer++; if (lodColour !== colorOn) buildLod(); tiles.forEach(colourLod); }
+    polys.forEach(function(mesh){
+      var i = mesh.userData.gi; blockColour(i, tmp); mesh.material.color.setRGB(tmp[0], tmp[1], tmp[2]);
+      mesh.visible = shownBlock(i);
+    });
+    concMeshes.forEach(function(mesh){
+      var c = [0.64, 0.64, 0.64], selW = {}; selList.forEach(function(g){ selW[bySide ? sides[g].wall : g] = 1; });
+      if (selList.length && !selW[mesh.userData.wall]){ var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; c = c.map(function(v, j){ return v*0.15 + f[j]*0.85; }); }
+      mesh.material.color.setRGB(c[0], c[1], c[2]);
+    });
+    // clip openings + rebar at the top of the highest block shown, per picked wall
+    if (vchg){
+      var allTop = null, gTop = {};
+      if (selLift !== null){ allTop = -1e9; for (var i = 0; i < N; i++) if (bLift[i] <= selLift){ if (bTop[i] > allTop) allTop = bTop[i]; var gg = groupOf(i); if (gTop[gg] === undefined || bTop[i] > gTop[gg]) gTop[gg] = bTop[i]; } }
+      var topOf = function(g){ if (allTop === null || (selList.length && !inSel[g])) return null; return selList.length && gTop[g] !== undefined ? gTop[g] + 0.005 : allTop + 0.005; };
+      openMeshes.forEach(function(om){ var t = topOf(om.userData.g); om.userData.plane.constant = t === null ? 1e5 : t; });
+      rebarLift(topOf, allTop === null ? null : allTop + 0.005);
+    }
+    legend(); paintRebar();
+    schedule();
+  }
+  var RED = new THREE.Color(0xb03a2e);
+  function paintRebar(){
+    if (!rebar) return;
+    var ca = rebar.geometry.attributes.color.array, f = dark() ? [0.25, 0.26, 0.27] : [0.88, 0.87, 0.85];
+    var dim = [RED.r*0.22 + f[0]*0.78, RED.g*0.22 + f[1]*0.78, RED.b*0.22 + f[2]*0.78];
+    for (var j = 0; j < meta.nRebarSegs; j++){
+      var b = segBar ? segBar[j] : -1, c = selBar === null ? [RED.r, RED.g, RED.b] : (b >= 0 && sameBar(b, selBar) ? [RED.r, RED.g, RED.b] : dim);
+      ca[j*6] = ca[j*6+3] = c[0]; ca[j*6+1] = ca[j*6+4] = c[1]; ca[j*6+2] = ca[j*6+5] = c[2];
+    }
+    rebar.geometry.attributes.color.needsUpdate = true;
+    if (barHi){ scene.remove(barHi); barHi.traverse(function(o){ if (o.geometry) o.geometry.dispose(); }); barHi = null; }
+    if (selBar !== null && rebar.visible){
+      barHi = new THREE.Group(); var mat = new THREE.MeshBasicMaterial({ color:sel.clone(), depthTest:false, clippingPlanes:[rbPlane] });
+      var rad = Math.max(0.018, span*0.0016), yax = new THREE.Vector3(0, 1, 0);
+      for (var s2 = BARS.seg0[selBar]; s2 < BARS.seg0[selBar+1]; s2++){
+        var A = new THREE.Vector3(rebarPos[s2*6], rebarPos[s2*6+1], rebarPos[s2*6+2]), B = new THREE.Vector3(rebarPos[s2*6+3], rebarPos[s2*6+4], rebarPos[s2*6+5]);
+        var len = A.distanceTo(B); if (len < 1e-6) continue;
+        var cyl = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, len + rad*2, 10, 1), mat);
+        cyl.position.copy(A).add(B).multiplyScalar(0.5); cyl.quaternion.setFromUnitVectors(yax, B.clone().sub(A).normalize());
+        cyl.renderOrder = 4; barHi.add(cyl);
+      }
+      scene.add(barHi);
+    }
+  }
+  // same bar-list mark; a bar with no TMM mark groups with the unmarked bars of the same size, length, shape
+  function sameBar(a, b){ var ma = BARS.mark[a], mb = BARS.mark[b]; return mb >= 0 ? ma === mb : (ma < 0 && BARS.fact[a] === BARS.fact[b]); }
+  var SHAPES = { straight:'Straight', corner:'Corner (L)', hook:'Hook', bent:'Bent', tie:'Tie (closed)' };
+  function renderBarCard(){
+    var el = $('barcard');
+    if (selBar === null){ el.hidden = true; el.innerHTML = ''; return; }
+    var mi = BARS.mark[selBar], mk = mi >= 0 ? BARS.marks[mi] : null, fc = BARS.facts[BARS.fact[selBar]], side = BARS.side[selBar], wl = BARS.wall[selBar], onSide = 0;
+    if (mk && side >= 0) for (var b = 0; b < nB; b++) if (BARS.mark[b] === mi && BARS.side[b] === side && BARS.wall[b] === wl) onSide++;
+    var h = '<div class="bh">' + (mk ? '<span class="mk">' + esc(mk.m) + '</span><span class="sz">' + esc(mk.size) + '</span>' : '<span class="mk">' + esc(fc.size) + '</span>') +
+      '<button class="x" id="barX" aria-label="Close the bar card">×</button></div>' +
+      '<p class="kd">' + esc(fc.kind) + (wl >= 0 && walls[wl] ? ' · ' + esc(walls[wl].name) : '') + '</p>' +
+      '<dl><dt>Cut length</dt><dd>' + esc(mk ? mk.len : fc.len) + '</dd><dt>Shape</dt><dd>' + esc(SHAPES[fc.shape] || fc.shape) + '</dd></dl>' +
+      (mk ? '<p class="cnt"><b>' + fmt(mk.qty) + '</b> of ' + esc(mk.m) + ' on the job' + (side >= 0 ? ' · <b>' + fmt(onSide) + '</b> on ' + esc(BARS.sideNames[side]) : '') + '</p>' : '');
+    el.innerHTML = h; el.hidden = false; $('hint').hidden = true;
+    $('barX').addEventListener('click', function(){ selectBar(null); });
+  }
+  function selectBar(b, quiet){ selBar = b; paintRebar(); renderBarCard(); if (!quiet) schedule(); }
+  var present = {}; for (i = 0; i < N; i++) present[bType[i]] = 1;
+  function legend(){
+    var el = $('legend'); el.hidden = !colorOn;
+    el.innerHTML = Object.keys(present).map(Number).sort(function(a, b){ return a - b; }).map(function(t){
+      var ti = typeInfo(t); return '<span><i style="background:' + rgbCss(ti.col) + '"></i>' + esc(ti.label) + '</span>';
+    }).join('');
+  }
+
+  /* ---------- production: block / rebar / grout done per side x lift, partial lifts by finger drag ---------- */
+  // each block -> a straight run (rotation + centre line) and a station along it, so a drag snaps to whole blocks
+  var runOf = new Int32Array(N), along = new Float32Array(N), runIdx = {}, runName = [];
+  for (i = 0; i < N; i++){
+    var rr = ((F[i*7+6] % Math.PI) + Math.PI) % Math.PI, rk = Math.round(rr*100); if (rk >= 314) rk = 0, rr = 0;
+    var cs = Math.cos(rr), sn = Math.sin(rr), perp = -F[i*7]*sn + F[i*7+1]*cs;
+    var rname = rk + ':' + Math.round(perp/0.05), ri = runIdx[rname];
+    if (ri === undefined){ ri = runIdx[rname] = runName.length; runName.push(rname); }
+    runOf[i] = ri; along[i] = F[i*7]*cs + F[i*7+1]*sn;
+  }
+  var glist = {}, glKeys = [];                                    // (group, lift) -> block list
+  for (i = 0; i < N; i++){ var g9 = groupOf(i); if (g9 < 0 || liftNums.indexOf(bLift[i]) < 0) continue; var kk = g9*1000 + bLift[i];
+    if (!glist[kk]){ glist[kk] = []; glKeys.push({ g:g9, l:bLift[i], lst:glist[kk] }); } glist[kk].push(i); }
+  var tagIdx = {}; selGroups.forEach(function(o, n){ tagIdx[String(o.tag)] = n; });
+  var done = { B:new Uint8Array(N), R:new Uint8Array(N), G:new Uint8Array(N) }, marks = [];
+  var TCOL = { B:[0.31, 0.54, 0.29], R:[0.69, 0.23, 0.18], G:[0.36, 0.5, 0.64] };
+  var TNAME = { B:'Block laid', R:'Rebar set', G:'Grouted' }, TSHORT = { B:'Block', R:'Rebar', G:'Grout' };
+
+  function mkHit(i){ if (bLift[i] === mk.lift && groupOf(i) >= 0) mk.hits[i] = 1; }
+  function rangesOf(hits){                                       // group -> run -> [a, b] spanning the touched blocks' ends
+    var R = {}; Object.keys(hits).forEach(function(k){ var i = +k, g = groupOf(i), h = F[i*7+3]/2, gr = R[g] || (R[g] = {}), e = gr[runOf[i]];
+      if (!e) gr[runOf[i]] = [along[i] - h, along[i] + h]; else { e[0] = Math.min(e[0], along[i] - h); e[1] = Math.max(e[1], along[i] + h); } });
+    return R;
+  }
+  function inRange(i, a, b){ return along[i] > a + 0.005 && along[i] < b - 0.005; }
+  function coverHits(lift, hits){
+    var out = new Uint8Array(N), R = rangesOf(hits);
+    Object.keys(R).forEach(function(g){ (glist[g*1000 + lift] || []).forEach(function(i){ var e = R[g][runOf[i]]; if (e && inRange(i, e[0], e[1])) out[i] = 1; }); });
+    return out;
+  }
+  function today(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function newId(){ return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
+  function whoName(){ return ($('whoName').value || '').trim().slice(0, 40); }
+  function newMark(g, l, t, r){ var m = { id:newId(), g:String(selGroups[g].tag), l:l, t:t, d:today() }; if (r) m.r = r; var n = whoName(); if (n) m.n = n; return m; }
+  function commitDrag(m0){
+    var R = rangesOf(m0.hits), adds = [];
+    Object.keys(R).forEach(function(g){ var r = Object.keys(R[g]).map(function(ri){ return [runName[ri], Math.round(R[g][ri][0]*1000)/1000, Math.round(R[g][ri][1]*1000)/1000]; });
+      if (r.length) adds.push(newMark(+g, m0.lift, showT, r.slice(0, 40))); });
+    if (adds.length) apply({ add:adds }, { del:adds.map(function(m){ return m.id; }) });
+    else paint();
+  }
+
+  // ---- marks: server copy + local queue (works offline, sends when it can) ----
+  var JOB = (/\/view\/([^\/]+)/.exec(location.pathname) || [])[1] || 'local', API = '/api/progress/' + encodeURIComponent(JOB);
+  var LS = { get:function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set:function(k, v){ try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch(e){} } };
+  function jget(k, d){ try { var v = JSON.parse(LS.get(k)); return v == null ? d : v; } catch(e){ return d; } }
+  var srv = jget('tmm-prog-s-' + JOB, []), queue = jget('tmm-prog-q-' + JOB, []), undoStack = [], syncing = false, syncMsg = '', syncWarn = false, online = null;
+  function marksNow(){
+    var by = {}, order = [];
+    srv.concat([]).forEach(function(m){ if (!by[m.id]) order.push(m.id); by[m.id] = m; });
+    queue.forEach(function(op){ (op.del || []).forEach(function(id){ delete by[id]; }); (op.add || []).forEach(function(m){ if (!by[m.id]) order.push(m.id); by[m.id] = m; }); });
+    return order.filter(function(id){ return by[id]; }).map(function(id){ return by[id]; });
+  }
+  function recompute(){
+    marks = marksNow(); done.B.fill(0); done.R.fill(0); done.G.fill(0);
+    marks.forEach(function(m){
+      var g = tagIdx[m.g], D = done[m.t], lst = g === undefined ? null : glist[g*1000 + m.l]; if (!lst || !D) return;
+      if (!m.r){ lst.forEach(function(i){ D[i] = 1; }); return; }
+      var rr2 = {}; m.r.forEach(function(x){ var id = runIdx[x[0]]; if (id !== undefined) (rr2[id] = rr2[id] || []).push(x); });
+      lst.forEach(function(i){ var xs = rr2[runOf[i]]; if (xs) for (var k = 0; k < xs.length; k++) if (inRange(i, xs[k][1], xs[k][2])){ D[i] = 1; break; } });
+    });
+  }
+  function apply(op, inverse){ queue.push(op); if (inverse) undoStack.push(inverse); LS.set('tmm-prog-q-' + JOB, JSON.stringify(queue)); recompute(); paint(); renderPanel(); flush(); }
+  function undo(){ var inv = undoStack.pop(); if (!inv) return;
+    if (inv.del) inv.del = inv.del.filter(function(id){ return marks.some(function(m){ return m.id === id; }); });
+    apply(inv, null); }
+  function setSync(msg, warn){ syncMsg = msg; syncWarn = !!warn; var el = $('sync'); el.textContent = msg; el.className = 'sync' + (warn ? ' warn' : ''); }
+  function waiting(){ var n = 0; queue.forEach(function(op){ n += (op.add || []).length + (op.del || []).length; }); return n; }
+  function flush(){
+    if (syncing) return;
+    if (!queue.length){ setSync(online === false ? 'Offline. Showing the last saved progress.' : online ? 'All marks saved.' : ''); return; }
+    var pin = LS.get('tmm-pin-' + JOB);
+    if (!pin){ setSync('Enter the crew PIN to save. ' + plural(waiting(), 'change') + ' waiting on this phone.', true); return; }
+    var sent = queue.slice(); syncing = true; setSync('Saving…');
+    fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ pin:pin, ops:sent }) })
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { s:r.status, j:j }; }); })
+      .then(function(res){
+        syncing = false;
+        if (res.s === 200 && res.j && res.j.marks){ online = true; queue.splice(0, sent.length); LS.set('tmm-prog-q-' + JOB, JSON.stringify(queue)); gotServer(res.j.marks); if (queue.length) flush(); else setSync('All marks saved.'); return; }
+        if (res.s === 403){ LS.set('tmm-pin-' + JOB, null); $('whoPin').value = ''; setSync('That crew PIN was not accepted. ' + plural(waiting(), 'change') + ' waiting.', true); return; }
+        if (res.s === 429){ setSync('Too many wrong PINs. Try again in 15 minutes.', true); return; }
+        if (res.s === 400){ queue.splice(0, sent.length); LS.set('tmm-prog-q-' + JOB, JSON.stringify(queue)); recompute(); paint(); renderPanel(); setSync('A change was refused by the server and dropped.', true); return; }
+        retryLater();
+      }, function(){ syncing = false; online = false; retryLater(); });
+  }
+  var retryT = null;
+  function retryLater(){ setSync('Offline. ' + plural(waiting(), 'change') + ' saved on this phone, will send when back online.', true); if (!retryT) retryT = setTimeout(function(){ retryT = null; flush(); }, 15000); }
+  function gotServer(list){ srv = Array.isArray(list) ? list : []; LS.set('tmm-prog-s-' + JOB, JSON.stringify(srv)); recompute(); paint(); renderPanel(); }
+  function load(){
+    return fetch(API, { cache:'no-store' }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){ online = true; if (!syncing) gotServer(j.marks); if (queue.length) flush(); else if (prodOn) setSync('All marks saved.'); },
+        function(){ online = false; if (prodOn) flush(); });
+  }
+  window.addEventListener('online', function(){ flush(); load(); });
+  setInterval(function(){ if (prodOn && !document.hidden && !syncing && !queue.length) load(); }, 30000);
+
+  function setProd(on, quiet){
+    prodOn = on; $('prodBtn').setAttribute('aria-pressed', String(on)); $('dragBtn').hidden = !on;
+    if (on){ $('hint').hidden = false; $('hint').textContent = dragOn ? 'Drag along a lift to mark it · drag off the walls to turn' : 'Drag to turn, tap a side'; load(); flush(); }
+    if (!quiet){ paint(); renderPanel(); hash(); }
+  }
+  // ---- numbers ----
+  function stat(gset, lift){                                      // gset: null = all groups
+    var o = { n:0, B:0, R:0, G:0 };
+    glKeys.forEach(function(e){ if ((gset && !gset[e.g]) || (lift !== null && e.l !== lift)) return;
+      e.lst.forEach(function(i){ o.n++; o.B += done.B[i]; o.R += done.R[i]; o.G += done.G[i]; }); });
+    return o;
+  }
+  function pctOf(o, t){ return o.n ? o[t]/o.n*100 : 0; }
+  function pctTxt(v){ return v >= 99.95 ? '100%' : v > 0 && v < 1 ? '<1%' : Math.floor(v) + '%'; }
+  function targets(){ if (selList.length) return selList.filter(function(g){ return glist[g*1000 + selLift]; });
+    var t = []; selGroups.forEach(function(o, g){ if (glist[g*1000 + selLift]) t.push(g); }); return t; }
+  function fullMark(g, l, t){ var tag = String(selGroups[g].tag); return marks.filter(function(m){ return !m.r && m.t === t && m.l === l && m.g === tag; })[0] || null; }
+  function toggle(t){
+    if (selLift === null) return; var tg = targets(); if (!tg.length) return;
+    var tags = {}; tg.forEach(function(g){ tags[String(selGroups[g].tag)] = 1; });
+    if (tg.every(function(g){ return fullMark(g, selLift, t); })){
+      var gone = marks.filter(function(m){ return m.t === t && m.l === selLift && tags[m.g]; });
+      apply({ del:gone.map(function(m){ return m.id; }) }, { add:gone });
+    } else {
+      var adds = tg.filter(function(g){ return !fullMark(g, selLift, t); }).map(function(g){ return newMark(g, selLift, t, null); });
+      apply({ add:adds }, { del:adds.map(function(m){ return m.id; }) });
+    }
+  }
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function dTxt(d){ var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? MON[+m[2]-1] + ' ' + (+m[3]) : ''; }
+  function barsHtml(o){
+    return '<div class="pbars">' + ['B','R','G'].map(function(t){ var v = pctOf(o, t);
+      return '<div class="pb ' + t + '">' + TSHORT[t] + '<b>' + pctTxt(v) + '</b><i><em style="width:' + v.toFixed(1) + '%"></em></i></div>'; }).join('') + '</div>';
+  }
+  function cellHtml(o, l, g){
+    if (!o.n) return '<td>–</td>';
+    var sp = ['B','R','G'].map(function(t){ var v = pctOf(o, t); return '<span class="' + t + (v >= 99.95 ? ' on' : v > 0 ? ' part' : '') + '">' + t + '</span>'; }).join('');
+    var on = g === null ? selList.length === 0 && selLift === l : selLift === l && selList.length === 1 && selList[0] === g;
+    return '<td><button class="cell" data-cg="' + (g === null ? '' : g) + '" data-cl="' + l + '" aria-pressed="' + on + '" aria-label="' + esc((g === null ? 'Whole job' : selGroups[g].name) + ' lift ' + l) + '">' + sp + '</button></td>';
+  }
+  function tableHtml(){
+    var h = '<div class="ptw"><table class="pt"><thead><tr><th>' + (bySide ? 'Side' : 'Wall') + '</th>' + liftNums.map(function(l){ return '<th>L' + l + '</th>'; }).join('') + '<th>Laid</th></tr></thead><tbody>';
+    selGroups.forEach(function(o, g){ var gs = {}; gs[g] = 1;
+      h += '<tr><th>' + esc(o.name) + '</th>' + liftNums.map(function(l){ return cellHtml(stat(gs, l), l, g); }).join('') + '<td class="pc">' + pctTxt(pctOf(stat(gs, null), 'B')) + '</td></tr>'; });
+    h += '<tr class="tot"><th>Job</th>' + liftNums.map(function(l){ return cellHtml(stat(null, l), l, null); }).join('') + '<td class="pc">' + pctTxt(pctOf(stat(null, null), 'B')) + '</td></tr>';
+    return h + '</tbody></table></div><p class="pkey">L = lift. B block · R rebar · G grout. Filled = done, half = part of the lift. Tap a cell to open it.</p>';
+  }
+  function renderProd(){
+    var h = '<p class="sub" style="margin:0 0 6px">Whole job, by block count</p>' + barsHtml(stat(null, null));
+    h += '<div class="seg" role="group" aria-label="Show and mark">' + ['B','R','G'].map(function(t){ return '<button data-st="' + t + '" aria-pressed="' + (showT === t) + '">' + TSHORT[t] + '</button>'; }).join('') + '</div>';
+    var nm = selList.length === 0 ? 'Whole job' : selList.length === 1 ? selGroups[selList[0]].name : plural(selList.length, bySide ? 'side' : 'wall');
+    h += '<h2>' + esc(nm) + '</h2>';
+    if (selList.length > 1) h += '<p class="sub">' + esc(selList.map(function(g){ return selGroups[g].name; }).join(', ')) + '</p>';
+    if (selLift === null){
+      var gs0 = null; if (selList.length){ gs0 = {}; selList.forEach(function(g){ gs0[g] = 1; }); }
+      if (selList.length) h += barsHtml(stat(gs0, null));
+      h += '<p class="sub">Pick a lift to check off block, rebar and grout, or drag a finger along a lift on the model to mark part of it.</p>';
+    } else {
+      var tg = targets(), gs = {}; tg.forEach(function(g){ gs[g] = 1; }); var o = stat(gs, selLift);
+      var ws = {}; tg.forEach(function(g){ ws[bySide ? selGroups[g].wall : g] = 1; });
+      h += '<p class="sub">' + esc(liftRange(Object.keys(ws).map(function(k){ return walls[k]; }))) + fmt(o.n) + ' blocks.</p>';
+      if (!tg.length) h += '<p class="empty">No blocks in lift ' + selLift + ' here.</p>';
+      else h += '<div class="checks">' + ['B','R','G'].map(function(t){
+        var full = tg.every(function(g){ return fullMark(g, selLift, t); }), v = pctOf(o, t), tags = {}; tg.forEach(function(g){ tags[String(selGroups[g].tag)] = 1; });
+        var last = marks.filter(function(m){ return m.t === t && m.l === selLift && tags[m.g]; }).sort(function(a, b){ return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; }).pop();
+        var sub = full ? 'Done' + (last ? ' ' + dTxt(last.d) + (last.n ? ' · ' + esc(last.n) : '') : '') : v > 0 ? 'Part done' + (last ? ', last ' + dTxt(last.d) + (last.n ? ' · ' + esc(last.n) : '') : '') : 'Not done';
+        return '<button class="ck" data-ck="' + t + '" aria-pressed="' + full + '"><span class="box"><span>✓</span></span><span class="lbl">' + TNAME[t] + '<small>' + sub + '</small></span><span class="pct">' + pctTxt(v) + '</span></button>';
+      }).join('') + '</div>';
+    }
+    h += '<div class="acts"><button class="tbtn" id="undoBtn"' + (undoStack.length ? '' : ' disabled') + '>Undo last mark</button></div>';
+    h += '<h3>Progress</h3>' + tableHtml();
+    return h;
+  }
+  $('detail').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b || !prodOn) return;
+    if (b.dataset.st){ showT = b.dataset.st; paint(); renderPanel(); return; }
+    if (b.dataset.ck){ toggle(b.dataset.ck); return; }
+    if (b.id === 'undoBtn'){ undo(); return; }
+    if (b.dataset.cl !== undefined){ setSel(b.dataset.cg === '' ? [] : [+b.dataset.cg]); selLift = +b.dataset.cl; paint(); renderPanel(); hash(); }
+  });
+  $('whoName').value = LS.get('tmm-name') || '';
+  $('whoName').addEventListener('change', function(){ LS.set('tmm-name', whoName() || null); });
+  $('whoPin').addEventListener('change', function(){ var v = this.value.replace(/\D/g, '').slice(0, 8); this.value = v; LS.set('tmm-pin-' + JOB, v || null); if (v) flush(); });
+  if (LS.get('tmm-pin-' + JOB)) $('whoPin').value = LS.get('tmm-pin-' + JOB);
+  recompute();
+
+  /* ---------- panel ---------- */
+  var fmt = function(n){ return Math.round(n).toLocaleString('en-US'); };
+  function groutText(q){
+    if (q.grout === null) return null;
+    return /m³|m3/.test(q.groutU) ? q.grout.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' m³'
+      : q.grout.toLocaleString('en-US', { minimumFractionDigits:1, maximumFractionDigits:1 }) + ' cu yd';
+  }
+  function labelOrder(a, b){
+    var ta = typeOf(a.replace(/^\S+(\s+cm)?\s+/, '')), tb = typeOf(b.replace(/^\S+(\s+cm)?\s+/, ''));
+    return ta - tb || parseFloat(a) - parseFloat(b) || (a < b ? -1 : 1);
+  }
+  function concRows(ws){
+    var c = {}; ws.forEach(function(w){ Object.keys(w.conc).forEach(function(k){ var e = c[k] || (c[k] = { n:0, vol:0, volU:'' }); e.n += w.conc[k].n; e.vol += w.conc[k].vol; e.volU = w.conc[k].volU || e.volU; }); });
+    return Object.keys(c).map(function(k){
+      var e = c[k], v = e.vol ? (/m³|m3/.test(e.volU) ? e.vol.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' m³' : e.vol.toLocaleString('en-US', { minimumFractionDigits:1, maximumFractionDigits:1 }) + ' cu yd') : fmt(e.n);
+      return '<dt>' + esc(k) + '<small>' + plural(e.n, 'piece') + ', cast in place</small></dt><dd>' + v + '</dd>';
+    }).join('');
+  }
+  function rows(q, withRebar){
+    var h = '<dl>';
+    Object.keys(q.units).filter(function(l){ return q.units[l].n > 0; }).sort(labelOrder).forEach(function(l){
+      var u = q.units[l], extra = [];
+      if (sizeOf[l]) extra.push(esc(sizeOf[l]));
+      Object.keys(u.colours).sort().forEach(function(c){ extra.push(fmt(u.colours[c]) + ' ' + esc(c)); });
+      h += '<dt>' + esc(l) + (extra.length ? '<small>' + extra.join(' · ') + '</small>' : '') + '</dt><dd>' + fmt(u.n) + '</dd>';
+    });
+    h += '<dt class="tot">Total blocks</dt><dd class="tot">' + fmt(q.total) + '</dd>';
+    var g = groutText(q); if (g) h += '<dt>Grout</dt><dd>' + g + '</dd>';
+    if (q.mortar !== null) h += '<dt>Mortar</dt><dd>' + fmt(Math.ceil(q.mortar - 1e-9)) + ' bags</dd>';
+    if (withRebar && (q.bars || q.rebarW)){
+      h += '<dt>Rebar<small>bars on the bar list</small></dt><dd>' + (q.bars ? fmt(q.bars) + ' bars' : '') + (q.rebarW ? (q.bars ? ', ' : '') + fmt(q.rebarW) + ' ' + q.rebarU : '') + '</dd>';
+    }
+    return h + '</dl>';
+  }
+  function plural(n, word){ return n + ' ' + word + (n === 1 ? '' : 's'); }
+  function describe(w){
+    var bits = [w.type];
+    if (w.len) bits.push(w.len + ' long'); if (w.h) bits.push(w.h + ' tall');
+    var t = bits.join(', ');
+    var more = [];
+    if (w.bond) more.push(w.bond.toLowerCase()); if (w.grout) more.push(w.grout.toLowerCase() + ' grout');
+    var c = {}; w.ops.forEach(function(o){ c[o] = (c[o] || 0) + 1; });
+    var names = { 'Overhead':'overhead door', 'Door':'door', 'Window':'window' };
+    Object.keys(c).forEach(function(o){ more.push(plural(c[o], names[o] || o.toLowerCase())); });
+    return t + (more.length ? '. ' + more.join(', ').replace(/^./, function(x){ return x.toUpperCase(); }) : '');
+  }
+  function liftRange(ws){
+    var r = null, same = true;
+    ws.forEach(function(w){ var l = w.lifts[selLift]; if (!l) return; var t = l.lo + ' to ' + l.hi; if (r === null) r = t; else if (r !== t) same = false; });
+    return 'Lift ' + selLift + (r && same ? ', ' + r : '') + '. ';
+  }
+  function renderPanel(){
+    var h;
+    $('prodWho').hidden = !prodOn;
+    if (prodOn) h = renderProd();
+    else if (selList.length > 1){
+      var mt = emptyQ(), mnames = [], mw = {}, mnb = 0;
+      selList.forEach(function(g){ var o = selGroups[g], oq = selLift === null ? o.whole : o.lifts[selLift]; mnames.push(o.name); mw[bySide ? o.wall : g] = 1; if (oq){ addQ(mt, oq); } });
+      Object.keys(mt.units).forEach(function(l){ mnb += mt.units[l].n; });
+      h = '<h2>' + plural(selList.length, bySide ? 'side' : 'wall') + '</h2><p class="sub">' + esc(mnames.join(', ')) + '</p>';
+      if (selLift !== null) h += '<p class="sub">' + esc(liftRange(Object.keys(mw).map(function(k){ return walls[k]; }))) + '</p>';
+      h += mnb ? rows(mt, !bySide && selLift === null) : '<p class="empty">No blocks in lift ' + selLift + ' on these ' + (bySide ? 'sides' : 'walls') + '.</p>';
+      if (bySide && mnb) h += '<p class="sub">Combined blocks for the picked sides. Tap more sides to add or remove.</p>';
+    }
+    else if (selected !== null && bySide){
+      var sd = sides[selected], ws = walls[sd.wall], sq = selLift === null ? sd.whole : sd.lifts[selLift];
+      h = '<h2>' + esc(sd.name) + '</h2><p class="sub">' + esc(ws.name) + ' · ' + esc(describe(ws)) + '</p>';
+      if (selLift !== null) h += '<p class="sub">' + esc(liftRange([ws])) + '</p>';
+      h += sq ? rows(sq, false) : '<p class="empty">No blocks in lift ' + selLift + ' on this side.</p>';
+      var wq = selLift === null ? ws.whole : ws.lifts[selLift];
+      if (sq && sq.grout === null && sq.mortar === null && wq){
+        var gx = []; var gt = groutText(wq); if (gt) gx.push('grout ' + gt); if (wq.mortar !== null) gx.push('mortar ' + fmt(Math.ceil(wq.mortar - 1e-9)) + ' bags');
+        if (gx.length) h += '<p class="sub">Grout and mortar are counted for the whole wall line' + (selLift !== null ? ' in this lift' : '') + ': ' + gx.join(', ') + '.</p>';
+      }
+    } else if (selected !== null){
+      var w = walls[selected], q = selLift === null ? w.whole : w.lifts[selLift];
+      h = '<h2>' + esc(w.name) + '</h2><p class="sub">' + esc(describe(w)) + '</p>';
+      if (selLift !== null) h += '<p class="sub">' + esc(liftRange([w])) + '</p>';
+      h += q ? rows(q, selLift === null) : '<p class="empty">No blocks in lift ' + selLift + ' on this wall.</p>';
+      if (selLift === null){ var cr = concRows([w]); if (cr) h = h.replace(/<\/dl>$/, cr + '</dl>'); }
+    } else {
+      var tot = emptyQ();
+      walls.forEach(function(w){ addQ(tot, selLift === null ? w.whole : w.lifts[selLift]); });
+      var nb = 0; walls.forEach(function(w){ nb += (selLift === null ? w.whole.total : (w.lifts[selLift] ? w.lifts[selLift].total : 0)); });
+      h = '<h2>Whole job</h2><p class="sub">' + (selLift !== null ? esc(liftRange(walls)) : '') + plural(walls.length, 'wall') + (bySide ? ', ' + plural(sides.length, 'side') : '') + ', ' + fmt(nb) + ' blocks</p>' + rows(tot, selLift === null);
+      if (selLift === null){ var cr2 = concRows(walls); if (cr2) h = h.replace(/<\/dl>$/, cr2 + '</dl>'); }
+    }
+    $('detail').innerHTML = h;
+    Array.prototype.forEach.call(document.querySelectorAll('#chips .chip[data-w]'), function(b){ b.setAttribute('aria-pressed', String(b.dataset.w === '' ? selList.length === 0 : !!inSel[+b.dataset.w])); });
+    $('multiBtn').setAttribute('aria-pressed', String(multiOn));
+    Array.prototype.forEach.call(document.querySelectorAll('#lifts .chip'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.l === '' ? null : +b.dataset.l) === selLift)); });
+    if (BIG){ var on = document.querySelector('#chips .chip[aria-pressed="true"]'), row = $('chips');
+      if (on) row.scrollLeft = Math.max(0, on.offsetLeft - row.offsetLeft - (row.clientWidth - on.offsetWidth)/2); }
+  }
+  function setSel(list){ selList = list; inSel = {}; list.forEach(function(g){ inSel[g] = 1; }); selected = list.length === 1 ? list[0] : null; }
+  function select(k, add){
+    if (k === null || k === undefined) setSel([]);
+    else if (multiOn || add){ var l2 = selList.slice(), at = l2.indexOf(k); if (at >= 0) l2.splice(at, 1); else l2.push(k); setSel(l2); }
+    else setSel([k]);
+    paint(); renderPanel(); hash();
+  }
+  function setLift(n){ selLift = n; paint(); renderPanel(); hash(); }
+  function hash(){
+    var parts = []; if (selList.length) parts.push((bySide ? 'side=' : 'wall=') + selList.map(function(g){ return encodeURIComponent(selGroups[g].tag); }).join(',')); if (selLift !== null) parts.push('lift=' + selLift);
+    if (prodOn) parts.push('prod=1');
+    try { history.replaceState(null, '', parts.length ? '#' + parts.join('&') : location.pathname + location.search); } catch(e) {}
+  }
+
+  $('chips').innerHTML = '<button class="chip" data-w="" aria-pressed="true">Whole job</button>' +
+    selGroups.map(function(w, n){ return '<button class="chip" data-w="' + n + '" aria-pressed="false" title="' + esc(bySide ? walls[w.wall].name : w.tag) + '">' + esc(BIG && bySide ? (walls[w.wall].tag || walls[w.wall].name) + ' · ' + w.name : w.name) + '</button>'; }).join('') +
+    (selGroups.length > 1 ? '<button class="chip add" id="multiBtn" aria-pressed="false" title="Tap more ' + (bySide ? 'sides' : 'walls') + ' to add or remove">+ Select more</button>' : '<span id="multiBtn" hidden></span>');
+  $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return;
+    if (b.id === 'multiBtn'){ multiOn = !multiOn; $('hint').hidden = !multiOn; if (multiOn) $('hint').textContent = 'Tap ' + (bySide ? 'sides' : 'walls') + ' to add or remove'; renderPanel(); return; }
+    select(b.dataset.w === '' ? null : +b.dataset.w); });
+  if (BIG){ $('chips').classList.add('scroll');   // big job: one scrolling row; a chip flies the camera to that wall
+    $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b || b.id === 'multiBtn' || multiOn) return; flyTo(b.dataset.w === '' ? null : +b.dataset.w); }); }
+  $('lifts').innerHTML = '<button class="chip" data-l="" aria-pressed="true">All lifts</button>' +
+    liftNums.map(function(n){ return '<button class="chip" data-l="' + n + '" aria-pressed="false">Lift ' + n + '</button>'; }).join('');
+  $('lifts').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (b) setLift(b.dataset.l === '' ? null : +b.dataset.l); });
+  $('colorBtn').addEventListener('click', function(){ colorOn = !colorOn; this.setAttribute('aria-pressed', String(colorOn)); paint(); });
+  $('rebarBtn').addEventListener('click', function(){ if (!rebar) return; rebar.visible = !rebar.visible; this.setAttribute('aria-pressed', String(rebar.visible)); if (!rebar.visible) selectBar(null); else schedule(); });
+  $('prodBtn').addEventListener('click', function(){ setProd(!prodOn); });
+  $('dragBtn').addEventListener('click', function(){ dragOn = !dragOn; this.setAttribute('aria-pressed', String(dragOn)); setProd(true); });
+  if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeScene);
+
+  // deterministic start: #wall=<tag or name>&lift=<n>&rebar=1
+  var hp = {}; location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var a = kv.split('='); if (a[0]) hp[a[0]] = a[0] === 'wall' || a[0] === 'side' ? (a[1] || '') : decodeURIComponent(a[1] || ''); });
+  var hl = [];
+  if (hp.wall && !bySide) hp.wall.split(',').forEach(function(t){ t = decodeURIComponent(t); walls.forEach(function(w){ if ((w.tag === t || w.name === t || String(w.k) === t) && hl.indexOf(w.k) < 0) hl.push(w.k); }); });
+  if (hp.side && bySide) hp.side.split(',').forEach(function(t){ t = decodeURIComponent(t); sides.forEach(function(sd, n){ if ((sd.seg === t || String(n) === t) && hl.indexOf(n) < 0) hl.push(n); }); });
+  setSel(hl);
+  if (hp.prod === '1') setProd(true, true);
+  if (hp.lift && liftNums.indexOf(+hp.lift) >= 0) selLift = +hp.lift;
+  if (hp.rebar === '1' && rebar){ rebar.visible = true; $('rebarBtn').setAttribute('aria-pressed', 'true'); }
+
+  $('status').hidden = true;
+  themeScene(); resize(); renderPanel();
+  window.__field = { ready:true, nBars:nB, laps:function(){ return barLap ? Array.prototype.slice.call(barLap) : null; }, bar:function(){ return selBar === null ? null : { i:selBar, mark:BARS.mark[selBar] >= 0 ? BARS.marks[BARS.mark[selBar]] : null, text:$('barcard').innerText }; }, selectBar:selectBar,
+    barScreen:function(b){ var r = canvas.getBoundingClientRect(), best = null, bl = -1; camera.updateMatrixWorld();
+      for (var s3 = BARS.seg0[b]; s3 < BARS.seg0[b+1]; s3++){ pa.set(rebarPos[s3*6], rebarPos[s3*6+1], rebarPos[s3*6+2]); pb.set(rebarPos[s3*6+3], rebarPos[s3*6+4], rebarPos[s3*6+5]);
+        var A = toScreen(pa.clone(), r), B = toScreen(pb.clone(), r), l = Math.hypot(B.x - A.x, B.y - A.y); if (l > bl){ bl = l; best = { x:r.left + (A.x + B.x)/2, y:r.top + (A.y + B.y)/2, px:l }; } }
+      return best; }, blocks:N, concrete:concMeshes.length, sides:sides.map(function(sd){ return sd.seg + ':' + sd.whole.total; }), walls:walls.length, lifts:liftNums.slice(), select:select, setLift:setLift,
+    prod:function(on){ setProd(on !== false); }, marks:function(){ return marks.slice(); }, queue:function(){ return queue.slice(); }, sync:function(){ return syncMsg; },
+    pct:function(){ var o = stat(null, null); return { n:o.n, B:pctOf(o, 'B'), R:pctOf(o, 'R'), G:pctOf(o, 'G') }; }, selList:function(){ return selList.slice(); }, multi:function(on){ multiOn = !!on; renderPanel(); },
+    blockXY:function(g, l){ var lst = glist[g*1000 + l] || [], r = canvas.getBoundingClientRect(); camera.updateMatrixWorld();
+      return lst.map(function(i){ var v = new THREE.Vector3(F[i*7] - ctr[0], F[i*7+2] - ctr[2], -(F[i*7+1] - ctr[1])), sp = toScreen(v, r); return { i:i, x:r.left + sp.x, y:r.top + sp.y, a:along[i], run:runOf[i] }; }); },
+    shown:function(){ var c = 0; for (var i = 0; i < N; i++) if (shownBlock(i)) c++; return c; },
+    mode:BIG ? 'big' : 'full', runs:tiles.reduce(function(a, tl){ return a + tl.slots.length; }, 0), tiles:tiles.length, span:span,
+    cam:function(x, z, r){ target.set(x, target.y, z); radius = r; updateCam(); schedule(); },
+    wallScreen:function(w){ var ch = chunkOfWall[w]; if (!ch) return null; var r = canvas.getBoundingClientRect(), v = ch.sphere.center.clone(); camera.updateMatrixWorld(); v.project(camera); return { x:r.left + (v.x + 1)/2*r.width, y:r.top + (1 - v.y)/2*r.height }; },
+    fullShown:function(){ var c = 0; chunks.forEach(function(ch){ if (ch.full && ch.full.visible) ch.idx.forEach(function(i){ if (shownBlock(i)) c++; }); }); return c; } };
+}
+})();
+</script>
+</body>
+</html>
