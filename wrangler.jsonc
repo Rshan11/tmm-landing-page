@@ -18,9 +18,12 @@
   "main": "worker/index.js",
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // HTML page paths run the Worker first so the private visit counter (worker/stats.js) sees
+    // them; every other file (blocks/rebar/meta/usdz, _astro, images) is served by assets directly.
+    "run_worker_first": ["/", "/*/", "/*.html"]
   },
   "d1_databases": [
-    { "binding": "PROGRESS", "database_name": "tmm-progress", "database_id": "949cd138-7ec7-4075-96b7-9fedd4bd2989" }
+    { "binding": "PROGRESS", "database_name": "tmm-progress", "database_id": "949cd138-7ec7-4075-96b7-9fedd4bd2989", "migrations_dir": "migrations" }
   ]
 }
