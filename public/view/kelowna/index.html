@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TMM Field View</title>
+<title>The Lead · The Masonry Modeler</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -199,7 +199,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
   <header>
     <div class="job">
       <h1 id="job">Loading…</h1>
-      <p id="pub">Field view</p>
+      <p id="pub">The Lead</p>
     </div>
     <span class="rev" id="rev" hidden></span>
   </header>
@@ -230,7 +230,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
       </div>
       <p class="sync" id="sync"></p>
     </div>
-    <p class="note" id="note">This field view shows quantities only. Prices and labor stay in the office.</p>
+    <p class="note" id="note">The Lead shows quantities only. Prices and labor stay in the office.</p>
     <p class="made"><a href="https://themasonrymodeler.com/" target="_blank" rel="noopener">Built with The Masonry Modeler</a> · <a href="https://themasonrymodeler.com/" target="_blank" rel="noopener">Get this for your job &rarr;</a></p>
   </aside>
 </div>
@@ -285,11 +285,11 @@ function init(meta, bbuf, rbuf){
 
   /* ---------- header ---------- */
   var jobName = (meta.project && meta.project.name) || 'Masonry job';
-  $('job').textContent = jobName; document.title = jobName + ' – field view';
+  $('job').textContent = jobName; document.title = jobName + ' – The Lead';
   var ex = meta.export || {}, rev = ex['Revision'], exd = ex['Exported (UTC)'], dateTxt = '', dateShort = '';
   if (exd){ var dm = /^(\d{4})-(\d{2})-(\d{2})/.exec(exd); if (dm){ dateShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+dm[2]-1] + ' ' + (+dm[3]); dateTxt = dateShort + ', ' + dm[1]; } }
   if (rev != null){ $('rev').textContent = 'Rev ' + rev + (dateShort ? ' · ' + dateShort : ''); $('rev').hidden = false; }
-  $('pub').textContent = 'Field view' + (rev != null ? ' · Rev ' + rev : '') + (dateTxt ? ' · ' + dateTxt : '');
+  $('pub').textContent = 'The Lead' + (rev != null ? ' · Rev ' + rev : '') + (dateTxt ? ' · ' + dateTxt : '');
 
   /* ---------- per-block facts ---------- */
   var bLift = new Int16Array(N), bType = new Uint8Array(N), bWall = new Int16Array(N);
@@ -442,7 +442,7 @@ function init(meta, bbuf, rbuf){
   walls.forEach(function(w){ Object.keys(w.lifts).forEach(function(n){ liftNums[n] = 1; }); });
   liftNums = Object.keys(liftNums).map(Number).sort(function(a, b){ return a - b; });
   var liftHs = []; walls.forEach(function(w){ if (w.liftH && liftHs.indexOf(w.liftH) < 0) liftHs.push(w.liftH); });
-  $('note').textContent = (liftHs.length ? 'Lifts are ' + liftHs.join(' / ') + '. ' : '') + 'This field view shows quantities only. Prices and labor stay in the office.';
+  $('note').textContent = (liftHs.length ? 'Lifts are ' + liftHs.join(' / ') + '. ' : '') + 'The Lead shows quantities only. Prices and labor stay in the office.';
 
   /* ---------- three.js ---------- */
   var stage = $('stage'), canvas = document.createElement('canvas');
