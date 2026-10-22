@@ -13,7 +13,14 @@
   "build": {
     "command": "npm run build"
   },
+  // worker/index.js serves /api/progress/<job> (field view production marks, D1) and hands every
+  // other request to the static assets unchanged.
+  "main": "worker/index.js",
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    { "binding": "PROGRESS", "database_name": "tmm-progress", "database_id": "949cd138-7ec7-4075-96b7-9fedd4bd2989" }
+  ]
 }

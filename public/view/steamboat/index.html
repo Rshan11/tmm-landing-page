@@ -91,12 +91,60 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 .empty{margin:12px 0 0;padding:10px 0;border-top:1px solid var(--line);color:var(--muted)}
 .note{margin:14px 0 0;font-size:.8rem;color:var(--muted)}
 
+.chip.add{border-style:dashed}
+.chip.add[aria-pressed="true"]{background:var(--select);color:var(--selectInk);border-color:var(--select);border-style:solid}
+.tbtn.prod[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tbtn.prod[aria-pressed="true"] .box{border-color:var(--surface)}
+/* production */
+.pbars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 12px}
+.pb{font-size:.82rem;color:var(--muted)}
+.pb b{display:block;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-size:1.6rem;line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
+.pb i{display:block;height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}
+.pb i em{display:block;height:100%;background:var(--ink)}
+.pb.B i em{background:#4f8a4b}.pb.R i em{background:#b03a2e}.pb.G i em{background:#5b7fa3}
+.cell span.on.B{background:#4f8a4b;border-color:#4f8a4b}.cell span.on.R{background:#b03a2e;border-color:#b03a2e}.cell span.on.G{background:#5b7fa3;border-color:#5b7fa3}
+.cell span.part.B{border-color:#4f8a4b}.cell span.part.R{border-color:#b03a2e}.cell span.part.G{border-color:#5b7fa3}
+.seg{display:flex;border:1.5px solid var(--ink);border-radius:12px;overflow:hidden;margin:0 0 12px}
+.seg button{flex:1;min-height:44px;border:none;background:transparent;font-weight:600;font-size:.95rem}
+.seg button+button{border-left:1.5px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.checks{display:grid;gap:8px;margin:12px 0 0}
+.ck{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:1.5px solid var(--line);border-radius:12px;background:transparent;text-align:left;width:100%}
+.ck .box{width:28px;height:28px;border:2px solid var(--ink);border-radius:6px;display:grid;place-items:center;font-size:18px;font-weight:700;flex:none}
+.ck[aria-pressed="true"]{border-color:var(--ink)}
+.ck[aria-pressed="true"] .box{background:var(--ink);color:var(--surface)}
+.ck[aria-pressed="false"] .box span{visibility:hidden}
+.ck .lbl{flex:1;min-width:0;font-weight:600;font-size:1.05rem}
+.ck .lbl small{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
+.ck .pct{font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
+.acts{display:flex;gap:8px;margin:10px 0 0;flex-wrap:wrap}
+.acts .tbtn{min-height:44px}
+.acts .tbtn:disabled{opacity:.45;cursor:default}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 0}
+.who label{font-size:.8rem;color:var(--muted);display:block}
+.who input{width:100%;font:inherit;font-size:16px;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin-top:2px}
+.sync{margin:8px 0 0;font-size:.85rem;color:var(--muted)}
+.sync.warn{color:#b03a2e}
+.panel h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.25rem;margin:18px 0 6px}
+.ptw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pt{border-collapse:collapse;width:100%;font-size:.85rem}
+.pt th,.pt td{padding:3px 2px;border-top:1px solid var(--line);text-align:center;white-space:nowrap}
+.pt th:first-child{text-align:left;font-weight:600;padding-right:6px;position:sticky;left:0;background:var(--surface);z-index:1}
+.pt thead th{color:var(--muted);font-weight:500;border-top:none}
+.pt td.pc{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;padding-left:6px}
+.cell{display:inline-flex;gap:1px;border:1.5px solid transparent;background:transparent;padding:5px 2px;border-radius:8px;min-height:40px;align-items:center}
+.cell[aria-pressed="true"]{border-color:var(--select)}
+.cell span{width:16px;height:18px;border-radius:4px;display:grid;place-items:center;font-size:.66rem;font-weight:700;border:1.5px solid var(--line);color:var(--muted)}
+.cell span.part{border-color:var(--ink);color:var(--ink);background:linear-gradient(to top,var(--line) 50%,transparent 50%)}
+.cell span.on{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.pt tr.tot th,.pt tr.tot td{border-top:1.5px solid var(--ink);font-weight:600}
+.pkey{margin:6px 0 0;font-size:.78rem;color:var(--muted)}
 @media (max-width:520px){
   .legend{font-size:.75rem;padding:5px 8px}
   .tbtn{padding:6px 10px;font-size:.85rem}
 }
 @media (min-width:900px){
-  .app{grid-template-columns:minmax(0,1fr) 380px;grid-template-rows:auto minmax(0,1fr)}
+  .app{grid-template-columns:minmax(0,1fr) 400px;grid-template-rows:auto minmax(0,1fr)}
   header{grid-column:1/-1}
   .stage{grid-column:1;grid-row:2}
   .panel{grid-column:2;grid-row:2;max-height:none;border-top:none;border-left:1px solid var(--line);padding:20px}
@@ -117,6 +165,8 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
     <div class="tools">
       <button class="tbtn" id="colorBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Color by type</button>
       <button class="tbtn small" id="rebarBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Rebar</button>
+      <button class="tbtn prod" id="prodBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Production</button>
+      <button class="tbtn small" id="dragBtn" aria-pressed="true" hidden><span class="box"><span>✓</span></span>Drag marks work</button>
       <div class="legend" id="legend"></div>
     </div>
     <p class="status" id="status">Loading the model…</p>
@@ -128,6 +178,13 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
     <div class="chips" id="chips"></div>
     <div class="chips" id="lifts"></div>
     <div id="detail"></div>
+    <div id="prodWho" hidden>
+      <div class="who">
+        <div><label for="whoName">Your name (optional)</label><input id="whoName" autocomplete="name" maxlength="40" placeholder="Name"></div>
+        <div><label for="whoPin">Crew PIN</label><input id="whoPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN to save"></div>
+      </div>
+      <p class="sync" id="sync"></p>
+    </div>
     <p class="note" id="note">This field view shows quantities only. Prices and labor stay in the office.</p>
   </aside>
 </div>
@@ -430,12 +487,19 @@ function init(meta, bbuf, rbuf){
   canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   canvas.addEventListener('pointerdown', function(e){
     canvas.setPointerCapture(e.pointerId); pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
-    if (pointers.size === 1){ moved = 0; panBtn = e.button === 2 || e.shiftKey; }
-    if (pointers.size === 2){ var t = two(); pinch0 = t.d; rad0 = radius; mid0 = t; moved = 99; }
+    if (pointers.size === 1){ moved = 0; panBtn = e.button === 2 || e.shiftKey; mk = null;
+      if (prodOn && dragOn && !panBtn){ var hb0 = rayBlock(e.clientX, e.clientY); if (hb0 !== null){ mk = { lift:bLift[hb0], hits:{}, last:{ x:e.clientX, y:e.clientY }, on:false }; mkHit(hb0); } } }
+    if (pointers.size === 2){ var t = two(); pinch0 = t.d; rad0 = radius; mid0 = t; moved = 99; if (mk){ mk = null; dragSet = null; paint(); } }
   });
   canvas.addEventListener('pointermove', function(e){
     if (!pointers.has(e.pointerId)) return;
     var prev = pointers.get(e.pointerId), cur = { x:e.clientX, y:e.clientY }; pointers.set(e.pointerId, cur);
+    if (pointers.size === 1 && mk){
+      moved += Math.abs(cur.x - prev.x) + Math.abs(cur.y - prev.y); if (moved < 6) return;
+      mk.on = true; var sx = mk.last.x, sy = mk.last.y, st = Math.max(1, Math.ceil(Math.hypot(cur.x - sx, cur.y - sy)/5));
+      for (var k5 = 1; k5 <= st; k5++){ var hb5 = rayBlock(sx + (cur.x - sx)*k5/st, sy + (cur.y - sy)*k5/st); if (hb5 !== null) mkHit(hb5); }
+      mk.last = cur; dragSet = coverHits(mk.lift, mk.hits); paint(); hideHint(); return;
+    }
     if (pointers.size === 1){
       var dx = cur.x - prev.x, dy = cur.y - prev.y; moved += Math.abs(dx) + Math.abs(dy); if (moved < 6) return;
       if (panBtn) pan(dx, dy); else { theta -= dx*0.008; phi = clamp(phi - dy*0.008, 0.15, 1.5); }
@@ -445,6 +509,9 @@ function init(meta, bbuf, rbuf){
     hideHint(); updateCam(); schedule();
   });
   function endPointer(e, tap){
+    if (mk && pointers.size === 1){ var m0 = mk; mk = null; dragSet = null;
+      if (tap && m0.on) commitDrag(m0); else if (tap && moved < 6) pick(e); else paint();
+      pointers.delete(e.pointerId); return; }
     if (tap && pointers.size === 1 && moved < 6 && !panBtn) pick(e);
     pointers.delete(e.pointerId); if (pointers.size < 2) pinch0 = 0;
   }
@@ -524,6 +591,13 @@ function init(meta, bbuf, rbuf){
     }
     return best;
   }
+  function rayBlock(x, y){
+    var r = canvas.getBoundingClientRect();
+    ndc.set((x - r.left)/r.width*2 - 1, -(y - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
+    var hit = ray.intersectObjects(meshes.concat(polys.filter(function(m){ return m.visible; })), false)[0];
+    if (!hit) return null;
+    return hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.idx[hit.instanceId];
+  }
   function pick(e){
     var hb = pickBar(e);
     if (hb !== null){ hideHint(); selectBar(hb); return; }
@@ -532,7 +606,7 @@ function init(meta, bbuf, rbuf){
     ndc.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
     var objs = meshes.concat(polys.filter(function(m){ return m.visible; }), concMeshes);
     var hit = ray.intersectObjects(objs, false)[0]; hideHint();
-    if (!hit) { select(null); return; }
+    if (!hit) { if (!multiOn) select(null); return; }
     if (hit.object.userData.conc !== undefined){ select(!bySide && hit.object.userData.wall >= 0 ? hit.object.userData.wall : null); return; }
     var gi = hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.idx[hit.instanceId];
     var gk = groupOf(gi); select(gk >= 0 ? gk : null);
@@ -540,11 +614,17 @@ function init(meta, bbuf, rbuf){
 
   /* ---------- state + painting ---------- */
   var selected = null, selLift = null, colorOn = false;
+  var selList = [], inSel = {}, multiOn = false;                 // multi-select (Ryan 10-21: "multi select walls")
+  var prodOn = false, dragOn = true, showT = 'B', dragSet = null, mk = null;
   var NEUTRAL = [0.84, 0.83, 0.8];
   function blockColour(i, out){
     var c = colorOn ? typeInfo(bType[i]).col : shadeOf(meta.colours[U[i*5]] || NEUTRAL, bType[i]), j = jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
-    if (selLift !== null && bLift[i] === selLift){ r = r*0.5 + sel.r*0.5; g = g*0.5 + sel.g*0.5; b = b*0.5 + sel.b*0.5; }
-    if (selected !== null && groupOf(i) !== selected){
+    if (prodOn){
+      if (dragSet && dragSet[i]){ r = sel.r; g = sel.g; b = sel.b; }
+      else if (done[showT][i]){ var tc = TCOL[showT]; r = r*0.6 + tc[0]*0.4; g = g*0.6 + tc[1]*0.4; b = b*0.6 + tc[2]*0.4; }   // done: its own colour, tinted so white block still reads
+      else { var gf = dark() ? [0.31, 0.33, 0.34] : [0.95, 0.945, 0.93]; r = r*0.22 + gf[0]*0.78; g = g*0.22 + gf[1]*0.78; b = b*0.22 + gf[2]*0.78; }
+    } else if (selLift !== null && bLift[i] === selLift){ r = r*0.5 + sel.r*0.5; g = g*0.5 + sel.g*0.5; b = b*0.5 + sel.b*0.5; }
+    if (selList.length && !inSel[groupOf(i)]){
       var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; r = r*0.15 + f[0]*0.85; g = g*0.15 + f[1]*0.85; b = b*0.15 + f[2]*0.85;
     }
     out[0] = Math.min(1, r); out[1] = Math.min(1, g); out[2] = Math.min(1, b);
@@ -565,8 +645,8 @@ function init(meta, bbuf, rbuf){
       mesh.visible = selLift === null || bLift[i] <= selLift;
     });
     concMeshes.forEach(function(mesh){
-      var c = [0.64, 0.64, 0.64], selWall = selected === null ? null : (bySide ? sides[selected].wall : selected);
-      if (selWall !== null && mesh.userData.wall !== selWall){ var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; c = c.map(function(v, j){ return v*0.15 + f[j]*0.85; }); }
+      var c = [0.64, 0.64, 0.64], selW = {}; selList.forEach(function(g){ selW[bySide ? sides[g].wall : g] = 1; });
+      if (selList.length && !selW[mesh.userData.wall]){ var f = dark() ? [0.22, 0.23, 0.24] : [0.93, 0.925, 0.91]; c = c.map(function(v, j){ return v*0.15 + f[j]*0.85; }); }
       mesh.material.color.setRGB(c[0], c[1], c[2]);
     });
     // clip openings + rebar at the top of the highest block shown
@@ -625,6 +705,188 @@ function init(meta, bbuf, rbuf){
     }).join('');
   }
 
+  /* ---------- production: block / rebar / grout done per side x lift, partial lifts by finger drag ---------- */
+  // each block -> a straight run (rotation + centre line) and a station along it, so a drag snaps to whole blocks
+  var runOf = new Int32Array(N), along = new Float32Array(N), runIdx = {}, runName = [];
+  for (i = 0; i < N; i++){
+    var rr = ((F[i*7+6] % Math.PI) + Math.PI) % Math.PI, rk = Math.round(rr*100); if (rk >= 314) rk = 0, rr = 0;
+    var cs = Math.cos(rr), sn = Math.sin(rr), perp = -F[i*7]*sn + F[i*7+1]*cs;
+    var rname = rk + ':' + Math.round(perp/0.05), ri = runIdx[rname];
+    if (ri === undefined){ ri = runIdx[rname] = runName.length; runName.push(rname); }
+    runOf[i] = ri; along[i] = F[i*7]*cs + F[i*7+1]*sn;
+  }
+  var glist = {}, glKeys = [];                                    // (group, lift) -> block list
+  for (i = 0; i < N; i++){ var g9 = groupOf(i); if (g9 < 0 || liftNums.indexOf(bLift[i]) < 0) continue; var kk = g9*1000 + bLift[i];
+    if (!glist[kk]){ glist[kk] = []; glKeys.push({ g:g9, l:bLift[i], lst:glist[kk] }); } glist[kk].push(i); }
+  var tagIdx = {}; selGroups.forEach(function(o, n){ tagIdx[String(o.tag)] = n; });
+  var done = { B:new Uint8Array(N), R:new Uint8Array(N), G:new Uint8Array(N) }, marks = [];
+  var TCOL = { B:[0.31, 0.54, 0.29], R:[0.69, 0.23, 0.18], G:[0.36, 0.5, 0.64] };
+  var TNAME = { B:'Block laid', R:'Rebar set', G:'Grouted' }, TSHORT = { B:'Block', R:'Rebar', G:'Grout' };
+
+  function mkHit(i){ if (bLift[i] === mk.lift && groupOf(i) >= 0) mk.hits[i] = 1; }
+  function rangesOf(hits){                                       // group -> run -> [a, b] spanning the touched blocks' ends
+    var R = {}; Object.keys(hits).forEach(function(k){ var i = +k, g = groupOf(i), h = F[i*7+3]/2, gr = R[g] || (R[g] = {}), e = gr[runOf[i]];
+      if (!e) gr[runOf[i]] = [along[i] - h, along[i] + h]; else { e[0] = Math.min(e[0], along[i] - h); e[1] = Math.max(e[1], along[i] + h); } });
+    return R;
+  }
+  function inRange(i, a, b){ return along[i] > a + 0.005 && along[i] < b - 0.005; }
+  function coverHits(lift, hits){
+    var out = new Uint8Array(N), R = rangesOf(hits);
+    Object.keys(R).forEach(function(g){ (glist[g*1000 + lift] || []).forEach(function(i){ var e = R[g][runOf[i]]; if (e && inRange(i, e[0], e[1])) out[i] = 1; }); });
+    return out;
+  }
+  function today(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function newId(){ return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
+  function whoName(){ return ($('whoName').value || '').trim().slice(0, 40); }
+  function newMark(g, l, t, r){ var m = { id:newId(), g:String(selGroups[g].tag), l:l, t:t, d:today() }; if (r) m.r = r; var n = whoName(); if (n) m.n = n; return m; }
+  function commitDrag(m0){
+    var R = rangesOf(m0.hits), adds = [];
+    Object.keys(R).forEach(function(g){ var r = Object.keys(R[g]).map(function(ri){ return [runName[ri], Math.round(R[g][ri][0]*1000)/1000, Math.round(R[g][ri][1]*1000)/1000]; });
+      if (r.length) adds.push(newMark(+g, m0.lift, showT, r.slice(0, 40))); });
+    if (adds.length) apply({ add:adds }, { del:adds.map(function(m){ return m.id; }) });
+    else paint();
+  }
+
+  // ---- marks: server copy + local queue (works offline, sends when it can) ----
+  var JOB = (/\/view\/([^\/]+)/.exec(location.pathname) || [])[1] || 'local', API = '/api/progress/' + encodeURIComponent(JOB);
+  var LS = { get:function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set:function(k, v){ try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch(e){} } };
+  function jget(k, d){ try { var v = JSON.parse(LS.get(k)); return v == null ? d : v; } catch(e){ return d; } }
+  var srv = jget('tmm-prog-s-' + JOB, []), queue = jget('tmm-prog-q-' + JOB, []), undoStack = [], syncing = false, syncMsg = '', syncWarn = false, online = null;
+  function marksNow(){
+    var by = {}, order = [];
+    srv.concat([]).forEach(function(m){ if (!by[m.id]) order.push(m.id); by[m.id] = m; });
+    queue.forEach(function(op){ (op.del || []).forEach(function(id){ delete by[id]; }); (op.add || []).forEach(function(m){ if (!by[m.id]) order.push(m.id); by[m.id] = m; }); });
+    return order.filter(function(id){ return by[id]; }).map(function(id){ return by[id]; });
+  }
+  function recompute(){
+    marks = marksNow(); done.B.fill(0); done.R.fill(0); done.G.fill(0);
+    marks.forEach(function(m){
+      var g = tagIdx[m.g], D = done[m.t], lst = g === undefined ? null : glist[g*1000 + m.l]; if (!lst || !D) return;
+      if (!m.r){ lst.forEach(function(i){ D[i] = 1; }); return; }
+      var rr2 = {}; m.r.forEach(function(x){ var id = runIdx[x[0]]; if (id !== undefined) (rr2[id] = rr2[id] || []).push(x); });
+      lst.forEach(function(i){ var xs = rr2[runOf[i]]; if (xs) for (var k = 0; k < xs.length; k++) if (inRange(i, xs[k][1], xs[k][2])){ D[i] = 1; break; } });
+    });
+  }
+  function apply(op, inverse){ queue.push(op); if (inverse) undoStack.push(inverse); LS.set('tmm-prog-q-' + JOB, JSON.stringify(queue)); recompute(); paint(); renderPanel(); flush(); }
+  function undo(){ var inv = undoStack.pop(); if (!inv) return;
+    if (inv.del) inv.del = inv.del.filter(function(id){ return marks.some(function(m){ return m.id === id; }); });
+    apply(inv, null); }
+  function setSync(msg, warn){ syncMsg = msg; syncWarn = !!warn; var el = $('sync'); el.textContent = msg; el.className = 'sync' + (warn ? ' warn' : ''); }
+  function waiting(){ var n = 0; queue.forEach(function(op){ n += (op.add || []).length + (op.del || []).length; }); return n; }
+  function flush(){
+    if (syncing) return;
+    if (!queue.length){ setSync(online === false ? 'Offline. Showing the last saved progress.' : online ? 'All marks saved.' : ''); return; }
+    var pin = LS.get('tmm-pin-' + JOB);
+    if (!pin){ setSync('Enter the crew PIN to save. ' + plural(waiting(), 'change') + ' waiting on this phone.', true); return; }
+    var sent = queue.slice(); syncing = true; setSync('Saving…');
+    fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ pin:pin, ops:sent }) })
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { s:r.status, j:j }; }); })
+      .then(function(res){
+        syncing = false;
+        if (res.s === 200 && res.j && res.j.marks){ online = true; queue.splice(0, sent.length); LS.set('tmm-prog-q-' + JOB, JSON.stringify(queue)); gotServer(res.j.marks); if (queue.length) flush(); else setSync('All marks saved.'); return; }
+        if (res.s === 403){ LS.set('tmm-pin-' + JOB, null); $('whoPin').value = ''; setSync('That crew PIN was not accepted. ' + plural(waiting(), 'change') + ' waiting.', true); return; }
+        if (res.s === 429){ setSync('Too many wrong PINs. Try again in 15 minutes.', true); return; }
+        if (res.s === 400){ queue.splice(0, sent.length); LS.set('tmm-prog-q-' + JOB, JSON.stringify(queue)); recompute(); paint(); renderPanel(); setSync('A change was refused by the server and dropped.', true); return; }
+        retryLater();
+      }, function(){ syncing = false; online = false; retryLater(); });
+  }
+  var retryT = null;
+  function retryLater(){ setSync('Offline. ' + plural(waiting(), 'change') + ' saved on this phone, will send when back online.', true); if (!retryT) retryT = setTimeout(function(){ retryT = null; flush(); }, 15000); }
+  function gotServer(list){ srv = Array.isArray(list) ? list : []; LS.set('tmm-prog-s-' + JOB, JSON.stringify(srv)); recompute(); paint(); renderPanel(); }
+  function load(){
+    return fetch(API, { cache:'no-store' }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){ online = true; if (!syncing) gotServer(j.marks); if (queue.length) flush(); else if (prodOn) setSync('All marks saved.'); },
+        function(){ online = false; if (prodOn) flush(); });
+  }
+  window.addEventListener('online', function(){ flush(); load(); });
+  setInterval(function(){ if (prodOn && !document.hidden && !syncing && !queue.length) load(); }, 30000);
+
+  function setProd(on, quiet){
+    prodOn = on; $('prodBtn').setAttribute('aria-pressed', String(on)); $('dragBtn').hidden = !on;
+    if (on){ $('hint').hidden = false; $('hint').textContent = dragOn ? 'Drag along a lift to mark it · drag off the walls to turn' : 'Drag to turn, tap a side'; load(); flush(); }
+    if (!quiet){ paint(); renderPanel(); hash(); }
+  }
+  // ---- numbers ----
+  function stat(gset, lift){                                      // gset: null = all groups
+    var o = { n:0, B:0, R:0, G:0 };
+    glKeys.forEach(function(e){ if ((gset && !gset[e.g]) || (lift !== null && e.l !== lift)) return;
+      e.lst.forEach(function(i){ o.n++; o.B += done.B[i]; o.R += done.R[i]; o.G += done.G[i]; }); });
+    return o;
+  }
+  function pctOf(o, t){ return o.n ? o[t]/o.n*100 : 0; }
+  function pctTxt(v){ return v >= 99.95 ? '100%' : v > 0 && v < 1 ? '<1%' : Math.floor(v) + '%'; }
+  function targets(){ if (selList.length) return selList.filter(function(g){ return glist[g*1000 + selLift]; });
+    var t = []; selGroups.forEach(function(o, g){ if (glist[g*1000 + selLift]) t.push(g); }); return t; }
+  function fullMark(g, l, t){ var tag = String(selGroups[g].tag); return marks.filter(function(m){ return !m.r && m.t === t && m.l === l && m.g === tag; })[0] || null; }
+  function toggle(t){
+    if (selLift === null) return; var tg = targets(); if (!tg.length) return;
+    var tags = {}; tg.forEach(function(g){ tags[String(selGroups[g].tag)] = 1; });
+    if (tg.every(function(g){ return fullMark(g, selLift, t); })){
+      var gone = marks.filter(function(m){ return m.t === t && m.l === selLift && tags[m.g]; });
+      apply({ del:gone.map(function(m){ return m.id; }) }, { add:gone });
+    } else {
+      var adds = tg.filter(function(g){ return !fullMark(g, selLift, t); }).map(function(g){ return newMark(g, selLift, t, null); });
+      apply({ add:adds }, { del:adds.map(function(m){ return m.id; }) });
+    }
+  }
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function dTxt(d){ var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? MON[+m[2]-1] + ' ' + (+m[3]) : ''; }
+  function barsHtml(o){
+    return '<div class="pbars">' + ['B','R','G'].map(function(t){ var v = pctOf(o, t);
+      return '<div class="pb ' + t + '">' + TSHORT[t] + '<b>' + pctTxt(v) + '</b><i><em style="width:' + v.toFixed(1) + '%"></em></i></div>'; }).join('') + '</div>';
+  }
+  function cellHtml(o, l, g){
+    if (!o.n) return '<td>–</td>';
+    var sp = ['B','R','G'].map(function(t){ var v = pctOf(o, t); return '<span class="' + t + (v >= 99.95 ? ' on' : v > 0 ? ' part' : '') + '">' + t + '</span>'; }).join('');
+    var on = g === null ? selList.length === 0 && selLift === l : selLift === l && selList.length === 1 && selList[0] === g;
+    return '<td><button class="cell" data-cg="' + (g === null ? '' : g) + '" data-cl="' + l + '" aria-pressed="' + on + '" aria-label="' + esc((g === null ? 'Whole job' : selGroups[g].name) + ' lift ' + l) + '">' + sp + '</button></td>';
+  }
+  function tableHtml(){
+    var h = '<div class="ptw"><table class="pt"><thead><tr><th>' + (bySide ? 'Side' : 'Wall') + '</th>' + liftNums.map(function(l){ return '<th>L' + l + '</th>'; }).join('') + '<th>Laid</th></tr></thead><tbody>';
+    selGroups.forEach(function(o, g){ var gs = {}; gs[g] = 1;
+      h += '<tr><th>' + esc(o.name) + '</th>' + liftNums.map(function(l){ return cellHtml(stat(gs, l), l, g); }).join('') + '<td class="pc">' + pctTxt(pctOf(stat(gs, null), 'B')) + '</td></tr>'; });
+    h += '<tr class="tot"><th>Job</th>' + liftNums.map(function(l){ return cellHtml(stat(null, l), l, null); }).join('') + '<td class="pc">' + pctTxt(pctOf(stat(null, null), 'B')) + '</td></tr>';
+    return h + '</tbody></table></div><p class="pkey">L = lift. B block · R rebar · G grout. Filled = done, half = part of the lift. Tap a cell to open it.</p>';
+  }
+  function renderProd(){
+    var h = '<p class="sub" style="margin:0 0 6px">Whole job, by block count</p>' + barsHtml(stat(null, null));
+    h += '<div class="seg" role="group" aria-label="Show and mark">' + ['B','R','G'].map(function(t){ return '<button data-st="' + t + '" aria-pressed="' + (showT === t) + '">' + TSHORT[t] + '</button>'; }).join('') + '</div>';
+    var nm = selList.length === 0 ? 'Whole job' : selList.length === 1 ? selGroups[selList[0]].name : plural(selList.length, bySide ? 'side' : 'wall');
+    h += '<h2>' + esc(nm) + '</h2>';
+    if (selList.length > 1) h += '<p class="sub">' + esc(selList.map(function(g){ return selGroups[g].name; }).join(', ')) + '</p>';
+    if (selLift === null){
+      var gs0 = null; if (selList.length){ gs0 = {}; selList.forEach(function(g){ gs0[g] = 1; }); }
+      if (selList.length) h += barsHtml(stat(gs0, null));
+      h += '<p class="sub">Pick a lift to check off block, rebar and grout, or drag a finger along a lift on the model to mark part of it.</p>';
+    } else {
+      var tg = targets(), gs = {}; tg.forEach(function(g){ gs[g] = 1; }); var o = stat(gs, selLift);
+      var ws = {}; tg.forEach(function(g){ ws[bySide ? selGroups[g].wall : g] = 1; });
+      h += '<p class="sub">' + esc(liftRange(Object.keys(ws).map(function(k){ return walls[k]; }))) + fmt(o.n) + ' blocks.</p>';
+      if (!tg.length) h += '<p class="empty">No blocks in lift ' + selLift + ' here.</p>';
+      else h += '<div class="checks">' + ['B','R','G'].map(function(t){
+        var full = tg.every(function(g){ return fullMark(g, selLift, t); }), v = pctOf(o, t), tags = {}; tg.forEach(function(g){ tags[String(selGroups[g].tag)] = 1; });
+        var last = marks.filter(function(m){ return m.t === t && m.l === selLift && tags[m.g]; }).sort(function(a, b){ return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; }).pop();
+        var sub = full ? 'Done' + (last ? ' ' + dTxt(last.d) + (last.n ? ' · ' + esc(last.n) : '') : '') : v > 0 ? 'Part done' + (last ? ', last ' + dTxt(last.d) + (last.n ? ' · ' + esc(last.n) : '') : '') : 'Not done';
+        return '<button class="ck" data-ck="' + t + '" aria-pressed="' + full + '"><span class="box"><span>✓</span></span><span class="lbl">' + TNAME[t] + '<small>' + sub + '</small></span><span class="pct">' + pctTxt(v) + '</span></button>';
+      }).join('') + '</div>';
+    }
+    h += '<div class="acts"><button class="tbtn" id="undoBtn"' + (undoStack.length ? '' : ' disabled') + '>Undo last mark</button></div>';
+    h += '<h3>Progress</h3>' + tableHtml();
+    return h;
+  }
+  $('detail').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b || !prodOn) return;
+    if (b.dataset.st){ showT = b.dataset.st; paint(); renderPanel(); return; }
+    if (b.dataset.ck){ toggle(b.dataset.ck); return; }
+    if (b.id === 'undoBtn'){ undo(); return; }
+    if (b.dataset.cl !== undefined){ setSel(b.dataset.cg === '' ? [] : [+b.dataset.cg]); selLift = +b.dataset.cl; paint(); renderPanel(); hash(); }
+  });
+  $('whoName').value = LS.get('tmm-name') || '';
+  $('whoName').addEventListener('change', function(){ LS.set('tmm-name', whoName() || null); });
+  $('whoPin').addEventListener('change', function(){ var v = this.value.replace(/\D/g, '').slice(0, 8); this.value = v; LS.set('tmm-pin-' + JOB, v || null); if (v) flush(); });
+  if (LS.get('tmm-pin-' + JOB)) $('whoPin').value = LS.get('tmm-pin-' + JOB);
+  recompute();
+
   /* ---------- panel ---------- */
   var fmt = function(n){ return Math.round(n).toLocaleString('en-US'); };
   function groutText(q){
@@ -678,7 +940,18 @@ function init(meta, bbuf, rbuf){
   }
   function renderPanel(){
     var h;
-    if (selected !== null && bySide){
+    $('prodWho').hidden = !prodOn;
+    if (prodOn) h = renderProd();
+    else if (selList.length > 1){
+      var mt = emptyQ(), mnames = [], mw = {}, mnb = 0;
+      selList.forEach(function(g){ var o = selGroups[g], oq = selLift === null ? o.whole : o.lifts[selLift]; mnames.push(o.name); mw[bySide ? o.wall : g] = 1; if (oq){ addQ(mt, oq); } });
+      Object.keys(mt.units).forEach(function(l){ mnb += mt.units[l].n; });
+      h = '<h2>' + plural(selList.length, bySide ? 'side' : 'wall') + '</h2><p class="sub">' + esc(mnames.join(', ')) + '</p>';
+      if (selLift !== null) h += '<p class="sub">' + esc(liftRange(Object.keys(mw).map(function(k){ return walls[k]; }))) + '</p>';
+      h += mnb ? rows(mt, !bySide && selLift === null) : '<p class="empty">No blocks in lift ' + selLift + ' on these ' + (bySide ? 'sides' : 'walls') + '.</p>';
+      if (bySide && mnb) h += '<p class="sub">Combined blocks for the picked sides. Tap more sides to add or remove.</p>';
+    }
+    else if (selected !== null && bySide){
       var sd = sides[selected], ws = walls[sd.wall], sq = selLift === null ? sd.whole : sd.lifts[selLift];
       h = '<h2>' + esc(sd.name) + '</h2><p class="sub">' + esc(ws.name) + ' · ' + esc(describe(ws)) + '</p>';
       if (selLift !== null) h += '<p class="sub">' + esc(liftRange([ws])) + '</p>';
@@ -702,30 +975,46 @@ function init(meta, bbuf, rbuf){
       if (selLift === null){ var cr2 = concRows(walls); if (cr2) h = h.replace(/<\/dl>$/, cr2 + '</dl>'); }
     }
     $('detail').innerHTML = h;
-    Array.prototype.forEach.call(document.querySelectorAll('#chips .chip'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.w === '' ? null : +b.dataset.w) === selected)); });
+    Array.prototype.forEach.call(document.querySelectorAll('#chips .chip[data-w]'), function(b){ b.setAttribute('aria-pressed', String(b.dataset.w === '' ? selList.length === 0 : !!inSel[+b.dataset.w])); });
+    $('multiBtn').setAttribute('aria-pressed', String(multiOn));
     Array.prototype.forEach.call(document.querySelectorAll('#lifts .chip'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.l === '' ? null : +b.dataset.l) === selLift)); });
   }
-  function select(k){ selected = k; paint(); renderPanel(); hash(); }
+  function setSel(list){ selList = list; inSel = {}; list.forEach(function(g){ inSel[g] = 1; }); selected = list.length === 1 ? list[0] : null; }
+  function select(k, add){
+    if (k === null || k === undefined) setSel([]);
+    else if (multiOn || add){ var l2 = selList.slice(), at = l2.indexOf(k); if (at >= 0) l2.splice(at, 1); else l2.push(k); setSel(l2); }
+    else setSel([k]);
+    paint(); renderPanel(); hash();
+  }
   function setLift(n){ selLift = n; paint(); renderPanel(); hash(); }
   function hash(){
-    var parts = []; if (selected !== null) parts.push((bySide ? 'side=' : 'wall=') + encodeURIComponent(selGroups[selected].tag)); if (selLift !== null) parts.push('lift=' + selLift);
+    var parts = []; if (selList.length) parts.push((bySide ? 'side=' : 'wall=') + selList.map(function(g){ return encodeURIComponent(selGroups[g].tag); }).join(',')); if (selLift !== null) parts.push('lift=' + selLift);
+    if (prodOn) parts.push('prod=1');
     try { history.replaceState(null, '', parts.length ? '#' + parts.join('&') : location.pathname + location.search); } catch(e) {}
   }
 
   $('chips').innerHTML = '<button class="chip" data-w="" aria-pressed="true">Whole job</button>' +
-    selGroups.map(function(w, n){ return '<button class="chip" data-w="' + n + '" aria-pressed="false" title="' + esc(bySide ? walls[w.wall].name : w.tag) + '">' + esc(w.name) + '</button>'; }).join('');
-  $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (b) select(b.dataset.w === '' ? null : +b.dataset.w); });
+    selGroups.map(function(w, n){ return '<button class="chip" data-w="' + n + '" aria-pressed="false" title="' + esc(bySide ? walls[w.wall].name : w.tag) + '">' + esc(w.name) + '</button>'; }).join('') +
+    (selGroups.length > 1 ? '<button class="chip add" id="multiBtn" aria-pressed="false" title="Tap more ' + (bySide ? 'sides' : 'walls') + ' to add or remove">+ Select more</button>' : '<span id="multiBtn" hidden></span>');
+  $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return;
+    if (b.id === 'multiBtn'){ multiOn = !multiOn; $('hint').hidden = !multiOn; if (multiOn) $('hint').textContent = 'Tap ' + (bySide ? 'sides' : 'walls') + ' to add or remove'; renderPanel(); return; }
+    select(b.dataset.w === '' ? null : +b.dataset.w); });
   $('lifts').innerHTML = '<button class="chip" data-l="" aria-pressed="true">All lifts</button>' +
     liftNums.map(function(n){ return '<button class="chip" data-l="' + n + '" aria-pressed="false">Lift ' + n + '</button>'; }).join('');
   $('lifts').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (b) setLift(b.dataset.l === '' ? null : +b.dataset.l); });
   $('colorBtn').addEventListener('click', function(){ colorOn = !colorOn; this.setAttribute('aria-pressed', String(colorOn)); paint(); });
   $('rebarBtn').addEventListener('click', function(){ if (!rebar) return; rebar.visible = !rebar.visible; this.setAttribute('aria-pressed', String(rebar.visible)); if (!rebar.visible) selectBar(null); else schedule(); });
+  $('prodBtn').addEventListener('click', function(){ setProd(!prodOn); });
+  $('dragBtn').addEventListener('click', function(){ dragOn = !dragOn; this.setAttribute('aria-pressed', String(dragOn)); setProd(true); });
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeScene);
 
   // deterministic start: #wall=<tag or name>&lift=<n>&rebar=1
-  var hp = {}; location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var a = kv.split('='); if (a[0]) hp[a[0]] = decodeURIComponent(a[1] || ''); });
-  if (hp.wall && !bySide){ walls.forEach(function(w){ if (w.tag === hp.wall || w.name === hp.wall || String(w.k) === hp.wall) selected = w.k; }); }
-  if (hp.side && bySide){ sides.forEach(function(sd, n){ if (sd.seg === hp.side || String(n) === hp.side) selected = n; }); }
+  var hp = {}; location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var a = kv.split('='); if (a[0]) hp[a[0]] = a[0] === 'wall' || a[0] === 'side' ? (a[1] || '') : decodeURIComponent(a[1] || ''); });
+  var hl = [];
+  if (hp.wall && !bySide) hp.wall.split(',').forEach(function(t){ t = decodeURIComponent(t); walls.forEach(function(w){ if ((w.tag === t || w.name === t || String(w.k) === t) && hl.indexOf(w.k) < 0) hl.push(w.k); }); });
+  if (hp.side && bySide) hp.side.split(',').forEach(function(t){ t = decodeURIComponent(t); sides.forEach(function(sd, n){ if ((sd.seg === t || String(n) === t) && hl.indexOf(n) < 0) hl.push(n); }); });
+  setSel(hl);
+  if (hp.prod === '1') setProd(true, true);
   if (hp.lift && liftNums.indexOf(+hp.lift) >= 0) selLift = +hp.lift;
   if (hp.rebar === '1' && rebar){ rebar.visible = true; $('rebarBtn').setAttribute('aria-pressed', 'true'); }
 
@@ -736,6 +1025,10 @@ function init(meta, bbuf, rbuf){
       for (var s3 = BARS.seg0[b]; s3 < BARS.seg0[b+1]; s3++){ pa.set(rebarPos[s3*6], rebarPos[s3*6+1], rebarPos[s3*6+2]); pb.set(rebarPos[s3*6+3], rebarPos[s3*6+4], rebarPos[s3*6+5]);
         var A = toScreen(pa.clone(), r), B = toScreen(pb.clone(), r), l = Math.hypot(B.x - A.x, B.y - A.y); if (l > bl){ bl = l; best = { x:r.left + (A.x + B.x)/2, y:r.top + (A.y + B.y)/2, px:l }; } }
       return best; }, blocks:N, concrete:concMeshes.length, sides:sides.map(function(sd){ return sd.seg + ':' + sd.whole.total; }), walls:walls.length, lifts:liftNums.slice(), select:select, setLift:setLift,
+    prod:function(on){ setProd(on !== false); }, marks:function(){ return marks.slice(); }, queue:function(){ return queue.slice(); }, sync:function(){ return syncMsg; },
+    pct:function(){ var o = stat(null, null); return { n:o.n, B:pctOf(o, 'B'), R:pctOf(o, 'R'), G:pctOf(o, 'G') }; }, selList:function(){ return selList.slice(); }, multi:function(on){ multiOn = !!on; renderPanel(); },
+    blockXY:function(g, l){ var lst = glist[g*1000 + l] || [], r = canvas.getBoundingClientRect(); camera.updateMatrixWorld();
+      return lst.map(function(i){ var v = new THREE.Vector3(F[i*7] - ctr[0], F[i*7+2] - ctr[2], -(F[i*7+1] - ctr[1])), sp = toScreen(v, r); return { i:i, x:r.left + sp.x, y:r.top + sp.y, a:along[i], run:runOf[i] }; }); },
     shown:function(){ var c = 0; meshes.forEach(function(m){ c += m.count; }); polys.forEach(function(m){ if (m.visible) c++; }); return c; } };
 }
 })();
