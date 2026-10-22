@@ -145,6 +145,26 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 .cell span.on{border-color:var(--ink);background:var(--ink);color:var(--surface)}
 .pt tr.tot th,.pt tr.tot td{border-top:1.5px solid var(--ink);font-weight:600}
 .pkey{margin:6px 0 0;font-size:.78rem;color:var(--muted)}
+/* schedule */
+.sbar{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.sbar .play{flex:none;min-width:84px;min-height:44px;border-radius:10px;border:1.5px solid var(--ink);background:var(--ink);color:var(--surface);font-weight:600}
+.sbar input{flex:1;min-width:0;height:44px;accent-color:var(--ink);margin:0}
+.sleg{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0 0;font-size:.82rem;color:var(--muted)}
+.sleg i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.sleg i.lay{background:rgb(143,217,120)}.sleg i.gr{background:rgb(84,140,235)}
+.loud{margin:10px 0 0;padding:8px 10px;border-left:4px solid var(--select);background:var(--bg);border-radius:6px;font-size:.84rem}
+.loud b{letter-spacing:.04em}
+.sset{margin:12px 0 0;border:1.5px solid var(--line);border-radius:12px;padding:0 12px}
+.sset summary{min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;padding:0 0 12px}
+.sgrid label{font-size:.78rem;color:var(--muted);display:block}
+.sgrid input{width:100%;font:inherit;font-size:16px;padding:8px 9px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin-top:2px}
+.slist{list-style:none;margin:0;padding:0}
+.slist button{display:block;width:100%;min-height:44px;text-align:left;border:none;border-top:1px solid var(--line);background:transparent;padding:8px 6px;font-size:.88rem;line-height:1.35}
+.slist button b{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-size:1.05rem;margin-right:6px}
+.slist button small{color:var(--muted);margin-right:6px}
+.slist button[aria-current="true"]{background:var(--select);color:var(--selectInk);border-radius:8px}
+.slist button[aria-current="true"] small{color:inherit}
 @media (max-width:520px){
   .legend{font-size:.75rem;padding:5px 8px}
   .tbtn{padding:6px 10px;font-size:.85rem}
@@ -172,6 +192,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
       <button class="tbtn" id="colorBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Color by type</button>
       <button class="tbtn small" id="rebarBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Rebar</button>
       <button class="tbtn prod" id="prodBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Production</button>
+      <button class="tbtn prod" id="schedBtn" aria-pressed="false"><span class="box"><span>✓</span></span>Schedule</button>
       <button class="tbtn small" id="dragBtn" aria-pressed="true" hidden><span class="box"><span>✓</span></span>Drag marks work</button>
       <a class="tbtn small ar" id="arBtn" rel="ar" href="model.usdz" hidden><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='22' viewBox='0 0 84 22'%3E%3Cg fill='none' stroke='%23787E82' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M11 2.5l7.5 4.2v8.6L11 19.5l-7.5-4.2V6.7z'/%3E%3Cpath d='M3.5 6.7L11 11l7.5-4.3M11 11v8.5'/%3E%3C/g%3E%3Ctext x='26' y='15.5' font-family='Barlow,Segoe UI,system-ui,sans-serif' font-size='14' font-weight='600' fill='%23787E82'%3EView in AR%3C/text%3E%3C/svg%3E" width="84" height="22" alt="View in AR"></a>
       <div class="legend" id="legend"></div>
@@ -824,7 +845,12 @@ function init(meta, bbuf, rbuf){
   var NEUTRAL = [0.84, 0.83, 0.8];
   function blockColour(i, out, jj){
     var c = colorOn ? typeInfo(bType[i]).col : shadeOf(meta.colours[U[i*5]] || NEUTRAL, bType[i]), j = jj || jit[i], r = c[0]*j, g = c[1]*j, b = c[2]*j;
-    if (prodOn){
+    if (schedOn && S){                                             // schedule: laid by end of the day shown = its own colour
+      var ld = S.day[i], gf2 = dark() ? [0.31, 0.33, 0.34] : [0.95, 0.945, 0.93];
+      if (ld > schedDay){ r = r*0.15 + gf2[0]*0.85; g = g*0.15 + gf2[1]*0.85; b = b*0.15 + gf2[2]*0.85; }   // future (only drawn when ghosted)
+      else if (ld === schedDay){ r = r*0.3 + 0.39; g = g*0.3 + 0.595; b = b*0.3 + 0.33; }                     // laying today: light green
+      else if (S.gd0[i] && S.gd0[i] <= schedDay && schedDay <= S.gd1[i]){ r = r*0.45 + 0.18; g = g*0.45 + 0.30; b = b*0.45 + 0.51; }   // grouting today: blue tint
+    } else if (prodOn){
       if (dragSet && dragSet[i]){ r = sel.r; g = sel.g; b = sel.b; }
       else if (done[showT][i]){ var tc = TCOL[showT]; r = r*0.6 + tc[0]*0.4; g = g*0.6 + tc[1]*0.4; b = b*0.6 + tc[2]*0.4; }   // done: its own colour, tinted so white block still reads
       else { var gf = dark() ? [0.31, 0.33, 0.34] : [0.95, 0.945, 0.93]; r = r*0.22 + gf[0]*0.78; g = g*0.22 + gf[1]*0.78; b = b*0.22 + gf[2]*0.78; }
@@ -836,11 +862,11 @@ function init(meta, bbuf, rbuf){
   }
   var tmp = [0, 0, 0], sel = new THREE.Color(), lastVKey = null;
   var HIDE = new Float32Array([1e-6,0,0,0, 0,1e-6,0,0, 0,0,1e-6,0, 0,-1e4,0,1]);   // a hidden instance: tiny, far below
-  function shownBlock(i){ return selLift === null || bLift[i] <= selLift || (selList.length > 0 && !inSel[groupOf(i)]); }
+  function shownBlock(i){ if (schedOn && S) return ghostOn || S.day[i] <= schedDay; return selLift === null || bLift[i] <= selLift || (selList.length > 0 && !inSel[groupOf(i)]); }
   function paint(){
     sel.set(getComputedStyle(document.documentElement).getPropertyValue('--select').trim() || '#E9B824');
     // a lift cuts only the picked walls (all walls when none is picked); the others stay whole (Ryan 10-21)
-    var vkey = selLift + '|' + selList.join(','), vchg = vkey !== lastVKey; lastVKey = vkey;
+    var vkey = selLift + '|' + selList.join(',') + (schedOn && S ? '|s' + S.ver + ':' + schedDay + (ghostOn ? 'g' : '') : ''), vchg = vkey !== lastVKey; lastVKey = vkey;
     meshes.forEach(function(mesh){
       var idx = mesh.userData.idx, a = mesh.instanceColor.array, cnt = 0, M = mesh.instanceMatrix.array, O = mesh.userData.orig;
       for (var n = 0; n < idx.length; n++){
@@ -863,7 +889,13 @@ function init(meta, bbuf, rbuf){
       mesh.material.color.setRGB(c[0], c[1], c[2]);
     });
     // clip openings + rebar at the top of the highest block shown, per picked wall
-    if (vchg){
+    if (vchg && schedOn && S){                                     // schedule: openings + rebar rise with what is laid
+      var sTop = -1e9, sg = {};
+      for (var i5 = 0; i5 < N; i5++) if (S.day[i5] <= schedDay){ if (bTop[i5] > sTop) sTop = bTop[i5]; var g5 = groupOf(i5); if (sg[g5] === undefined || bTop[i5] > sg[g5]) sg[g5] = bTop[i5]; }
+      var sTopOf = function(g){ var t = g >= 0 ? sg[g] : sTop; return t === undefined || t < -1e8 ? -1e9 : t + 0.005; };
+      openMeshes.forEach(function(om){ om.userData.plane.constant = sTopOf(om.userData.g); });
+      rebarLift(sTopOf, sTop + 0.005);
+    } else if (vchg){
       var allTop = null, gTop = {};
       if (selLift !== null){ allTop = -1e9; for (var i = 0; i < N; i++) if (bLift[i] <= selLift){ if (bTop[i] > allTop) allTop = bTop[i]; var gg = groupOf(i); if (gTop[gg] === undefined || bTop[i] > gTop[gg]) gTop[gg] = bTop[i]; } }
       var topOf = function(g){ if (allTop === null || (selList.length && !inSel[g])) return null; return selList.length && gTop[g] !== undefined ? gTop[g] + 0.005 : allTop + 0.005; };
@@ -1024,6 +1056,7 @@ function init(meta, bbuf, rbuf){
   setInterval(function(){ if (prodOn && !document.hidden && !syncing && !queue.length) load(); }, 30000);
 
   function setProd(on, quiet){
+    if (on && schedOn) setSched(false, true);
     prodOn = on; $('prodBtn').setAttribute('aria-pressed', String(on)); $('dragBtn').hidden = !on;
     if (on){ $('hint').hidden = false; $('hint').textContent = dragOn ? 'Drag along a lift to mark it · drag off the walls to turn' : 'Drag to turn, tap a side'; load(); flush(); }
     if (!quiet){ paint(); renderPanel(); hash(); }
@@ -1097,7 +1130,8 @@ function init(meta, bbuf, rbuf){
     return h;
   }
   $('detail').addEventListener('click', function(e){
-    var b = e.target.closest('button'); if (!b || !prodOn) return;
+    var b = e.target.closest('button'); if (b && schedOn){ schedClick(b); return; }
+    if (!b || !prodOn) return;
     if (b.dataset.st){ showT = b.dataset.st; paint(); renderPanel(); return; }
     if (b.dataset.ck){ toggle(b.dataset.ck); return; }
     if (b.id === 'undoBtn'){ undo(); return; }
@@ -1108,6 +1142,174 @@ function init(meta, bbuf, rbuf){
   $('whoPin').addEventListener('change', function(){ var v = this.value.replace(/\D/g, '').slice(0, 8); this.value = v; LS.set('tmm-pin-' + JOB, v || null); if (v) flush(); });
   if (LS.get('tmm-pin-' + JOB)) $('whoPin').value = LS.get('tmm-pin-' + JOB);
   recompute();
+
+  /* ---------- schedule: the build planned day by day (lay a lift, rebar, grout it, go up), animated ---------- */
+  // PLANNING ASSUMPTIONS, not field facts: every number is a default the user changes (kept on this device only)
+  var SDEF = { crew:4, r8:120, r4:150, r12:90, brick:500, grout:1, bb:0.5, area:3 };
+  var SKEYS = [['crew', 'Masons on the crew', 1, 1], ['r8', '8" CMU per mason-day (6", 20 cm too)', 1, 1], ['r4', '4" CMU per mason-day', 1, 1],
+    ['r12', '12" CMU per mason-day (10" too)', 1, 1], ['brick', 'Brick per mason-day', 1, 1], ['grout', 'Days per grout pour', 0.5, 0],
+    ['bb', 'Extra rebar days, lift with bond beams', 0.5, 0], ['area', 'Pour area = days of laying per lift', 0.5, 0.5]];
+  var SP = {}, schedOn = false, schedDay = 1, ghostOn = false, S = null, schedVer = 0, playT = null, setOpen = false;
+  function loadSP(){ var s = jget('tmm-sched', {}) || {}; SKEYS.forEach(function(k){ var v = parseFloat(s[k[0]]); SP[k[0]] = isFinite(v) && v >= k[3] ? v : SDEF[k[0]]; });
+    SP.start = LS.get('tmm-sched-start-' + JOB) || ''; }
+  function saveSP(){ var o = {}; SKEYS.forEach(function(k){ o[k[0]] = SP[k[0]]; }); LS.set('tmm-sched', JSON.stringify(o)); LS.set('tmm-sched-start-' + JOB, SP.start || null); }
+  loadSP();
+  function rateOf(w){                                              // units per mason-day from the wall type
+    var t = String(w.type || ''); if (/brick/i.test(t)) return SP.brick;
+    var m = /(\d+(?:\.\d+)?)\s*("|cm|mm)/.exec(t), inch = m ? (m[2] === '"' ? +m[1] : m[2] === 'cm' ? +m[1]/2.54 : +m[1]/25.4) : 8;
+    return inch <= 5 ? SP.r4 : inch <= 9 ? SP.r8 : SP.r12;
+  }
+  var gGeo = null;
+  function groupGeo(){                                             // each side / wall: block count + its two far ends (plan x, y)
+    if (gGeo) return gGeo;
+    var G = selGroups.length, n = new Int32Array(G), cx = new Float64Array(G), cy = new Float64Array(G), d1 = new Float64Array(G).fill(-1), d2 = new Float64Array(G).fill(-1),
+      ax = new Float64Array(G), ay = new Float64Array(G), bx = new Float64Array(G), by = new Float64Array(G), g, i;
+    for (i = 0; i < N; i++){ g = groupOf(i); if (g < 0) continue; n[g]++; cx[g] += F[i*7]; cy[g] += F[i*7+1]; }
+    for (g = 0; g < G; g++) if (n[g]){ cx[g] /= n[g]; cy[g] /= n[g]; }
+    for (i = 0; i < N; i++){ g = groupOf(i); if (g < 0) continue; var d = Math.hypot(F[i*7] - cx[g], F[i*7+1] - cy[g]); if (d > d1[g]){ d1[g] = d; ax[g] = F[i*7]; ay[g] = F[i*7+1]; } }
+    for (i = 0; i < N; i++){ g = groupOf(i); if (g < 0) continue; var e = Math.hypot(F[i*7] - ax[g], F[i*7+1] - ay[g]); if (e > d2[g]){ d2[g] = e; bx[g] = F[i*7]; by[g] = F[i*7+1]; } }
+    return gGeo = { n:n, ends:[[ax, ay], [bx, by]] };
+  }
+  function buildPlan(){
+    var gg = groupGeo(), todo = [], g;
+    for (g = 0; g < selGroups.length; g++) if (gg.n[g]) todo.push(g);
+    // route: start at the south-west-most wall end, then always the nearest unworked wall end
+    var order = [], px = 0, py = 0, first = true;
+    while (todo.length){
+      var best = -1, be = 0, bd = 1e30;
+      todo.forEach(function(g2, n2){ for (var e = 0; e < 2; e++){ var x = gg.ends[e][0][g2], y = gg.ends[e][1][g2], d = first ? x + y : Math.hypot(x - px, y - py); if (d < bd){ bd = d; best = n2; be = e; } } });
+      var gb = todo.splice(best, 1)[0]; order.push(gb); px = gg.ends[1 - be][0][gb]; py = gg.ends[1 - be][1][gb]; first = false;
+    }
+    // SEAM (later): a wall order the user drags replaces `order` here
+    var perDay = function(g2){ return Math.max(1, SP.crew) * Math.max(1, rateOf(walls[bySide ? sides[g2].wall : g2])); };
+    var areas = [], cur = null, acc = null;
+    order.forEach(function(g2){
+      if (!cur){ cur = []; acc = {}; } cur.push(g2); var mx = 0;
+      liftNums.forEach(function(l){ var lst = glist[g2*1000 + l]; acc[l] = (acc[l] || 0) + (lst ? lst.length/perDay(g2) : 0); if (acc[l] > mx) mx = acc[l]; });
+      if (mx >= SP.area){ areas.push(cur); cur = null; }
+    });
+    if (cur) areas.push(cur);
+    var day = new Int16Array(N), gd0 = new Int16Array(N), gd1 = new Int16Array(N), tasks = [], t = 0;
+    areas.forEach(function(ar, an){
+      liftNums.forEach(function(l){
+        var gs = ar.filter(function(g2){ return glist[g2*1000 + l]; }); if (!gs.length) return;
+        var bbLift = false, laid = [];
+        gs.forEach(function(g2){                                    // lay: course by course, block by block along the wall
+          var lst = glist[g2*1000 + l].slice().sort(function(a, b){ return F[a*7+2] - F[b*7+2] || runOf[a] - runOf[b] || along[a] - along[b]; });
+          var n = lst.length, dur = n/perDay(g2), tk = { k:'L', g:g2, l:l, a:an, n:n, t0:t, t1:t + dur, by:{} }, d0 = Math.floor(t + 1e-9) + 1;
+          lst.forEach(function(i, k){ var d = Math.max(d0, Math.ceil(t + (k + 1)/n*dur - 1e-6)); day[i] = d; tk.by[d] = (tk.by[d] || 0) + 1; if (bType[i] === 3 || bType[i] === 4) bbLift = true; });
+          tasks.push(tk); t += dur; laid.push(lst);
+        });
+        if (bbLift && SP.bb > 0){ tasks.push({ k:'R', l:l, a:an, gs:gs, t0:t, t1:t + SP.bb }); t += SP.bb; }   // rebar: in the lay days, + extra when the lift has bond beams
+        if (SP.grout > 0){                                          // one pour for the area's lift, on a fresh day; the next lift starts the day after
+          var s0 = Math.ceil(t - 1e-6), s1 = Math.ceil(s0 + SP.grout - 1e-6);
+          tasks.push({ k:'G', l:l, a:an, gs:gs, t0:s0, t1:s0 + SP.grout });
+          laid.forEach(function(lst){ lst.forEach(function(i){ gd0[i] = s0 + 1; gd1[i] = s1; }); }); t = s0 + SP.grout;
+        } else t = Math.ceil(t - 1e-6);
+      });
+    });
+    var T = Math.max(1, Math.ceil(t - 1e-6)), days = [];
+    for (var d = 0; d <= T; d++) days.push([]);
+    tasks.forEach(function(tk){
+      if (tk.k === 'L'){ Object.keys(tk.by).forEach(function(d2){ days[+d2].push({ k:'L', l:tk.l, g:tk.g, n:tk.by[d2] }); }); return; }
+      for (var d3 = Math.floor(tk.t0 + 1e-9) + 1; d3 <= Math.ceil(tk.t1 - 1e-6); d3++) days[d3].push({ k:tk.k, l:tk.l, gs:tk.gs });
+    });
+    // SEAM (later, plan vs actual): production marks (marks[]: m.t 'B'/'G', m.d date) will replace planned days for the blocks they cover, here
+    return { day:day, gd0:gd0, gd1:gd1, tasks:tasks, days:days, T:T, areas:areas, order:order, ver:++schedVer };
+  }
+  function segsTxt(segs){
+    var L = segs.map(function(s){ var m = /^Side (\S+)$/.exec(s); return m ? m[1] : null; });
+    if (L.some(function(x){ return x === null; })) return segs.join(', ');
+    L.sort(function(a, b){ return a.localeCompare(b, 'en', { numeric:true }); });
+    if (L.length === 1) return 'Side ' + L[0];
+    var run = L.every(function(x, k){ return x.length === 1 && (k === 0 || x.charCodeAt(0) === L[k-1].charCodeAt(0) + 1); });
+    return 'Sides ' + (run && L.length > 2 ? L[0] + '–' + L[L.length - 1] : L.join(', '));
+  }
+  function groupsTxt(gs){
+    var byW = {}, ord = [];
+    gs.forEach(function(g){ var w = bySide ? sides[g].wall : g; if (!byW[w]){ byW[w] = []; ord.push(w); } if (bySide) byW[w].push(sides[g].seg); });
+    var parts = ord.map(function(w){ if (!bySide) return walls[w].name; return walls.length === 1 ? segsTxt(byW[w]) : (walls[w].tag || walls[w].name) + '·' + segsTxt(byW[w]); });
+    return parts.length > 4 ? parts.slice(0, 3).join(', ') + ' +' + (parts.length - 3) + ' more walls' : parts.join(', ');
+  }
+  function dayTxt(d){
+    if (!S || !S.days[d]) return '';
+    var L = {}, lo = [], out = [];
+    S.days[d].forEach(function(e){ if (e.k !== 'L') return; if (!L[e.l]){ L[e.l] = { gs:[], n:0 }; lo.push(e.l); } L[e.l].gs.push(e.g); L[e.l].n += e.n; });
+    lo.forEach(function(l){ out.push('Lay L' + l + ' on ' + groupsTxt(L[l].gs) + ' (' + fmt(L[l].n) + ' blocks)'); });
+    S.days[d].forEach(function(e){ if (e.k === 'R') out.push('Rebar L' + e.l + ' bond beams on ' + groupsTxt(e.gs)); else if (e.k === 'G') out.push('Grout L' + e.l + ' on ' + groupsTxt(e.gs)); });
+    return out.join(', ');
+  }
+  function dateOf(d){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(SP.start || ''); if (!m) return '';
+    var dt = new Date(+m[1], +m[2] - 1, +m[3]), wk = function(){ var w = dt.getDay(); return w === 0 || w === 6; };
+    while (wk()) dt.setDate(dt.getDate() + 1);
+    for (var k = 1; k < d;){ dt.setDate(dt.getDate() + 1); if (!wk()) k++; }
+    return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()] + ' ' + MON[dt.getMonth()] + ' ' + dt.getDate();
+  }
+  function selLine(){
+    if (selList.length !== 1 || !S) return '';
+    var g = selList[0], per = {};
+    S.tasks.forEach(function(tk){ var on = tk.k === 'L' ? tk.g === g : tk.k === 'G' && tk.gs.indexOf(g) >= 0; if (!on) return;
+      var e = per[tk.l] || (per[tk.l] = { a:1e9, b:0, gr:0 });
+      if (tk.k === 'L') Object.keys(tk.by).forEach(function(d){ d = +d; if (d < e.a) e.a = d; if (d > e.b) e.b = d; }); else e.gr = Math.floor(tk.t0 + 1e-9) + 1; });
+    var ls = Object.keys(per).map(Number).sort(function(a, b){ return a - b; });
+    if (!ls.length) return '';
+    return '<p class="sub"><b>' + esc(glabel(g)) + ':</b> ' + ls.map(function(l){ var e = per[l]; return 'L' + l + ' laid Day ' + e.a + (e.b > e.a ? '–' + e.b : '') + (e.gr ? ', grouted Day ' + e.gr : ''); }).join('; ') + '.</p>';
+  }
+  function renderSched(){
+    if (!S) S = buildPlan();
+    var h = '<div class="sbar"><button class="play" id="sPlay">' + (playT ? 'Pause' : 'Play') + '</button><input type="range" id="sDay" min="1" max="' + S.T + '" step="1" value="' + schedDay + '" aria-label="Day of the build"></div>';
+    h += '<h2 id="sHead"></h2><p class="sub" id="sToday"></p>';
+    h += '<p class="sleg"><span><i class="lay"></i>Laying today</span><span><i class="gr"></i>Grouting today</span><span>' + (ghostOn ? 'Pale = still to build' : 'Still to build is hidden') + '</span></p>';
+    h += '<div class="acts"><button class="tbtn small" id="sGhost" aria-pressed="' + ghostOn + '"><span class="box"><span>✓</span></span>Show the rest pale</button></div>';
+    h += selLine();
+    h += '<p class="sub" style="margin-top:10px"><b>' + plural(S.T, 'working day') + '</b>' + (SP.start ? ', ' + dateOf(1) + ' to ' + dateOf(S.T) : '') + '. ' + plural(S.areas.length, 'pour area') + ', worked in order around the building, a lift at a time.</p>';
+    h += '<p class="loud"><b>ASSUMED, NOT YOUR CREW\'S REAL PACE:</b> ' + SP.crew + ' masons · 8" CMU ' + SP.r8 + ', 4" ' + SP.r4 + ', 12" ' + SP.r12 + ', brick ' + SP.brick + ' per mason-day · ' +
+      SP.grout + ' day per grout pour · rebar in the lay days, +' + SP.bb + ' day for a lift with bond beams · pour areas of about ' + SP.area + ' days of laying per lift. Change them below.</p>';
+    h += '<details class="sset" id="sSet"' + (setOpen ? ' open' : '') + '><summary>Planning assumptions</summary><div class="sgrid">' +
+      SKEYS.map(function(k){ return '<label>' + esc(k[1]) + '<input type="number" inputmode="decimal" min="' + k[3] + '" step="' + k[2] + '" data-sk="' + k[0] + '" value="' + SP[k[0]] + '"></label>'; }).join('') +
+      '<label>Start date (optional, skips weekends)<input type="date" data-sk="start" value="' + esc(SP.start || '') + '"></label>' +
+      '<label>&nbsp;<button class="tbtn small" id="sReset" style="width:100%;min-height:42px;margin-top:2px">Reset to defaults</button></label></div></details>';
+    h += '<h3>Day by day</h3><ol class="slist" id="sList">';
+    for (var d = 1; d <= S.T; d++){ var tx = dayTxt(d); h += '<li><button data-day="' + d + '" aria-current="false"><b>Day ' + d + '</b>' + (SP.start ? '<small>' + dateOf(d) + '</small>' : '') + esc(tx || 'No work planned') + '</button></li>'; }
+    return h + '</ol>';
+  }
+  function updDay(){
+    if (!S || !$('sDay')) return;
+    $('sDay').max = S.T; $('sDay').value = schedDay;
+    $('sHead').textContent = 'Day ' + schedDay + ' of ' + S.T + (SP.start ? ' · ' + dateOf(schedDay) : '');
+    $('sToday').textContent = dayTxt(schedDay) || 'No work planned this day.';
+    var on = document.querySelector('#sList button[aria-current="true"]'); if (on) on.setAttribute('aria-current', 'false');
+    var nb = document.querySelector('#sList button[data-day="' + schedDay + '"]'); if (nb) nb.setAttribute('aria-current', 'true');
+    $('sPlay').textContent = playT ? 'Pause' : 'Play';
+  }
+  function setDay(d){ if (!S) S = buildPlan(); schedDay = clamp(Math.round(d) || 1, 1, S.T); paint(); updDay(); hash(); }
+  function stopPlay(){ if (playT){ clearInterval(playT); playT = null; if ($('sPlay')) $('sPlay').textContent = 'Play'; } }
+  function togglePlay(){
+    if (playT){ stopPlay(); return; }
+    if (schedDay >= S.T) setDay(1);
+    playT = setInterval(function(){ if (!schedOn || schedDay >= S.T){ stopPlay(); return; } setDay(schedDay + 1); }, 700);
+    updDay();
+  }
+  function setSched(on, quiet){
+    stopPlay(); schedOn = on; $('schedBtn').setAttribute('aria-pressed', String(on));
+    if (on){ if (prodOn) setProd(false, true); selLift = null; if (!S) S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); $('hint').hidden = true; }
+    if (!quiet){ paint(); renderPanel(); hash(); }
+  }
+  function schedClick(b){
+    if (b.id === 'sPlay'){ togglePlay(); return; }
+    if (b.id === 'sGhost'){ ghostOn = !ghostOn; paint(); renderPanel(); hash(); return; }
+    if (b.id === 'sReset'){ SKEYS.forEach(function(k){ SP[k[0]] = SDEF[k[0]]; }); saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash(); return; }
+    if (b.dataset.day){ stopPlay(); setDay(+b.dataset.day); }
+  }
+  $('detail').addEventListener('input', function(e){ if (schedOn && e.target.id === 'sDay'){ stopPlay(); setDay(+e.target.value); } });
+  $('detail').addEventListener('change', function(e){
+    var k = e.target.dataset && e.target.dataset.sk; if (!schedOn || !k) return;
+    if (k === 'start') SP.start = /^\d{4}-\d{2}-\d{2}$/.test(e.target.value) ? e.target.value : '';
+    else { var v = parseFloat(e.target.value), mn = 0; SKEYS.forEach(function(x){ if (x[0] === k) mn = x[3]; }); if (!isFinite(v) || v < mn) v = SDEF[k]; SP[k] = v; }
+    saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash();
+  });
+  $('detail').addEventListener('toggle', function(e){ if (e.target.id === 'sSet') setOpen = e.target.open; }, true);
 
   /* ---------- panel ---------- */
   var fmt = function(n){ return Math.round(n).toLocaleString('en-US'); };
@@ -1163,7 +1365,9 @@ function init(meta, bbuf, rbuf){
   function renderPanel(){
     var h;
     $('prodWho').hidden = !prodOn;
-    if (prodOn) h = renderProd();
+    $('lifts').hidden = schedOn;
+    if (schedOn) h = renderSched();
+    else if (prodOn) h = renderProd();
     else if (selList.length > 1){
       var mt = emptyQ(), mnames = [], mw = {}, mnb = 0;
       selList.forEach(function(g){ var o = selGroups[g], oq = selLift === null ? o.whole : o.lifts[selLift]; mnames.push(o.name); mw[bySide ? o.wall : g] = 1; if (oq){ addQ(mt, oq); } });
@@ -1196,7 +1400,7 @@ function init(meta, bbuf, rbuf){
       h = '<h2>Whole job</h2><p class="sub">' + (selLift !== null ? esc(liftRange(walls)) : '') + plural(walls.length, 'wall') + (bySide ? ', ' + plural(sides.length, 'side') : '') + ', ' + fmt(nb) + ' blocks</p>' + rows(tot, selLift === null);
       if (selLift === null){ var cr2 = concRows(walls); if (cr2) h = h.replace(/<\/dl>$/, cr2 + '</dl>'); }
     }
-    $('detail').innerHTML = h;
+    $('detail').innerHTML = h; if (schedOn) updDay();
     Array.prototype.forEach.call(document.querySelectorAll('#chips .chip[data-w]'), function(b){ b.setAttribute('aria-pressed', String(b.dataset.w === '' ? selList.length === 0 : !!inSel[+b.dataset.w])); });
     $('multiBtn').setAttribute('aria-pressed', String(multiOn));
     Array.prototype.forEach.call(document.querySelectorAll('#lifts .chip'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.l === '' ? null : +b.dataset.l) === selLift)); });
@@ -1215,6 +1419,7 @@ function init(meta, bbuf, rbuf){
   function hash(){
     var parts = []; if (selList.length) parts.push((bySide ? 'side=' : 'wall=') + selList.map(function(g){ return encodeURIComponent(bySide && segCount[selGroups[g].seg] > 1 ? gkey(g) : selGroups[g].tag); }).join(',')); if (selLift !== null) parts.push('lift=' + selLift);
     if (prodOn) parts.push('prod=1');
+    if (schedOn){ parts.push('sched=1'); parts.push('day=' + schedDay); if (ghostOn) parts.push('ghost=1'); }
     try { history.replaceState(null, '', parts.length ? '#' + parts.join('&') : location.pathname + location.search); } catch(e) {}
   }
 
@@ -1231,6 +1436,7 @@ function init(meta, bbuf, rbuf){
   $('colorBtn').addEventListener('click', function(){ colorOn = !colorOn; this.setAttribute('aria-pressed', String(colorOn)); paint(); });
   $('rebarBtn').addEventListener('click', function(){ if (!rebar) return; rebar.visible = !rebar.visible; this.setAttribute('aria-pressed', String(rebar.visible)); if (!rebar.visible) selectBar(null); else schedule(); });
   $('prodBtn').addEventListener('click', function(){ setProd(!prodOn); });
+  $('schedBtn').addEventListener('click', function(){ setSched(!schedOn); });
   $('dragBtn').addEventListener('click', function(){ dragOn = !dragOn; this.setAttribute('aria-pressed', String(dragOn)); setProd(true); });
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeScene);
 
@@ -1241,6 +1447,7 @@ function init(meta, bbuf, rbuf){
   if (hp.side && bySide) hp.side.split(',').forEach(function(t){ t = decodeURIComponent(t); sides.forEach(function(sd, n){ if ((gkey(n) === t || (sd.seg === t && segCount[sd.seg] === 1) || String(n) === t) && hl.indexOf(n) < 0) hl.push(n); }); });
   setSel(hl);
   if (hp.prod === '1') setProd(true, true);
+  if (hp.sched === '1'){ ghostOn = hp.ghost === '1'; setSched(true, true); if (hp.day) schedDay = clamp(+hp.day || 1, 1, S.T); }
   if (hp.lift && liftNums.indexOf(+hp.lift) >= 0) selLift = +hp.lift;
   if (hp.rebar === '1' && rebar){ rebar.visible = true; $('rebarBtn').setAttribute('aria-pressed', 'true'); }
 
@@ -1251,7 +1458,8 @@ function init(meta, bbuf, rbuf){
       for (var s3 = BARS.seg0[b]; s3 < BARS.seg0[b+1]; s3++){ pa.set(rebarPos[s3*6], rebarPos[s3*6+1], rebarPos[s3*6+2]); pb.set(rebarPos[s3*6+3], rebarPos[s3*6+4], rebarPos[s3*6+5]);
         var A = toScreen(pa.clone(), r), B = toScreen(pb.clone(), r), l = Math.hypot(B.x - A.x, B.y - A.y); if (l > bl){ bl = l; best = { x:r.left + (A.x + B.x)/2, y:r.top + (A.y + B.y)/2, px:l }; } }
       return best; }, blocks:N, concrete:concMeshes.length, sides:sides.map(function(sd){ return sd.seg + ':' + sd.whole.total; }), walls:walls.length, lifts:liftNums.slice(), select:select, setLift:setLift,
-    prod:function(on){ setProd(on !== false); }, marks:function(){ return marks.slice(); }, queue:function(){ return queue.slice(); }, sync:function(){ return syncMsg; },
+    prod:function(on){ setProd(on !== false); }, sched:function(on){ setSched(on !== false); }, setDay:function(d){ setDay(d); },
+    schedInfo:function(){ if (!S) S = buildPlan(); return { days:S.T, day:schedDay, areas:S.areas.length, tasks:S.tasks.length, shown:(function(){ var c = 0; for (var i = 0; i < N; i++) if (shownBlock(i)) c++; return c; })(), text:dayTxt(schedDay) }; }, marks:function(){ return marks.slice(); }, queue:function(){ return queue.slice(); }, sync:function(){ return syncMsg; },
     pct:function(){ var o = stat(null, null); return { n:o.n, B:pctOf(o, 'B'), R:pctOf(o, 'R'), G:pctOf(o, 'G') }; }, selList:function(){ return selList.slice(); }, multi:function(on){ multiOn = !!on; renderPanel(); },
     blockXY:function(g, l){ var lst = glist[g*1000 + l] || [], r = canvas.getBoundingClientRect(); camera.updateMatrixWorld();
       return lst.map(function(i){ var v = new THREE.Vector3(F[i*7] - ctr[0], F[i*7+2] - ctr[2], -(F[i*7+1] - ctr[1])), sp = toScreen(v, r); return { i:i, x:r.left + sp.x, y:r.top + sp.y, a:along[i], run:runOf[i] }; }); },
