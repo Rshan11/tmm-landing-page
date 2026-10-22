@@ -1,0 +1,74 @@
+---
+// /schedule — for masons and the GCs they build for. Unbuilt parts are tagged "Coming".
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageTiles from '../components/PageTiles.astro';
+import SendPrints from '../components/SendPrints.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const title = 'Masonry Schedule Built From Your Block Count | The Masonry Modeler';
+const description = 'A day-by-day masonry schedule from every block in every wall and lift: lay the lift, let it sit overnight, grout, go up. For masons and the GCs they build for.';
+const canonical = 'https://themasonrymodeler.com/schedule/';
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Schedule", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A1.4 — Schedule" />
+
+  <section class="pain-hero">
+    <div class="pain-inner">
+      <p class="pain-kicker">For masons · and the GCs they build for</p>
+      <div class="pain-split">
+        <h1 class="pain-h1">Day 25 of 50. <span class="accent">Built from your blocks.</span></h1>
+        <p class="pain-body">TMM knows every block in every wall and lift, so the schedule writes itself: <span class="hi">lay the lift, let it sit overnight, grout, go up.</span></p>
+      </div>
+      <p class="pain-mono" style="font-size:14px;color:#f2f3f4">Lay → sit overnight → grout → next lift</p>
+      <div class="pain-band on-dark">
+        <p>Every day of the job, lift by lift and wall by wall, from the same count you bid.</p>
+        <div class="pain-actions">
+          <a class="pain-btn" href="#send">Send us your prints</a>
+          <a class="pain-btn-alt" href="/demo/pump-station/">Watch a job go up</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section pain-sec">
+    <div class="page-section-inner section-wide">
+      <h2 class="pain-h2">A day-by-day plan <span class="accent">from the model.</span></h2>
+      <figure class="pain-figure" style="margin-bottom:32px">
+        <img src="/assets/pages/schedule-day-25.webp" width="1400" height="832" loading="lazy" decoding="async"
+          alt="Schedule mode in the field view: an arena job in 3-D at day 25 of 50, with a day slider and play button, today's laying and grouting listed by wall and lift, and the planning assumptions shown as assumed, not the crew's real pace" />
+        <figcaption>Day 25 of 50 on one of our jobs. Play it and the walls go up lift by lift; the day list says what gets laid and grouted where.</figcaption>
+      </figure>
+      <ol class="pain-steps">
+        <li><strong>Lay, sit, grout, go up.</strong> Each lift is laid, left overnight, grouted, then the next lift starts, with pour areas worked around the building.</li>
+        <li><strong>Every day listed.</strong> Which walls and lifts get laid, which get rebar, which get grouted, and how many blocks.</li>
+        <li><strong>The assumptions are on the page.</strong> Crew size and pace are shown as assumed, not your crew's real pace, and you can change them.</li>
+        <li><strong>Give it the days the GC allows and it tells you the crew.</strong> <span class="pain-tag">Coming</span></li>
+        <li><strong>Field marks show plan against actual.</strong> <span class="pain-tag">Coming</span></li>
+      </ol>
+      <p class="pain-note">Coming next: it reads the prints and builds the model. <span class="pain-tag">Coming</span></p>
+    </div>
+  </section>
+
+  <SendPrints headline="Send us your prints." button="Send us your prints" source="schedule" />
+
+  <PageTiles current="/schedule/" headline="The rest of the job." />
+
+  <SiteFooter />
+</Layout>

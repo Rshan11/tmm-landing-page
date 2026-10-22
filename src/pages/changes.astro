@@ -1,0 +1,83 @@
+---
+// /changes — one pain: an addendum makes every number wrong.
+// Claims only what exists: every output is rebuilt from the one model; IFC
+// exports carry a revision stamp. No automatic change-diff is claimed.
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageTiles from '../components/PageTiles.astro';
+import SendPrints from '../components/SendPrints.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const title = 'Masonry Addendum Changes Without Redoing the Takeoff | The Masonry Modeler';
+const description = 'A door moves, a wall gets taller. Change the masonry model once: the takeoff, bar list, shop drawings and the crew\'s link all come from it.';
+const canonical = 'https://themasonrymodeler.com/changes/';
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Changes", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A1.3 — Changes" />
+
+  <section class="pain-hero">
+    <div class="pain-inner">
+      <p class="pain-kicker">Addenda · revisions</p>
+      <h1 class="pain-h1">One addendum. <span class="accent">Every number wrong.</span></h1>
+      <p class="pain-body">A door moves, a wall gets taller, the grout changes. Today that means a new takeoff, a new bar list, new shop drawings, and a crew building off last week's set.</p>
+      <div class="pain-cards four">
+        <div class="pain-card"><span class="pain-mono">Takeoff</span><strong>Recounts itself</strong></div>
+        <div class="pain-card"><span class="pain-mono">Bar list</span><strong>Bars, laps and lengths follow</strong></div>
+        <div class="pain-card"><span class="pain-mono">Shop drawings</span><strong>Redraw from the same model</strong></div>
+        <div class="pain-card"><span class="pain-mono">The crew's link</span><strong>Shows the new revision</strong></div>
+      </div>
+      <div class="pain-band on-dark">
+        <p class="pain-h1" style="font-size:clamp(40px,5vw,64px);flex-basis:100%">Change it once. <span class="accent">Everything follows.</span></p>
+        <div class="pain-actions">
+          <a class="pain-btn" href="#send">Send us your prints</a>
+          <a class="pain-btn-alt" href="/demo/pump-station/">Try a real job</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section pain-sec">
+    <div class="page-section-inner section-wide">
+      <h2 class="pain-h2">One model. <span class="accent">Not four documents.</span></h2>
+      <div class="pain-two">
+        <div>
+          <p>In TMM, the takeoff, the bar list, the shop drawings and your crew's Story Pole link aren't four files you keep in step. They all come from the one masonry model. Move the door or raise the wall in the model, and each of them is built again from it. Nothing to retype.</p>
+          <ol class="pain-steps">
+            <li><strong>Takeoff:</strong> recounted from the bond, block by block.</li>
+            <li><strong>Bar list:</strong> bars, laps and cut lengths follow the new heights and openings.</li>
+            <li><strong>Shop drawings:</strong> redrawn from the same model, not edited in CAD.</li>
+            <li><strong>The crew's link:</strong> shows the revision it was built from. IFC exports carry a revision stamp too.</li>
+          </ol>
+          <p class="pain-note">What changed in the addendum is still yours to read. What it changes, TMM recounts.</p>
+        </div>
+        <figure class="pain-figure">
+          <img src="/assets/pages/pump-station-lift-1.webp" width="1275" height="757" loading="lazy" decoding="async"
+            alt="The crew's link for the Georgeville pump station showing its revision, Rev 1, Oct 21, in the header, with the 3-D walls, rebar and the lift 1 count" />
+          <figcaption>The crew's link carries its revision (top right: Rev 1 · Oct 21) so nobody builds off last week's set.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <SendPrints headline="Send us your prints." button="Send us your prints" source="changes" />
+
+  <PageTiles current="/changes/" headline="The rest of the job." />
+
+  <SiteFooter />
+</Layout>

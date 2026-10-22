@@ -20,12 +20,19 @@ The Masonry Modeler (TMM) is built by Ryan Shanley of Powder River Masonry. The 
 
 ## Video proof
 
-A three-minute screen recording of the 88th Avenue pump station being traced and taken off in The Masonry Modeler is embedded on the homepage, the CMU Block Count page, and the Masonry Takeoff Accuracy page. Hosted on YouTube: https://youtu.be/m-fSK2uB924
+A three-minute screen recording of the 88th Avenue pump station being traced and taken off in The Masonry Modeler is embedded on the How It Works page, the CMU Block Count page, and the Masonry Takeoff Accuracy page. Hosted on YouTube: https://youtu.be/m-fSK2uB924
 
 ## Pages
 
+### The job (one page per headache)
+- [Home](https://themasonrymodeler.com/): The estimator on an island: every wall, every piece, every special shape counted by wall and lift before you sign; live 3-D demo of a real pump station job; send us your next bid
+- [Estimating](https://themasonrymodeler.com/estimating/): Draw the wall once; TMM lays every block, cut, corner and bar up the gable and around the openings. On our own gabled brick job, within 0.2% of our Bluebeam count
+- [Field](https://themasonrymodeler.com/field/): The crew's Story Pole link: tap a wall, pick a lift, check off block, rebar and grout, drag for a partial lift, View in AR on iPhone/iPad
+- [Changes](https://themasonrymodeler.com/changes/): One model, not four documents: takeoff, bar list, shop drawings and the crew's link all come from the one model; IFC exports carry a revision stamp
+- [Schedule](https://themasonrymodeler.com/schedule/): Day-by-day plan from the block count: lay the lift, sit overnight, grout, go up. Crew-from-deadline and plan-vs-actual are coming
+- [How It Works & Pricing](https://themasonrymodeler.com/how-it-works/): Worked estimate, screenshots, how the count is built, shop drawing, comparison, founder pricing, FAQ
+
 ### Architectural (product / topic pages)
-- [Home](https://themasonrymodeler.com/): Masonry estimating software overview, material and crew pricing workflow, worked estimate summary, demo request
 - [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): CMU quantity review and a worked estimate with explicit sample material, labor, equipment, overhead, and profit inputs
 - [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
 - [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them

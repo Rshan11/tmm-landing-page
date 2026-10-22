@@ -2,15 +2,19 @@
 // "Try a real job" — the Georgeville pump station field view, embedded and interactive.
 // The iframe loads only when scrolled near (desktop) or on tap (phones), so the
 // 3-D model never costs first paint. Marks made in the demo stay on the visitor's device.
-interface Props { sectionNum?: string; }
-const { sectionNum = '01' } = Astro.props;
+interface Props { sectionNum?: string; headline?: string; lede?: string; }
+const {
+  sectionNum = '01',
+  headline = 'Try a real job.',
+  lede = "This is a pump station from one of our own jobs, running live in your browser. Turn it, tap a wall, pick a lift, tap a bar, then switch on Production and mark work done. Nothing you do here is saved to anyone's job.",
+} = Astro.props;
 ---
 
 <section class="page-section tryit-section" id="try-it">
   <div class="page-section-inner section-wide">
     <div class="section-num" data-num={sectionNum}>Try it</div>
-    <h2>Try a real job.</h2>
-    <p class="section-lede">This is a pump station from one of our own jobs, running live in your browser. Turn it, tap a wall, pick a lift, tap a bar, then switch on Production and mark work done. Nothing you do here is saved to anyone's job.</p>
+    <h2>{headline}</h2>
+    <p class="section-lede">{lede}</p>
 
     <div class="tryit-frame" id="tryitFrame" data-src="/demo/pump-station/">
       <button type="button" class="tryit-load" id="tryitLoad">

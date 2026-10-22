@@ -1,0 +1,112 @@
+---
+// /estimating — one pain: bid night, tracing then retyping.
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageTiles from '../components/PageTiles.astro';
+import SendPrints from '../components/SendPrints.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const title = 'Masonry Takeoff Up the Gable, Counted Once | The Masonry Modeler';
+const description = 'Masonry estimating software: draw the wall once and TMM lays every block, cut, corner and bar up the gable and around the openings. The takeoff falls out.';
+const canonical = 'https://themasonrymodeler.com/estimating/';
+
+const videoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "A CMU pump station modeled in two minutes in The Masonry Modeler",
+  "description": "A sped-up, silent product recording: drag one box to draw all four CMU walls at once, add four openings and move them in the 3D model, then add rakes, control joints, and two block colors. Two minutes of real work, start to finish.",
+  "thumbnailUrl": ["https://themasonrymodeler.com/assets/video/pump-station-demo-poster.jpg"],
+  "contentUrl": "https://themasonrymodeler.com/assets/video/pump-station-demo.mp4",
+  "uploadDate": "2026-10-08",
+  "duration": "PT15.766S",
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Estimating", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A1.1 — Estimate" />
+
+  <section class="pain-hero">
+    <div class="pain-inner">
+      <p class="pain-kicker">10:40 p.m. · Bid due at 2</p>
+      <h1 class="pain-h1">Still tracing it in Bluebeam, then <span class="accent">typing it all again?</span></h1>
+      <div class="pain-cards">
+        <div class="pain-card"><strong>The peak drawn by hand</strong><span>Your takeoff stops at the eave and you add the gable yourself.</span></div>
+        <div class="pain-card"><strong>Every window placed twice</strong><span>Once for the block, once for the brick.</span></div>
+        <div class="pain-card"><strong>Corners and cuts guessed</strong><span>A waste factor where a count should be.</span></div>
+      </div>
+      <div class="pain-band on-dark">
+        <p>Draw the wall once. TMM lays every block, cut, corner and bar — up the gable, around the openings — and the takeoff falls out. <span class="pain-proof">On our own brick job: within 0.2% of the Bluebeam count.</span></p>
+        <div class="pain-actions">
+          <a class="pain-btn" href="#send">Send us your prints</a>
+          <a class="pain-btn-alt" href="/demo/pump-station/">Try a real job</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section pain-sec">
+    <div class="page-section-inner section-wide">
+      <h2 class="pain-h2">Draw it once. <span class="accent">Count it once.</span></h2>
+      <div class="pain-two">
+        <div>
+          <p>TMM is masonry estimating software built by a mason contractor. You trace the walls on the prints and it lays the wall the way the crew will: bond, corners, openings, bond beams and bars.</p>
+          <ol class="pain-steps">
+            <li><strong>Trace the walls on the prints.</strong> Length, height and unit land as you draw.</li>
+            <li><strong>Place each opening once.</strong> The block and the brick over it both work around the same opening.</li>
+            <li><strong>Rakes and gables lay to the peak.</strong> The cut pieces are listed by size, not added by hand.</li>
+            <li><strong>Corners, halves, bond beams and bars are pieces.</strong> Counted by wall and lift, with the laps from the chart.</li>
+          </ol>
+        </div>
+        <figure class="pain-figure">
+          <img src="/assets/pages/pump-station-lift-1.webp" width="1275" height="757" loading="lazy" decoding="async"
+            alt="Lift 1 of the Georgeville pump station in TMM: 3-D walls with vertical rebar, and the count for that lift — 295 stretchers, 35 halves, 24 corners, 81 bond beams, 5 bond beam halves, 440 blocks, 3.7 cubic yards of grout" />
+          <figcaption>One of our own jobs, lift 1: 440 blocks by type and color, grout and mortar for that lift.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section-dark pain-sec">
+    <div class="page-section-inner section-wide">
+      <h2 class="pain-h2">Within <span class="accent">0.2%</span> of our own count.</h2>
+      <div class="pain-two">
+        <div>
+          <p>On a gabled brick job of ours, the TMM count came in within 0.2% of our own Bluebeam count. And TMM's count comes broken out piece by piece, by wall and lift.</p>
+          <p>The count doesn't stop at the bid. The same model prints the <a href="/masonry-shop-drawings/">shop drawings</a> and the steel bar list, with every bar by mark and cut length, and <a href="/bond-beam-estimating/">bond beams</a> on the courses the rebar schedule calls for.</p>
+          <p class="pain-links"><a href="/how-it-works/#estimate-example">See a worked estimate →</a><a href="/how-it-works/#pricing">Pricing →</a></p>
+        </div>
+        <figure class="pain-figure">
+          <video controls playsinline preload="none" poster="/assets/video/pump-station-demo-poster.jpg" width="1908" height="1000"
+            style="display:block;width:100%;height:auto;aspect-ratio:1908/1000;background:#0f1418"
+            aria-label="Pump station modeled in two minutes, sped up">
+            <source src="/assets/video/pump-station-demo.mp4" type="video/mp4" />
+            <a href="/assets/video/pump-station-demo.mp4">Watch the pump station video.</a>
+          </video>
+          <figcaption>A pump station in two minutes, sped up to 16 seconds: four walls in one drag, four openings, rakes, control joints, two block colors. Silent.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <SendPrints headline="Send us your prints." button="Send us your prints" source="estimating" />
+
+  <PageTiles current="/estimating/" headline="The rest of the job." />
+
+  <SiteFooter />
+</Layout>

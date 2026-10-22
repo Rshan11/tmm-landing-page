@@ -1,4 +1,5 @@
 ---
+import SiteFooter from './SiteFooter.astro';
 // Homepage closer — reuses the .page-cta-section pattern (ink bg, centered,
 // big Oswald headline) established by PageCTA.astro, plus a simple site
 // footer bundled in the same component (see build report for why).
@@ -16,7 +17,6 @@ const {
   ctaLabel = 'Book a demo',
 } = Astro.props;
 
-const year = 2026;
 ---
 
 <section class="page-cta-section">
@@ -25,12 +25,4 @@ const year = 2026;
   <a href={ctaHref} class="hero-cta">{ctaLabel}<span class="hero-cta-arrow">→</span></a>
 </section>
 
-<footer class="site-footer">
-  <div class="site-footer-inner">
-    <span class="site-footer-brand">The Masonry Modeler &middot; Powder River Masonry</span>
-    <span class="site-footer-spacer"></span>
-    <a class="site-footer-link" href="/blog/">Field Notes</a>
-    <a class="site-footer-link" href="https://pm4subs.com" target="_blank" rel="noopener">PM4Subs</a>
-    <span class="site-footer-copy">&copy; {year}</span>
-  </div>
-</footer>
+<SiteFooter />

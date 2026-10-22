@@ -1,0 +1,70 @@
+---
+// "Send us your next bid" — the one primary action on every pain page.
+// Posts to the same Formspree "Sign Up" form as the old hero demo form
+// (formspree.io/f/mkodkqyy) with request_type=send-prints so leads can be told
+// apart. On the homepage it carries id="demo" (+ #waitlist) so the header's
+// "Book a demo" link and every old /#demo link still land on a form.
+interface Props {
+  id?: string;
+  headline?: string;
+  body?: string;
+  button?: string;
+  source?: string;
+}
+const {
+  id = 'send',
+  headline = 'Send us your next bid.',
+  body = "Leave your email and a line about the job. Ryan will write back with where to send the prints, then walk you through it on a real job. Want a demo first? Say so in the note.",
+  button = 'Send us your next bid',
+  source = 'site',
+} = Astro.props;
+const isHome = id === 'demo';
+---
+
+<section class="page-section page-section-dark pain-sec send-section" id={id}>
+  {isHome && <span id="waitlist" aria-hidden="true"></span>}
+  {isHome && <span id="send" aria-hidden="true"></span>}
+  <div class="page-section-inner">
+    <h2 class="pain-h2">{headline}</h2>
+    <p>{body}</p>
+    <form class="send-form" action="https://formspree.io/f/mkodkqyy" method="POST" data-send-form>
+      <input type="hidden" name="_subject" value="TMM: send us your next bid" />
+      <input type="hidden" name="request_type" value="send-prints" />
+      <input type="hidden" name="page" value={source} />
+      <input type="text" name="_gotcha" class="fs-gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <label for={`${id}-email`}>Your email</label>
+      <input type="email" id={`${id}-email`} name="email" placeholder="your@email.com" required autocomplete="email" />
+      <label for={`${id}-job`}>The job (optional)</label>
+      <textarea id={`${id}-job`} name="job" placeholder="CMU and brick, two-story, bid due Friday"></textarea>
+      <button type="submit" class="pain-btn">{button} <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="send-status" role="status" tabindex="-1" hidden>Thanks. Your note was sent and Ryan will email you back.</p>
+    <p class="send-error" role="alert" hidden>That didn't send. Try again, or <a href="mailto:ryan@themasonrymodeler.com?subject=TMM%20-%20my%20next%20bid">email Ryan directly</a>.</p>
+    <p class="send-direct">Prefer email? Send the prints to <a href="mailto:ryan@themasonrymodeler.com?subject=TMM%20-%20my%20next%20bid">ryan@themasonrymodeler.com</a>.</p>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form[data-send-form]').forEach((form) => {
+    const wrap = form.parentElement!;
+    const ok = wrap.querySelector<HTMLElement>('.send-status');
+    const err = wrap.querySelector<HTMLElement>('.send-error');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button') as HTMLButtonElement;
+      if (btn.disabled) return;
+      const label = btn.innerHTML;
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+      if (err) err.hidden = true;
+      const ctl = new AbortController();
+      const t = window.setTimeout(() => ctl.abort(), 15000);
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }, signal: ctl.signal });
+        if (res.ok) { form.hidden = true; if (ok) { ok.hidden = false; ok.focus({ preventScroll: true }); } }
+        else if (err) err.hidden = false;
+      } catch { if (err) err.hidden = false; }
+      finally { window.clearTimeout(t); btn.innerHTML = label; btn.disabled = false; }
+    });
+  });
+</script>

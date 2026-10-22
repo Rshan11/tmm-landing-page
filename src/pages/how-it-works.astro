@@ -1,0 +1,177 @@
+---
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import PageHero from '../components/PageHero.astro';
+import EstimateExample from '../components/EstimateExample.astro';
+import ProofStrip from '../components/ProofStrip.astro';
+import SectionDivider from '../components/SectionDivider.astro';
+import SeeItSection from '../components/SeeItSection.astro';
+import PillarsSection from '../components/PillarsSection.astro';
+import SheetMoment from '../components/SheetMoment.astro';
+import DifferenceTable from '../components/DifferenceTable.astro';
+import PricingSection from '../components/PricingSection.astro';
+import FAQSection from '../components/FAQSection.astro';
+import FinalCTA from '../components/FinalCTA.astro';
+
+const title = 'How Masonry Estimating Software Works & Pricing | The Masonry Modeler';
+const description = 'How TMM works: draw the walls, read the count, price it with your own rates, print the shop drawings. Worked estimate, screenshots, founder pricing.';
+const canonical = 'https://themasonrymodeler.com/how-it-works/';
+
+const faqItems = [
+  {
+    question: 'Does TMM count corners and halves while I draw?',
+    answer: 'Yes. TMM counts fulls, halves, and corners from the first click as you draw your walls. The pieces are counted by type and carried into the takeoff and estimate. Review the specified units, finishes, and prices for the wall you intend to build.',
+  },
+  {
+    question: 'What does masonry estimating software calculate?',
+    answer: 'TMM connects wall quantities to material prices, production rates, crew labor, equipment, overhead, and profit. Review the included scope and your rates before issuing a bid. The same wall model also produces shop drawings.',
+  },
+  {
+    question: 'Can I use my own supplier prices and crews?',
+    answer: 'Yes. Set your material prices, production rates, crew, and equipment, then review the estimate by item. Your job conditions and costs determine the bid.',
+  },
+  {
+    question: 'How do corners work in The Masonry Modeler?',
+    answer: 'Corners interlock by default — inside and outside. The bond runs through the corner. No butt joints unless overridden. The corner is a consequence of the bond, not a special case bolted on top.',
+  },
+  {
+    question: 'How does The Masonry Modeler handle non-modular leftover at corners?',
+    answer: 'Non-modular leftover absorbs into the corner. The leg moves 8 inches every course — same as the bond. No 4-inch cut exposed in the field.',
+  },
+  {
+    question: 'What is the default control joint spacing?',
+    answer: 'Control joints default to 24 feet 8 inches — 296 inches, which is 18.5 blocks times 16 inches exactly. This is the modular spacing. Drag to override. Control joints are never auto-placed within 16 inches of a corner.',
+  },
+  {
+    question: 'How are bond beams placed?',
+    answer: 'Rebar drives bond beams. Set the rebar schedule from the structural drawings and courses snap to match. Development-length extension past openings is automatic. Weight is reported in pounds, not just linear feet.',
+  },
+  {
+    question: 'Does The Masonry Modeler handle half-high courses?',
+    answer: 'Yes. Review the partial-height course in the elevation and takeoff. It may use a specified half-high unit or a cut from full-height stock; the purchased block and the remaining piece height have different roles in the estimate.',
+  },
+  {
+    question: 'Will The Masonry Modeler produce cuts smaller than 4 inches?',
+    answer: 'TMM resolves coursing and shows the resulting pieces. Tight openings, corners, and special details can need small closures. Review the elevation and cutting list for the detail you intend to build.',
+  },
+  {
+    question: 'How are 10-inch and 12-inch CMU corners handled?',
+    answer: '10-inch and 12-inch CMU corners use an 8-inch block plus a face shell spacer — listed as separate takeoff line items, the way the supplier ships them and the way the crew lays them.',
+  },
+  {
+    question: 'Can the mason override it?',
+    answer: 'Yes. Select a block and change its type to match the detail you intend to build. Review the updated takeoff and estimate before issuing the bid.',
+  },
+];
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "How It Works", "item": canonical },
+  ],
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(item => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": { "@type": "Answer", "text": item.answer },
+  })),
+};
+
+// Lead embed — the short trace clip. uploadDate is the exact publish instant
+// from the channel's RSS feed, not a guessed date. `duration` is intentionally
+// omitted rather than invented; add it (ISO 8601, e.g. "PT38S") once known.
+const shortVideoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Tracing a CMU wall on the print in The Masonry Modeler",
+  "description": "Short clip: setting the wall type and tracing a segment on an architect's print in The Masonry Modeler, with dimensions landing live as the wall is drawn — 8-inch CMU, 18 feet 8 inches long, 11 feet 4 inches tall.",
+  "thumbnailUrl": ["https://i.ytimg.com/vi/eBQulJ2CVEE/maxresdefault.jpg"],
+  "uploadDate": "2026-07-27T02:58:38+00:00",
+  "embedUrl": "https://www.youtube.com/embed/eBQulJ2CVEE",
+  "contentUrl": "https://youtu.be/eBQulJ2CVEE",
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+};
+
+const videoSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Building a Pump Station in The Masonry Modeler",
+  "description": "Three-minute screen recording of a pump station traced and taken off in The Masonry Modeler. Walls, corners, lintels, bond beams, and the block-by-block takeoff — start to finish.",
+  "thumbnailUrl": ["https://i.ytimg.com/vi/m-fSK2uB924/maxresdefault.jpg"],
+  "uploadDate": "2026-05-25",
+  "duration": "PT3M",
+  "embedUrl": "https://www.youtube.com/embed/m-fSK2uB924",
+  "contentUrl": "https://youtu.be/m-fSK2uB924",
+  "publisher": {
+    "@type": "Organization",
+    "name": "The Masonry Modeler",
+    "url": "https://themasonrymodeler.com/",
+  },
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(shortVideoSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A1.5 — How It Works" />
+
+  <PageHero
+    kicker="How it works · Pricing"
+    headline="Masonry estimating software, start to finish."
+    lead="Draw the walls on the prints. TMM lays every block, cut, corner and bar, then carries the count into your material list, your estimate with your own prices and crews, and the shop drawings. Here is the whole thing on one page: a worked estimate, real screenshots, how the count is built, and founder pricing."
+  >
+    <Fragment slot="actions">
+      <a href="/#send" class="hero-cta">Send us your next bid<span class="hero-cta-arrow">→</span></a>
+      <a href="/#try-it" class="page-hero-secondary">Try a real job</a>
+    </Fragment>
+  </PageHero>
+  <ProofStrip />
+
+  <SectionDivider number="01" label="From Takeoff to Bid" />
+  <EstimateExample compact sectionNum="01" />
+
+  <SectionDivider number="02" label="See It Work" />
+  <SeeItSection sectionNum="02" />
+
+  <SectionDivider number="03" label="Why The Number Is Right" />
+  <PillarsSection sectionNum="03" />
+
+  <SectionDivider number="04" label="The Shop Drawing" />
+  <SheetMoment sectionNum="04" />
+
+  <SectionDivider number="05" label="The Difference" />
+  <!-- PM4Subs cross-sell strip removed 2026-07-27: TMM is positioned as a
+       standalone specialized product, so the homepage doesn't pitch a second
+       one ahead of pricing. SuiteStrip.astro and its CSS are retained — drop
+       <SuiteStrip /> back here to restore. Footer link to PM4Subs stays. -->
+  <DifferenceTable sectionNum="05" />
+
+  <SectionDivider number="06" label="Founder Pricing" />
+  <PricingSection sectionNum="06" />
+
+  <SectionDivider number="07" label="Common Questions" />
+  <FAQSection
+    items={faqItems}
+    sectionNum="07"
+    headline="What the job site asks about masonry estimating."
+  />
+
+  <FinalCTA />
+</Layout>

@@ -1,0 +1,36 @@
+---
+// Four tiles linking the one-pain pages. `current` drops the page you're on.
+interface Props {
+  current?: string;
+  headline?: string;
+  showNext?: boolean;
+  dark?: boolean;
+}
+const { current = '', headline = 'One job. Four headaches.', showNext = false } = Astro.props;
+const tiles = [
+  { num: '01', label: 'Estimate', line: 'Bid night: every block, cut and bar counted, up the gable.', href: '/estimating/' },
+  { num: '02', label: 'Field', line: 'The crew\'s link: tap a wall, pick a lift, check it off.', href: '/field/' },
+  { num: '03', label: 'Changes', line: 'One addendum. Change it once, everything follows.', href: '/changes/' },
+  { num: '04', label: 'Schedule', line: 'Day by day, built from your blocks.', href: '/schedule/' },
+].filter((t) => t.href !== current);
+---
+
+<section class="page-section pain-sec" id="pages">
+  <div class="page-section-inner section-wide">
+    <h2 class="pain-h2">{headline}</h2>
+    <div class="pain-tiles" style={tiles.length === 3 ? 'grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))' : undefined}>
+      {tiles.map((t) => (
+        <a class="pain-tile" href={t.href}>
+          <span class="pain-mono">{t.num}</span>
+          <strong>{t.label}</strong>
+          <span class="line">{t.line}</span>
+          <span class="go">See it →</span>
+        </a>
+      ))}
+    </div>
+    <p class="pain-links"><a href="/how-it-works/">How it works, a worked estimate and founder pricing →</a></p>
+    {showNext && (
+      <p class="pain-next"><strong>Next:</strong> it reads the prints and builds the model. <span class="pain-tag">Coming</span></p>
+    )}
+  </div>
+</section>

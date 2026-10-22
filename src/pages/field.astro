@@ -1,0 +1,90 @@
+---
+// /field — one pain: chasing the count by text. Answer: the crew's Story Pole link.
+import Layout from '../components/Layout.astro';
+import MasonXMonogram from '../components/MasonXMonogram.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import TryItSection from '../components/TryItSection.astro';
+import PageTiles from '../components/PageTiles.astro';
+import SendPrints from '../components/SendPrints.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const title = 'Masonry Production Tracking by Wall and Lift | The Masonry Modeler';
+const description = 'Send your foreman a link: tap a wall, pick a lift, check off block, rebar and grout. The office sees it the moment he does. Try it on a real job.';
+const canonical = 'https://themasonrymodeler.com/field/';
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://themasonrymodeler.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Field", "item": canonical },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <MasonXMonogram />
+  <TitleBlock sheet="A1.2 — Field" />
+
+  <section class="pain-hero">
+    <div class="pain-inner">
+      <p class="pain-kicker">The crew's link · Story Pole</p>
+      <ul class="pain-questions is-texts" aria-label="Texts from the office">
+        <li>Where are we on the east wall?</li>
+        <li>Is lift 2 grouted yet?</li>
+        <li>I'll have to go count.</li>
+      </ul>
+      <div class="pain-split">
+        <h1 class="pain-h1">Stop chasing <span class="accent">the count.</span></h1>
+        <p class="pain-body">Your foreman gets a link to the job. He taps the wall, picks the lift, checks off block, rebar and grout — or drags a finger across what got laid today. <span class="hi">The office sees it the moment he does.</span></p>
+      </div>
+      <div class="pain-band on-dark">
+        <p>Masonry production tracking from the same model you bid — by wall, by lift, by block.</p>
+        <div class="pain-actions">
+          <a class="pain-btn" href="#send">Send us your prints</a>
+          <a class="pain-btn-alt" href="#try-it">Try it on a real job</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section pain-sec">
+    <div class="page-section-inner section-wide">
+      <h2 class="pain-h2">The Story Pole link. <span class="accent">No app to install.</span></h2>
+      <div class="pain-two phone">
+        <div>
+          <p>Every job you model gets a link your crew opens on a phone. It's the same block, cut and bar count you bid, laid out in 3-D.</p>
+          <ol class="pain-steps">
+            <li><strong>Tap a wall.</strong> Or the whole job, or several sides at once.</li>
+            <li><strong>Pick a lift.</strong> Every block, cut and bar for that lift, with the laps sticking up.</li>
+            <li><strong>Check off block, rebar and grout.</strong> Lift by lift, wall by wall.</li>
+            <li><strong>Partial lift?</strong> Drag a finger across what got laid today.</li>
+            <li><strong>On iPhone or iPad,</strong> View in AR puts the model in front of you.</li>
+          </ol>
+          <p class="pain-note">What the crew marks is real production. Turning it into the rates for your next bid is next. <span class="pain-tag">Coming</span></p>
+        </div>
+        <figure class="pain-figure phone">
+          <img src="/assets/pages/field-phone-partial-drag.webp" width="600" height="1298" loading="lazy" decoding="async"
+            alt="The field view on a phone: Georgeville pump station in 3-D with Production on, lift 2 picked, laid block shaded green and a partial drag highlighted yellow; Block 7%, Rebar 7%, Grout 0%" />
+          <figcaption>Production on, lift 2: green is laid, yellow is today's drag.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <TryItSection
+    sectionNum="Live"
+    headline="Try it on a real job."
+    lede="The Georgeville pump station, one of our own jobs. Tap a wall, pick a lift, switch on Production and mark work done. Your marks stay on your device."
+  />
+
+  <SendPrints headline="Send us your prints." button="Send us your prints" source="field" />
+
+  <PageTiles current="/field/" headline="The rest of the job." />
+
+  <SiteFooter />
+</Layout>
