@@ -459,16 +459,51 @@ function init(meta, bbuf, rbuf){
   if (BARS && rebar){ segBar = new Int32Array(meta.nRebarSegs).fill(-1); for (var bi = 0; bi < nB; bi++) for (var sj = BARS.seg0[bi]; sj < BARS.seg0[bi+1]; sj++) segBar[sj] = bi; }
   var pa = new THREE.Vector3(), pb = new THREE.Vector3(), segOn = null, barLow = null;
   if (segBar){ barLow = new Float32Array(nB).fill(1e9); for (var q = 0; q < meta.nRebarSegs; q++) if (segBar[q] >= 0) barLow[segBar[q]] = Math.min(barLow[segBar[q]], rebarPos[q*6+1], rebarPos[q*6+4]); }
-  // a lift keeps every bar that starts at or below its top at FULL length (laps stick up like the field); bars starting above stay hidden
+  // a lift keeps every bar that starts at or below its top, drawn up to lift top + its lap (Ryan 10-21: "just the lap lengths"); bars starting above stay hidden
+  var rebarOrig = rebarPos ? rebarPos.slice() : null, barLap = null;
+  if (segBar){
+    var DB_IN = { '#3':0.375, '#4':0.5, '#5':0.625, '#6':0.75, '#7':0.875, '#8':1, '#9':1.128, '#10':1.27, '#11':1.41 }, DB_MM = { '10M':11.3, '15M':16, '20M':19.5, '25M':25.2, '30M':29.9, '35M':35.7 };
+    var bTopY = new Float32Array(nB).fill(-1e9), bx = new Float32Array(nB), bz = new Float32Array(nB), bn = new Float32Array(nB), bxa = new Float32Array(nB).fill(1e9), bxb = new Float32Array(nB).fill(-1e9), bza = new Float32Array(nB).fill(1e9), bzb = new Float32Array(nB).fill(-1e9);
+    for (var q2 = 0; q2 < meta.nRebarSegs; q2++){ var b2 = segBar[q2]; if (b2 < 0) continue;
+      for (var e2 = 0; e2 < 2; e2++){ var o2 = q2*6 + e2*3, X = rebarPos[o2], Y = rebarPos[o2+1], Z = rebarPos[o2+2];
+        if (Y > bTopY[b2]) bTopY[b2] = Y; bx[b2] += X; bz[b2] += Z; bn[b2]++;
+        if (X < bxa[b2]) bxa[b2] = X; if (X > bxb[b2]) bxb[b2] = X; if (Z < bza[b2]) bza[b2] = Z; if (Z > bzb[b2]) bzb[b2] = Z; } }
+    var vert = new Uint8Array(nB);
+    for (var b3 = 0; b3 < nB; b3++){ if (bn[b3]){ bx[b3] /= bn[b3]; bz[b3] /= bn[b3]; } vert[b3] = bTopY[b3] - barLow[b3] > 0.3 && Math.max(bxb[b3] - bxa[b3], bzb[b3] - bza[b3]) < 0.2 ? 1 : 0; }
+    barLap = new Float32Array(nB);
+    for (b3 = 0; b3 < nB; b3++){
+      var lap = -1;
+      if (vert[b3]) for (var c3 = 0; c3 < nB; c3++){   // the next bar up in the same cell: overlap = the lap
+        if (c3 === b3 || !vert[c3] || Math.hypot(bx[c3] - bx[b3], bz[c3] - bz[b3]) > 0.12) continue;
+        if (barLow[c3] > barLow[b3] + 0.05 && barLow[c3] < bTopY[b3] - 0.01){ var ov = bTopY[b3] - barLow[c3]; if (lap < 0 || ov > lap) lap = ov; }
+      }
+      if (lap < 0){   // 48 bar diameters from the size
+        var sz = BARS.facts[BARS.fact[b3]] ? String(BARS.facts[BARS.fact[b3]].size) : '', dm = DB_MM[sz] ? DB_MM[sz]/1000 : (DB_IN[sz] ? DB_IN[sz]*0.0254 : 0.625*0.0254);
+        lap = 48*dm;
+      }
+      barLap[b3] = lap;
+    }
+  }
   function rebarLift(top){
     if (!rebar) return;
     segOn = null; rbPlane.constant = 1e5;
+    if (rebarOrig){ rebarPos.set(rebarOrig); rebar.geometry.attributes.position.needsUpdate = true; }
     if (top === null) rebar.geometry.setIndex(null);
     else if (!segBar) rbPlane.constant = top + 1.2192, rebar.geometry.setIndex(null);   // no bar map: clip rebar only, top + 48"
     else {
       var n = meta.nRebarSegs, idx = [], b; segOn = new Uint8Array(n);
-      for (var q = 0; q < n; q++){ b = segBar[q]; if (b >= 0 ? barLow[b] <= top : Math.min(rebarPos[q*6+1], rebarPos[q*6+4]) <= top){ segOn[q] = 1; idx.push(q*2, q*2+1); } }
-      rebar.geometry.setIndex(idx);
+      for (var q = 0; q < n; q++){
+        b = segBar[q]; var o = q*6, y0 = rebarPos[o+1], y1 = rebarPos[o+4];
+        if (b >= 0 ? barLow[b] > top : Math.min(y0, y1) > top) continue;
+        if (b >= 0){
+          var cap = top + barLap[b];
+          if (y0 > cap && y1 > cap) continue;
+          if (y0 > cap || y1 > cap){ var lo = y0 > cap ? 3 : 0, hi = y0 > cap ? 0 : 3, t = (cap - rebarPos[o+lo+1]) / (rebarPos[o+hi+1] - rebarPos[o+lo+1]);
+            for (var k2 = 0; k2 < 3; k2++) rebarPos[o+hi+k2] = rebarPos[o+lo+k2] + (rebarPos[o+hi+k2] - rebarPos[o+lo+k2])*t; }
+        }
+        segOn[q] = 1; idx.push(q*2, q*2+1);
+      }
+      rebar.geometry.setIndex(idx); rebar.geometry.attributes.position.needsUpdate = true;
     }
   }
   function toScreen(v, r){ v.project(camera); return { x:(v.x + 1)/2*r.width, y:(1 - v.y)/2*r.height, ok: v.z > -1 && v.z < 1 }; }
@@ -696,7 +731,7 @@ function init(meta, bbuf, rbuf){
 
   $('status').hidden = true;
   themeScene(); resize(); renderPanel();
-  window.__field = { ready:true, nBars:nB, bar:function(){ return selBar === null ? null : { i:selBar, mark:BARS.mark[selBar] >= 0 ? BARS.marks[BARS.mark[selBar]] : null, text:$('barcard').innerText }; }, selectBar:selectBar,
+  window.__field = { ready:true, nBars:nB, laps:function(){ return barLap ? Array.prototype.slice.call(barLap) : null; }, bar:function(){ return selBar === null ? null : { i:selBar, mark:BARS.mark[selBar] >= 0 ? BARS.marks[BARS.mark[selBar]] : null, text:$('barcard').innerText }; }, selectBar:selectBar,
     barScreen:function(b){ var r = canvas.getBoundingClientRect(), best = null, bl = -1; camera.updateMatrixWorld();
       for (var s3 = BARS.seg0[b]; s3 < BARS.seg0[b+1]; s3++){ pa.set(rebarPos[s3*6], rebarPos[s3*6+1], rebarPos[s3*6+2]); pb.set(rebarPos[s3*6+3], rebarPos[s3*6+4], rebarPos[s3*6+5]);
         var A = toScreen(pa.clone(), r), B = toScreen(pb.clone(), r), l = Math.hypot(B.x - A.x, B.y - A.y); if (l > bl){ bl = l; best = { x:r.left + (A.x + B.x)/2, y:r.top + (A.y + B.y)/2, px:l }; } }
