@@ -319,7 +319,7 @@ function init(meta, bbuf, rbuf){
   var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:true, preserveDrawingBuffer:true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.localClippingEnabled = true;
-  var clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
+  var clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5), rbPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e5);
   var scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a80, 0.8));
   var sun = new THREE.DirectionalLight(0xffffff, 0.6); sun.position.set(0.6, 1, 0.4); scene.add(sun);
@@ -395,7 +395,7 @@ function init(meta, bbuf, rbuf){
     var rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     rg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(segs*6), 3));
     rebarPos = pos;
-    rebar = new THREE.LineSegments(rg, new THREE.LineBasicMaterial({ color:0xffffff, vertexColors:true, depthTest:false, transparent:true, opacity:0.9, clippingPlanes:[clipPlane] }));
+    rebar = new THREE.LineSegments(rg, new THREE.LineBasicMaterial({ color:0xffffff, vertexColors:true, depthTest:false, transparent:true, opacity:0.9, clippingPlanes:[rbPlane] }));
     rebar.renderOrder = 3; rebar.visible = false; scene.add(rebar);
   } else $('rebarBtn').hidden = true;
 
@@ -457,19 +457,31 @@ function init(meta, bbuf, rbuf){
   var BARS = meta.bars || null, nB = BARS ? BARS.mark.length : 0, selBar = null, barHi = null;
   var segBar = null;
   if (BARS && rebar){ segBar = new Int32Array(meta.nRebarSegs).fill(-1); for (var bi = 0; bi < nB; bi++) for (var sj = BARS.seg0[bi]; sj < BARS.seg0[bi+1]; sj++) segBar[sj] = bi; }
-  var pa = new THREE.Vector3(), pb = new THREE.Vector3();
+  var pa = new THREE.Vector3(), pb = new THREE.Vector3(), segOn = null, barLow = null;
+  if (segBar){ barLow = new Float32Array(nB).fill(1e9); for (var q = 0; q < meta.nRebarSegs; q++) if (segBar[q] >= 0) barLow[segBar[q]] = Math.min(barLow[segBar[q]], rebarPos[q*6+1], rebarPos[q*6+4]); }
+  // a lift keeps every bar that starts at or below its top at FULL length (laps stick up like the field); bars starting above stay hidden
+  function rebarLift(top){
+    if (!rebar) return;
+    segOn = null; rbPlane.constant = 1e5;
+    if (top === null) rebar.geometry.setIndex(null);
+    else if (!segBar) rbPlane.constant = top + 1.2192, rebar.geometry.setIndex(null);   // no bar map: clip rebar only, top + 48"
+    else {
+      var n = meta.nRebarSegs, idx = [], b; segOn = new Uint8Array(n);
+      for (var q = 0; q < n; q++){ b = segBar[q]; if (b >= 0 ? barLow[b] <= top : Math.min(rebarPos[q*6+1], rebarPos[q*6+4]) <= top){ segOn[q] = 1; idx.push(q*2, q*2+1); } }
+      rebar.geometry.setIndex(idx);
+    }
+  }
   function toScreen(v, r){ v.project(camera); return { x:(v.x + 1)/2*r.width, y:(1 - v.y)/2*r.height, ok: v.z > -1 && v.z < 1 }; }
   function pickBar(e){
     if (!rebar || !rebar.visible || !segBar) return null;
     var r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
     var coarse = e.pointerType === 'touch' || e.pointerType === 'pen' || (window.matchMedia && matchMedia('(pointer: coarse)').matches);
-    var rad = coarse ? 24 : 10, best = null, bestD = rad, cy = clipPlane.constant;
+    var rad = coarse ? 24 : 10, best = null, bestD = rad;
     camera.updateMatrixWorld();
     for (var j = 0; j < meta.nRebarSegs; j++){
       if (segBar[j] < 0) continue;
       pa.set(rebarPos[j*6], rebarPos[j*6+1], rebarPos[j*6+2]); pb.set(rebarPos[j*6+3], rebarPos[j*6+4], rebarPos[j*6+5]);
-      if (pa.y > cy && pb.y > cy) continue;                      // above the lift shown
-      if (pa.y > cy) pa.lerp(pb, (pa.y - cy)/(pa.y - pb.y)); else if (pb.y > cy) pb.lerp(pa, (pb.y - cy)/(pb.y - pa.y));
+      if (segOn && !segOn[j]) continue;                          // bar starts above the lift shown
       var A = toScreen(pa, r), B = toScreen(pb, r); if (!A.ok || !B.ok) continue;
       var dx = B.x - A.x, dy = B.y - A.y, L2 = dx*dx + dy*dy, t = L2 ? clamp(((mx - A.x)*dx + (my - A.y)*dy)/L2, 0, 1) : 0;
       var d = Math.hypot(mx - (A.x + t*dx), my - (A.y + t*dy));
@@ -525,6 +537,7 @@ function init(meta, bbuf, rbuf){
     // clip openings + rebar at the top of the highest block shown
     if (selLift === null) clipPlane.constant = 1e5;
     else { var top = -1e9; for (var i = 0; i < N; i++) if (bLift[i] <= selLift && bTop[i] > top) top = bTop[i]; clipPlane.constant = top + 0.005; }
+    rebarLift(selLift === null ? null : clipPlane.constant);
     legend(); paintRebar();
     schedule();
   }
@@ -540,7 +553,7 @@ function init(meta, bbuf, rbuf){
     rebar.geometry.attributes.color.needsUpdate = true;
     if (barHi){ scene.remove(barHi); barHi.traverse(function(o){ if (o.geometry) o.geometry.dispose(); }); barHi = null; }
     if (selBar !== null && rebar.visible){
-      barHi = new THREE.Group(); var mat = new THREE.MeshBasicMaterial({ color:sel.clone(), depthTest:false, clippingPlanes:[clipPlane] });
+      barHi = new THREE.Group(); var mat = new THREE.MeshBasicMaterial({ color:sel.clone(), depthTest:false, clippingPlanes:[rbPlane] });
       var rad = Math.max(0.018, span*0.0016), yax = new THREE.Vector3(0, 1, 0);
       for (var s2 = BARS.seg0[selBar]; s2 < BARS.seg0[selBar+1]; s2++){
         var A = new THREE.Vector3(rebarPos[s2*6], rebarPos[s2*6+1], rebarPos[s2*6+2]), B = new THREE.Vector3(rebarPos[s2*6+3], rebarPos[s2*6+4], rebarPos[s2*6+5]);
