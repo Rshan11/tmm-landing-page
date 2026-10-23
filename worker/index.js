@@ -4,6 +4,7 @@
 // Crew PINs live in the CREW_PINS secret ({"job":"pin"}), never in the page.
 //   GET  /stats?key=<STATS_KEY>  private visit counter (worker/stats.js); wrong/missing key = 404
 import { shouldCount, countView, stats } from './stats.js';
+import { gate } from './private.js';
 const MAX_BODY = 65536, MAX_OPS = 100, MAX_ITEMS = 400, MAX_MARKS = 5000, LOCK_N = 10, LOCK_MS = 15 * 60 * 1000;
 
 function json(o, status = 200) {
@@ -96,6 +97,8 @@ export default {
       try { return await progress(req, env, m[1]); } catch (e) { return json({ error: 'server' }, 500); }
     }
     if (url.pathname === '/stats' || url.pathname === '/stats/') return stats(req, env, url);
+    const locked = await gate(req, url);
+    if (locked) return locked;
     const res = await env.ASSETS.fetch(req);
     // Page views: wrangler.jsonc run_worker_first routes only HTML page paths here; data files
     // (blocks/rebar/meta/usdz) never reach the Worker.
