@@ -1616,6 +1616,12 @@ function init(meta, bbuf, rbuf){
     var fr = f ? ' ' + ['', '1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'][f] : '';
     return ft + "'-" + inch + fr + '"';
   }
+  // "12'-0\"", "9'-11 3/4\"", "4'-8\"" or "1220 mm" -> metres (null if it isn't a length)
+  function parseFI(v){
+    var s = String(v == null ? '' : v), mm = /^\s*(-?[\d.]+)\s*mm/.exec(s); if (mm) return +mm[1]/1000;
+    var m = /^\s*(-?\d+)'\s*-?\s*(\d+)?(?:\s+(\d+)\/(\d+))?/.exec(s); if (!m) return null;
+    var inch = +m[1]*12 + (m[2] ? +m[2] : 0) + (m[3] ? +m[3]/+m[4] : 0); return inch*0.0254;
+  }
   function dimInk(){ return dark() ? ['#ffffff', 'rgba(20,22,23,0.92)'] : ['#15191b', 'rgba(255,255,255,0.95)']; }
   function legOf(g, seed){
     // blocks of the group; the leg = the seed block's straight line (or the group's most common line)
@@ -1628,7 +1634,7 @@ function init(meta, bbuf, rbuf){
     else { var votes = {}; idx.forEach(function(j){ if (polySet[j]) return; var k = lineKey(j), key = Math.round(k.r*100) + '|' + Math.round(k.t*20); var v = votes[key] || (votes[key] = { n:0, k:k }); v.n++; });
       var best = null; Object.keys(votes).forEach(function(key){ if (!best || votes[key].n > best.n) best = votes[key]; }); pickLine = best.k; }
     var r = pickLine.r, cs = Math.cos(r), sn = Math.sin(r), t0 = pickLine.t, wl = bWall[idx[0]];
-    var lo = 1e9, hi = -1e9, base = 1e9, top = -1e9, wd = 0, nw = 0, mine = [];
+    var lo = 1e9, hi = -1e9, base = 1e9, mbase = 1e9, top = -1e9, wd = 0, nw = 0, mine = [];
     var bx3 = new THREE.Box3(), cn = new THREE.Vector3();
     function addShape(mesh, isConc){        // a clipped piece / curb: its real extents, from the drawn mesh
       if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
@@ -1640,6 +1646,7 @@ function init(meta, bbuf, rbuf){
       var zb = bx3.min.y + ctr[2], zt = bx3.max.y + ctr[2];
       if (zb < base) base = zb;
       if (isConc) return;
+      if (zb < mbase) mbase = zb;
       if (sl < lo) lo = sl; if (sh > hi) hi = sh; if (zt > top) top = zt;
       mine.push({ s:(sl + sh)/2, ea:(sh - sl)/2, zt:zt });
     }
@@ -1651,7 +1658,7 @@ function init(meta, bbuf, rbuf){
       var b = j*7, t = -F[b]*sn + F[b+1]*cs; if (Math.abs(t - t0) > 0.16) return;
       var dr = F[b+6] - r, ea = Math.abs(Math.cos(dr))*F[b+3]/2 + Math.abs(Math.sin(dr))*F[b+4]/2, s = F[b]*cs + F[b+1]*sn;
       if (s - ea < lo) lo = s - ea; if (s + ea > hi) hi = s + ea;
-      var zb = F[b+2] - F[b+5]/2, zt = F[b+2] + F[b+5]/2; if (zb < base) base = zb; if (zt > top) top = zt;
+      var zb = F[b+2] - F[b+5]/2, zt = F[b+2] + F[b+5]/2; if (zb < base) base = zb; if (zb < mbase) mbase = zb; if (zt > top) top = zt;
       if (Math.abs(Math.sin(dr)) < 0.1){ wd += F[b+4]; nw++; }
       mine.push({ s:s, ea:ea, zt:zt });
     });
@@ -1663,10 +1670,20 @@ function init(meta, bbuf, rbuf){
       var t = -o.c[0]*sn + o.c[1]*cs, s = o.c[0]*cs + o.c[1]*sn; if (Math.abs(t - t0) > 0.4) return;
       var w = o.s[0], h = o.s[2]; if (s + w/2 < lo || s - w/2 > hi) return;
       var op = get(pmap(o)['TMM Opening'], 'Width'), oh = get(pmap(o)['TMM Opening'], 'Height'), os = get(pmap(o)['TMM Opening'], 'Sill above wall base');
-      ops.push({ a:s - w/2, b:s + w/2, sill:o.c[2] - h/2, head:o.c[2] + h/2, wTxt:op, hTxt:oh, sTxt:os });
+      ops.push({ a:s - w/2, b:s + w/2, sill:o.c[2] - h/2, head:o.c[2] + h/2, wTxt:op, hTxt:oh, sTxt:os, kind:String(get(pmap(o)['TMM Opening'], 'Type') || 'Opening') });
     });
     ops.sort(function(x, y){ return x.a - y.a; });
-    return { r:r, cs:cs, sn:sn, t0:t0, half:(nw ? wd/nw : 0.2)/2, lo:lo, hi:hi, base:base, top:top, hLo:endTop(lo), hHi:endTop(hi), ops:ops };
+    if (mbase > 1e8) mbase = base;
+    // the model's numbers, not the drawn blocks: wall height + each lift top above the masonry base (TMM Wall / TMM Lift n psets)
+    var wObj = walls[wl] || {}, lifts = [];
+    // the touched side's own height from the model (TMM Side n: Height), else the wall line's
+    var sIx = -1; if (seed !== null && seed !== undefined && bSide[seed] >= 0) sIx = bSide[seed]; else { var sc = {}; idx.forEach(function(j){ if (bSide[j] >= 0) sc[bSide[j]] = (sc[bSide[j]] || 0) + 1; }); Object.keys(sc).forEach(function(k2){ if (sIx < 0 || sc[k2] > sc[sIx]) sIx = +k2; }); }
+    var sideH = null; if (sIx >= 0 && sides[sIx]) (meta.sides || []).forEach(function(ms){ var pr = ms.props || []; if (String(get(pr, 'Segment id')) === String(sides[sIx].seg)) sideH = get(pr, 'Height'); });
+    Object.keys(wObj.lifts || {}).forEach(function(n){ var z = parseFI(wObj.lifts[n].hi); if (z !== null) lifts.push(z); });
+    lifts.sort(function(a, b){ return a - b; });
+    var topAt = function(at){ var t = -1e9; mine.forEach(function(o){ if (Math.abs(o.s - at) < o.ea + 0.01) t = Math.max(t, o.zt); }); return t > -1e8 ? t : top; };
+    return { r:r, cs:cs, sn:sn, t0:t0, half:(nw ? wd/nw : 0.2)/2, lo:lo, hi:hi, base:base, mbase:mbase, top:top, hLo:endTop(lo), hHi:endTop(hi), ops:ops,
+      hTxt:sideH || wObj.h, lifts:lifts, topAt:topAt };
   }
   // a point on the leg's near face: s along, z up (IFC metres) -> three
   function dimPt(L, s, z, out){
@@ -1678,8 +1695,9 @@ function init(meta, bbuf, rbuf){
     var cx = camera.position.x + ctr[0], cy = -camera.position.z + ctr[1];
     return (cx - x)*nx + (cy - y)*ny >= 0 ? 1 : -1;
   }
-  function textSprite(txt){
+  function textSprite(txt, faint){
     var ink = dimInk(), c = document.createElement('canvas'), x = c.getContext('2d'), fs = 44;
+    if (faint) ink = [ink[0].replace(/^#ffffff$/, 'rgba(255,255,255,0.55)').replace(/^#15191b$/, 'rgba(21,25,27,0.5)'), dark() ? 'rgba(20,22,23,0.35)' : 'rgba(255,255,255,0.6)'];
     x.font = '700 ' + fs + 'px system-ui, -apple-system, Segoe UI, sans-serif'; var w = Math.ceil(x.measureText(txt).width) + 24;
     c.width = w; c.height = fs + 22; x.font = '700 ' + fs + 'px system-ui, -apple-system, Segoe UI, sans-serif';
     x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineJoin = 'round';
@@ -1709,24 +1727,48 @@ function init(meta, bbuf, rbuf){
     }
     var up = new THREE.Vector3(0, 1, 0), alongV = dimPt(L, 1, 0).sub(dimPt(L, 0, 0)).normalize();
     var tk = function(len){ return up.clone().multiplyScalar(len); };
-    // bottom: chain through every jamb, then the overall length under it
-    var stops = [L.lo, L.hi]; L.ops.forEach(function(o){ [o.a, o.b].forEach(function(s){ if (s > L.lo + 0.003 && s < L.hi - 0.003) stops.push(s); }); });
-    stops.sort(function(a, b){ return a - b; }); stops = stops.filter(function(s, n){ return !n || s - stops[n-1] > 0.003; });
-    var gap = dimGap(L), zc = L.base - gap, zo = L.base - gap*2.1;
-    var spanTxt = function(a, b){ var o = L.ops.filter(function(o){ return Math.abs(o.a - a) < 0.004 && Math.abs(o.b - b) < 0.004; })[0]; return o && o.wTxt ? o.wTxt : dimTxt(b - a); };
-    if (stops.length > 2) for (var n = 1; n < stops.length; n++) dim(dimPt(L, stops[n-1], zc, A).clone(), dimPt(L, stops[n], zc, B).clone(), spanTxt(stops[n-1], stops[n]), tk(0.09), 3);
-    dim(dimPt(L, L.lo, zo, A).clone(), dimPt(L, L.hi, zo, B).clone(), dimTxt(L.hi - L.lo), tk(0.12));
-    // witness lines from the wall base down to the chain at the ends + jambs
-    stops.forEach(function(s){ var a = dimPt(L, s, L.base - 0.04), b = dimPt(L, s, (s === L.lo || s === L.hi) ? zo - 0.1 : zc - 0.1); segs.push(a.x, a.y, a.z, b.x, b.y, b.z); });
-    // height at the far end (and the near end when a rake makes them differ)
-    var hx = L.hi + gap; dim(dimPt(L, hx, L.base, A).clone(), dimPt(L, hx, L.hHi, B).clone(), dimTxt(L.hHi - L.base), alongV.clone().multiplyScalar(0.12));
-    if (Math.abs(L.hLo - L.hHi) > 0.02){ var lx = L.lo - gap; dim(dimPt(L, lx, L.base, A).clone(), dimPt(L, lx, L.hLo, B).clone(), dimTxt(L.hLo - L.base), alongV.clone().multiplyScalar(0.12)); }
-    // each opening: one vertical line inside the near jamb -> sill (when raised) + opening height
-    L.ops.forEach(function(o){
-      var sx = Math.max(o.a, L.lo) + Math.min(0.25, (o.b - o.a)*0.22), tick = alongV.clone().multiplyScalar(0.08);
-      if (o.sill - L.base > 0.02) dim(dimPt(L, sx, L.base, A).clone(), dimPt(L, sx, o.sill, B).clone(), o.sTxt || dimTxt(o.sill - L.base), tick, 2);
-      dim(dimPt(L, sx, o.sill, A).clone(), dimPt(L, sx, o.head, B).clone(), o.hTxt || dimTxt(o.head - o.sill), tick, 2);
+    // bottom strings in layout order, nearest the wall first (Ryan 10-24: "Walll bond, control joints, doors, windows"):
+    // 1 overall, 2 CJ layout, 3 doors, 4 windows, 5 anything else. Each its own row; a row only when it has something to say.
+    var gap = dimGap(L), mb = L.mbase, inside = function(s){ return s > L.lo + 0.003 && s < L.hi - 0.003; };
+    // CJ: mock, one near the middle on the 8" module and clear of the openings (Ryan: "Just mock it up. Put one around the middle")
+    var mod = 0.2032, cj = L.lo + Math.round(((L.lo + L.hi)/2 - L.lo)/mod)*mod, inOp = function(s){ return L.ops.some(function(o){ return s > o.a - 0.1 && s < o.b + 0.1; }); };
+    for (var tries = 0; tries < 40 && inOp(cj); tries++) cj += (tries % 2 ? 1 : -1)*mod*(tries + 1);
+    var cjs = inside(cj) && !inOp(cj) ? [cj] : [];
+    var isDoor = function(o){ return /door/i.test(o.kind); }, isWin = function(o){ return /window/i.test(o.kind); };
+    var rows = [{ stops:[L.lo, L.hi], overall:true }];
+    if (cjs.length) rows.push({ stops:[L.lo, L.hi].concat(cjs) });
+    [L.ops.filter(isDoor), L.ops.filter(isWin), L.ops.filter(function(o){ return !isDoor(o) && !isWin(o); })].forEach(function(set){
+      if (!set.length) return; var st = [L.lo, L.hi]; set.forEach(function(o){ [o.a, o.b].forEach(function(s){ if (inside(s)) st.push(s); }); }); rows.push({ stops:st, ops:set }); });
+    var spanTxt = function(set, a, b){ var o = (set || []).filter(function(o){ return Math.abs(o.a - a) < 0.004 && Math.abs(o.b - b) < 0.004; })[0]; return o && o.wTxt ? o.wTxt : dimTxt(b - a); };
+    var rowZ = function(k){ return mb - gap*(1 + k*1.05); }, lastZ = rowZ(rows.length - 1);
+    rows.forEach(function(row, k){
+      var st = row.stops.slice().sort(function(a, b){ return a - b; }).filter(function(s, n, arr){ return !n || s - arr[n-1] > 0.003; }), z = rowZ(k);
+      for (var n = 1; n < st.length; n++) dim(dimPt(L, st[n-1], z, A).clone(), dimPt(L, st[n], z, B).clone(), row.overall ? dimTxt(L.hi - L.lo) : spanTxt(row.ops, st[n-1], st[n]), tk(row.overall ? 0.12 : 0.09), row.overall ? 0 : 3 + k);
+      // witness lines: interior stops drop from the wall base to their own row
+      st.forEach(function(s){ if (!inside(s)) return; var a = dimPt(L, s, mb - 0.04), b = dimPt(L, s, z - 0.1); segs.push(a.x, a.y, a.z, b.x, b.y, b.z); });
     });
+    [L.lo, L.hi].forEach(function(s){ var a = dimPt(L, s, mb - 0.04), b = dimPt(L, s, lastZ - 0.1); segs.push(a.x, a.y, a.z, b.x, b.y, b.z); });
+    // the CJ itself on the wall face: a full-height line
+    cjs.forEach(function(s){ var a = dimPt(L, s, mb), b = dimPt(L, s, L.topAt(s)); segs.push(a.x, a.y, a.z, b.x, b.y, b.z); });
+    // height at the far end (and the near end when a rake makes them differ) from the masonry base
+    var hx = L.hi + gap, hHiTxt = Math.abs(L.hLo - L.hHi) <= 0.02 && L.hTxt && parseFI(L.hTxt) !== null ? L.hTxt : dimTxt(L.hHi - mb);
+    dim(dimPt(L, hx, mb, A).clone(), dimPt(L, hx, L.hHi, B).clone(), hHiTxt, alongV.clone().multiplyScalar(0.12));
+    if (Math.abs(L.hLo - L.hHi) > 0.02){ var lx = L.lo - gap; dim(dimPt(L, lx, mb, A).clone(), dimPt(L, lx, L.hLo, B).clone(), dimTxt(L.hLo - mb), alongV.clone().multiplyScalar(0.12)); }
+    // each opening: a staggered stack inside the near jamb -- sill (base->sill), opening (sill->head), head->top of wall, each a step further in
+    L.ops.forEach(function(o){
+      var w = o.b - o.a, step = Math.min(gap*0.9, w*0.28), x0 = Math.max(o.a, L.lo) + Math.min(step, w*0.15), tick = alongV.clone().multiplyScalar(0.08);
+      if (o.sill - mb > 0.02) dim(dimPt(L, x0, mb, A).clone(), dimPt(L, x0, o.sill, B).clone(), o.sTxt || dimTxt(o.sill - mb), tick, 2);
+      dim(dimPt(L, x0 + step, o.sill, A).clone(), dimPt(L, x0 + step, o.head, B).clone(), o.hTxt || dimTxt(o.head - o.sill), tick, 2);
+      var tt = L.topAt(x0 + step*2); if (tt - o.head > 0.02) dim(dimPt(L, x0 + step*2, o.head, A).clone(), dimPt(L, x0 + step*2, tt, B).clone(), dimTxt(tt - o.head), tick, 2);
+    });
+    // lift heights: faint dotted lines across the wall at each lift top, a small faint label at the far end
+    var liftSegs = [];
+    L.lifts.forEach(function(lz){ var z = mb + lz; if (lz < 0.05 || z > L.top - 0.05) return;
+      var a = dimPt(L, L.lo, z), b = dimPt(L, L.hi, z); liftSegs.push(a.x, a.y, a.z, b.x, b.y, b.z);
+      var sp = textSprite(dimTxt(lz) + ' LIFT', true); sp.position.copy(dimPt(L, L.lo - gap*0.2, z)); sp.userData.span = 1e9; sp.userData.pri = 9; sp.userData.faint = true; sp.center.set(1, 0.5); dimLabels.push(sp); dimRoot.add(sp); });
+    if (liftSegs.length){ var lgl = new THREE.BufferGeometry(); lgl.setAttribute('position', new THREE.Float32BufferAttribute(liftSegs, 3));
+      var ll = new THREE.LineSegments(lgl, new THREE.LineDashedMaterial({ color:ink[0], dashSize:0.12, gapSize:0.1, transparent:true, opacity:0.35, depthTest:false }));
+      ll.computeLineDistances(); ll.renderOrder = 6; dimRoot.add(ll); }
     var lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(segs, 3));
     var ls = new THREE.LineSegments(lg, lineMat); ls.renderOrder = 7; dimRoot.add(ls);
     dimsFrame(true);
@@ -1742,7 +1784,7 @@ function init(meta, bbuf, rbuf){
     if (!force && dimBuiltD){ var rz = camDist(dimLeg)/dimBuiltD; if (rz > 1.7 || rz < 0.6){ buildDims(dimLeg); return; } }
     var hpx = stage.clientHeight || 600, k = 2*Math.tan(camera.fov*Math.PI/360)/hpx, cam = camera.position, phone = (stage.clientWidth || 800) < 520;
     var txtPx = phone ? 17 : 15, headPx = phone ? 11 : 9;
-    dimLabels.forEach(function(sp){ var d = cam.distanceTo(sp.position), hgt = d*k*txtPx; sp.scale.set(hgt*sp.userData.aspect, hgt, 1);
+    dimLabels.forEach(function(sp){ var d = cam.distanceTo(sp.position), hgt = d*k*txtPx*(sp.userData.faint ? 0.72 : 1); sp.scale.set(hgt*sp.userData.aspect, hgt, 1);
       sp.visible = sp.userData.span > hgt*0.9; });           // a piece too short to letter on screen keeps its arrows only
     // no two numbers on top of each other: overall + heights win, then openings, then the chain; the loser keeps its arrows
     var r = canvas.getBoundingClientRect(), placed = [], v = new THREE.Vector3();
@@ -1769,7 +1811,7 @@ function init(meta, bbuf, rbuf){
     dimSign = Math.abs(tc - dimLeg.t0) < 0.05 ? faceSign(dimLeg) : (tc > dimLeg.t0 ? -1 : 1);
     // turn to face the touched side (about 20 deg off square, a little above) and frame just that leg + its dims
     var L = dimLeg, nx = -L.sn*dimSign, nz = -L.cs*dimSign, pad = 1.2, lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9], v = new THREE.Vector3();
-    [L.lo - pad, L.hi + pad].forEach(function(s){ [L.base - pad*1.6, L.top + 0.3].forEach(function(z){ dimPt(L, s, z, v); for (var a = 0; a < 3; a++){ var c = [v.x, v.y, v.z][a]; if (c < lo[a]) lo[a] = c; if (c > hi[a]) hi[a] = c; } }); });
+    [L.lo - pad, L.hi + pad].forEach(function(s){ [L.base - pad*3.2, L.top + 0.3].forEach(function(z){ dimPt(L, s, z, v); for (var a = 0; a < 3; a++){ var c = [v.x, v.y, v.z][a]; if (c < lo[a]) lo[a] = c; if (c > hi[a]) hi[a] = c; } }); });
     dimAim = { theta:Math.atan2(nx, nz) + 0.35, phi:1.22, box:[lo, hi] };
     buildDims(dimLeg);
   }
