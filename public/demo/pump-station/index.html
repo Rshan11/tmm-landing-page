@@ -56,6 +56,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .tbtn .box{width:18px;height:18px;border:1.5px solid var(--ink);border-radius:4px;display:grid;place-items:center;font-size:12px;line-height:1;flex:none}
 .tbtn.small .box{width:15px;height:15px;font-size:10px}
 .tbtn.ar{text-decoration:none;padding:6px 10px}
+.dimlayers{position:absolute;left:12px;right:12px;bottom:52px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;pointer-events:none}
+.dimlayers>*{pointer-events:auto}
+.dimlayers[hidden]{display:none}
 .tbtn.ar img{display:block}
 .tbtn[aria-pressed="false"] .box span{visibility:hidden}
 .legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.8rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);
@@ -92,6 +95,7 @@ dl{margin:12px 0 0;display:grid;grid-template-columns:minmax(0,1fr) auto}
 dt,dd{margin:0;padding:10px 0;border-top:1px solid var(--line)}
 dt small{display:block;color:var(--muted);font-size:.8rem}
 dd{padding-left:12px;font-weight:600;font-size:1.1rem;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+dt.grp,dd.grp{border-top:1.5px solid var(--line)}
 dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 .empty{margin:12px 0 0;padding:10px 0;border-top:1px solid var(--line);color:var(--muted)}
 .made{margin:10px 0 0;font-size:.75rem;color:var(--muted)}
@@ -166,6 +170,22 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
 .slist button small{color:var(--muted);margin-right:6px}
 .slist button[aria-current="true"]{background:var(--select);color:var(--selectInk);border-radius:8px}
 .slist button[aria-current="true"] small{color:inherit}
+.smode{display:flex;gap:6px;margin:0 0 8px}
+.smode button{flex:1;min-height:44px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;font-weight:600;padding:4px 8px;line-height:1.2}
+.smode button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.srevin{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin:0 0 8px}
+.srevin label{font-size:.78rem;color:var(--muted);display:block}
+.srevin input,.srevin select,.sgrid select{width:100%;font:inherit;font-size:16px;padding:8px 9px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin-top:2px}
+.screw{display:flex;align-items:flex-end;gap:1px;height:46px;margin:0 2px;border-bottom:1.5px solid var(--line)}
+.cb{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;opacity:.55}
+.cb.on{opacity:1;outline:1.5px solid var(--select);outline-offset:1px}
+.cb i{display:block;width:100%}.cb i.m{background:var(--ink)}.cb i.t{background:var(--muted);opacity:.6}
+.sleg i.cm{background:var(--ink)}.sleg i.ct{background:var(--muted);opacity:.6}
+.srev{list-style:none;margin:0;padding:0;font-size:.88rem}
+.srev li{padding:6px 0;border-top:1px solid var(--line)}
+.srev li.bad{color:#c62828;font-weight:600}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .srev li.bad{color:#ff8a80}}
+:root[data-theme="dark"] .srev li.bad{color:#ff8a80}
 @media (max-width:520px){
   .legend{font-size:.75rem;padding:5px 8px}
   .tbtn{padding:6px 10px;font-size:.85rem}
@@ -184,7 +204,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
   <header>
     <div class="job">
       <h1 id="job">Loading…</h1>
-      <p id="pub">Field view</p>
+      <p id="pub">The Lead</p>
     </div>
     <span class="demo-tip"><b>Try it:</b> tap a wall, pick a lift, tap a bar, turn on <b>Production</b>. <a href="/view/georgeville/" target="_top">Open the real field view</a></span>
     <span class="rev" id="rev" hidden></span>
@@ -200,6 +220,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
       <a class="tbtn small ar" id="arBtn" rel="ar" href="../../view/georgeville/model.usdz" hidden><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='22' viewBox='0 0 84 22'%3E%3Cg fill='none' stroke='%23787E82' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M11 2.5l7.5 4.2v8.6L11 19.5l-7.5-4.2V6.7z'/%3E%3Cpath d='M3.5 6.7L11 11l7.5-4.3M11 11v8.5'/%3E%3C/g%3E%3Ctext x='26' y='15.5' font-family='Barlow,Segoe UI,system-ui,sans-serif' font-size='14' font-weight='600' fill='%23787E82'%3EView in AR%3C/text%3E%3C/svg%3E" width="84" height="22" alt="View in AR"></a>
       <div class="legend" id="legend"></div>
     </div>
+    <div class="dimlayers" id="dimLayers" role="group" aria-label="Dimension layers" hidden><button class="tbtn small" data-dl="cj" aria-pressed="false"><span class="box"><span>✓</span></span>CJs</button><button class="tbtn small" data-dl="door" aria-pressed="false"><span class="box"><span>✓</span></span>Doors</button><button class="tbtn small" data-dl="win" aria-pressed="false"><span class="box"><span>✓</span></span>Windows</button><button class="tbtn small" data-dl="lift" aria-pressed="false"><span class="box"><span>✓</span></span>Lifts</button></div>
     <p class="status" id="status">Loading the model…</p>
     <div class="barcard" id="barcard" hidden></div>
     <p class="hint" id="hint">Drag to turn, pinch or scroll to zoom, tap a wall</p>
@@ -216,7 +237,7 @@ dt.tot,dd.tot{border-top:1.5px solid var(--ink)}
       </div>
       <p class="sync" id="sync"></p>
     </div>
-    <p class="note" id="note">This field view shows quantities only. Prices and labor stay in the office.</p>
+    <p class="note" id="note">The Lead shows quantities only. Prices and labor stay in the office.</p>
     <p class="made"><a href="https://themasonrymodeler.com/" target="_blank" rel="noopener">Built with The Masonry Modeler</a> · <a href="https://themasonrymodeler.com/" target="_blank" rel="noopener">Get this for your job &rarr;</a></p>
   </aside>
 </div>
@@ -271,11 +292,11 @@ function init(meta, bbuf, rbuf){
 
   /* ---------- header ---------- */
   var jobName = (meta.project && meta.project.name) || 'Masonry job';
-  $('job').textContent = jobName; document.title = jobName + ' – field view';
+  $('job').textContent = jobName; document.title = jobName + ' – The Lead';
   var ex = meta.export || {}, rev = ex['Revision'], exd = ex['Exported (UTC)'], dateTxt = '', dateShort = '';
   if (exd){ var dm = /^(\d{4})-(\d{2})-(\d{2})/.exec(exd); if (dm){ dateShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+dm[2]-1] + ' ' + (+dm[3]); dateTxt = dateShort + ', ' + dm[1]; } }
   if (rev != null){ $('rev').textContent = 'Rev ' + rev + (dateShort ? ' · ' + dateShort : ''); $('rev').hidden = false; }
-  $('pub').textContent = 'Field view' + (rev != null ? ' · Rev ' + rev : '') + (dateTxt ? ' · ' + dateTxt : '');
+  $('pub').textContent = 'The Lead' + (rev != null ? ' · Rev ' + rev : '') + (dateTxt ? ' · ' + dateTxt : '');
 
   /* ---------- per-block facts ---------- */
   var bLift = new Int16Array(N), bType = new Uint8Array(N), bWall = new Int16Array(N);
@@ -337,6 +358,7 @@ function init(meta, bbuf, rbuf){
       Object.keys(b.units[l].colours).forEach(function(c){ u.colours[c] = (u.colours[c] || 0) + b.units[l].colours[c]; });
     });
     a.total += b.total;
+    if (b.cuts) Object.keys(b.cuts).forEach(function(k){ a.cuts = a.cuts || {}; var c = a.cuts[k] || (a.cuts[k] = { n:0, len:b.cuts[k].len, pre:b.cuts[k].pre }); c.n += b.cuts[k].n; });
     if (b.grout !== null){ a.grout = (a.grout || 0) + b.grout; a.groutU = b.groutU; }
     if (b.mortar !== null) a.mortar = (a.mortar || 0) + b.mortar;
     if (b.rebarW != null){ a.rebarW = (a.rebarW || 0) + b.rebarW; a.rebarU = b.rebarU; }
@@ -396,6 +418,28 @@ function init(meta, bbuf, rbuf){
       });
     });
   }
+  /* ---------- cut pieces by real cut length (per-block 'Cut length' column; in or mm) ---------- */
+  var cutKey = null, cutMm = false;
+  keys.forEach(function(k, n){ if (/^Cut length \((in|mm)\)$/.test(k)){ cutKey = n; cutMm = /mm/.test(k); } });
+  function cutText(v){
+    if (cutMm) return Math.round(v) + ' mm';
+    var e = Math.round(v*8), w = Math.floor(e/8), f = e % 8, fr = f ? ['', '1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'][f] : '';
+    return (w || !fr ? w : '') + (w && fr ? '-' : '') + fr + '"';
+  }
+  if (cutKey !== null){
+    var colCut = cols[cutKey];
+    var addCut = function(q, len, pre){
+      if (!q) return; var k = pre + '|' + len; q.cuts = q.cuts || {};
+      var c = q.cuts[k] || (q.cuts[k] = { n:0, len:len, pre:pre }); c.n++;
+    };
+    for (var ic = 0; ic < N; ic++){
+      var pc = U[ic*5+2]; if (pc === 65535) continue; var cv = colCut[pc]; if (cv === null || cv === undefined || cv === '' || !isFinite(+cv)) continue;
+      var cl = cutMm ? Math.round(+cv) : Math.round(+cv*8)/8, cw = walls[bWall[ic]]; if (!cw) continue;
+      var cpm = /^(\d+(?:\.\d+)?\s*(?:"|cm|mm))/.exec(cw.type || ''), cpre = cpm ? cpm[1] + ' ' : '', cL = bLift[ic];
+      addCut(cw.whole, cl, cpre); addCut(cw.lifts[cL], cl, cpre);
+      var cs = bSide[ic]; if (cs >= 0){ addCut(sides[cs].whole, cl, cpre); addCut(sides[cs].lifts[cL], cl, cpre); }
+    }
+  }
   var bySide = sides.length > 0;
   var selGroups = bySide ? sides : walls;
   function groupOf(i){ return bySide ? bSide[i] : bWall[i]; }
@@ -405,7 +449,7 @@ function init(meta, bbuf, rbuf){
   walls.forEach(function(w){ Object.keys(w.lifts).forEach(function(n){ liftNums[n] = 1; }); });
   liftNums = Object.keys(liftNums).map(Number).sort(function(a, b){ return a - b; });
   var liftHs = []; walls.forEach(function(w){ if (w.liftH && liftHs.indexOf(w.liftH) < 0) liftHs.push(w.liftH); });
-  $('note').textContent = (liftHs.length ? 'Lifts are ' + liftHs.join(' / ') + '. ' : '') + 'This field view shows quantities only. Prices and labor stay in the office.';
+  $('note').textContent = (liftHs.length ? 'Lifts are ' + liftHs.join(' / ') + '. ' : '') + 'The Lead shows quantities only. Prices and labor stay in the office.';
 
   /* ---------- three.js ---------- */
   var stage = $('stage'), canvas = document.createElement('canvas');
@@ -627,7 +671,7 @@ function init(meta, bbuf, rbuf){
     camera.lookAt(target);
   }
   var pending = false;
-  function schedule(){ if (!pending){ pending = true; requestAnimationFrame(function(){ pending = false; chooseLod(); renderer.render(scene, camera); if (window.__field) window.__field.renders = (window.__field.renders || 0) + 1; }); } }
+  function schedule(){ if (!pending){ pending = true; requestAnimationFrame(function(){ pending = false; chooseLod(); dimsFrame(); renderer.render(scene, camera); if (window.__field) window.__field.renders = (window.__field.renders || 0) + 1; }); } }
   var fitted = false, moved0 = false, fly = null, lastAsp = 0, wbox = {};
   function wallBox(w){
     if (wbox[w]) return wbox[w];
@@ -638,6 +682,7 @@ function init(meta, bbuf, rbuf){
     return wbox[w] = hi[0] < lo[0] ? null : [lo, hi];
   }
   function frameBox(){
+    if (dimAim) return dimAim.box;
     var lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9], n = 0;
     selList.forEach(function(g){ var bx = wallBox(bySide ? sides[g].wall : g); if (!bx) return; n++;
       for (var a = 0; a < 3; a++){ if (bx[0][a] < lo[a]) lo[a] = bx[0][a]; if (bx[1][a] > hi[a]) hi[a] = bx[1][a]; } });
@@ -662,14 +707,16 @@ function init(meta, bbuf, rbuf){
     r = Math.max(1, r); var out = { t:t.clone(), r:r }; return out;
   }
   function fitTo(anim){
+    var th0 = theta, ph0 = phi, th1 = theta, ph1 = phi;
+    if (dimAim){ th1 = th0 + Math.atan2(Math.sin(dimAim.theta - th0), Math.cos(dimAim.theta - th0)); ph1 = dimAim.phi; theta = th1; phi = ph1; }   // shortest turn to face the touched wall
     var t0 = target.clone(), r0 = radius, sv = solveFit(frameBox()), st = performance.now(); fly = anim ? st : null;
     R0 = Math.max(R0, sv.r);
     if (!anim){ target.copy(sv.t); radius = sv.r; updateCam(); return; }
-    target.copy(t0); radius = r0;
+    target.copy(t0); radius = r0; theta = th0; phi = ph0;
     (function step(){
       if (fly !== st) return;
       var u = Math.min(1, (performance.now() - st)/450), e = u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2)/2;
-      target.lerpVectors(t0, sv.t, e); radius = r0 + (sv.r - r0)*e; updateCam(); schedule();
+      target.lerpVectors(t0, sv.t, e); radius = r0 + (sv.r - r0)*e; theta = th0 + (th1 - th0)*e; phi = ph0 + (ph1 - ph0)*e; updateCam(); schedule();
       if (u < 1) requestAnimationFrame(step); else fly = null;
     })();
   }
@@ -829,16 +876,20 @@ function init(meta, bbuf, rbuf){
     if (BIG){ tiles.forEach(function(tl){ if (ray.ray.intersectsSphere(tl.mesh.geometry.boundingSphere)) objs.push(tl.mesh); });
       chunks.forEach(function(ch){ if (ch.full && ch.full.visible && ray.ray.intersectsSphere(ch.sphere)) objs.push(ch.full); }); }
     var hit = ray.intersectObjects(objs, false)[0]; hideHint();
+    // an opening touched (its hole, in front of whatever is behind it) -> that opening's own dims
+    if (!prodOn && !schedOn && !multiOn){ var oh = ray.intersectObjects(openMeshes.filter(function(m){ return m.visible; }), false)[0];
+      if (oh && (!hit || oh.distance <= hit.distance + 0.05)){ touchOpening(openMeshes.indexOf(oh.object)); return; } }
+    dimOp = null;
     if (!hit && BIG){   // big job: a thin wall far away is hard to hit with a finger -> nearest course run within 28 px
       var best = null, bd = 28, r2 = canvas.getBoundingClientRect(), mx = e.clientX - r2.left, my = e.clientY - r2.top, v = new THREE.Vector3(); camera.updateMatrixWorld();
       tiles.forEach(function(tl){ for (var n = 0; n < tl.slots.length; n++){ var rn = tl.slots[n]; if (!shownBlock(rn.rep)) continue; v.set(rn.x - ctr[0], rn.z - ctr[2], -(rn.y - ctr[1])).project(camera); if (v.z < -1 || v.z > 1) continue;
         var d = Math.hypot((v.x + 1)/2*r2.width - mx, (1 - v.y)/2*r2.height - my); if (d < bd){ bd = d; best = rn.rep; } } });
-      if (best !== null){ var gb = groupOf(best); select(gb >= 0 ? gb : null); return; }
+      if (best !== null){ var gb = groupOf(best); dimSeed = best; select(gb >= 0 ? gb : null); return; }
     }
-    if (!hit) { if (!multiOn) select(null, false, true); return; }
+    if (!hit) { if (!multiOn){ dimSeed = null; select(null, false, true); } return; }
     if (hit.object.userData.conc !== undefined){ select(!bySide && hit.object.userData.wall >= 0 ? hit.object.userData.wall : null); return; }
     var gi = hit.object.userData.gi !== undefined ? hit.object.userData.gi : hit.object.userData.lod ? hit.object.userData.tile.slots[hit.instanceId].rep : hit.object.userData.idx[hit.instanceId];
-    var gk = groupOf(gi); select(gk >= 0 ? gk : null);
+    var gk = groupOf(gi); dimSeed = gi; select(gk >= 0 ? gk : null);
   }
 
   /* ---------- state + painting ---------- */
@@ -905,7 +956,7 @@ function init(meta, bbuf, rbuf){
       openMeshes.forEach(function(om){ var t = topOf(om.userData.g); om.userData.plane.constant = t === null ? 1e5 : t; });
       rebarLift(topOf, allTop === null ? null : allTop + 0.005);
     }
-    legend(); paintRebar();
+    legend(); paintRebar(); updateDims();
     schedule();
   }
   var RED = new THREE.Color(0xb03a2e);
@@ -1151,14 +1202,18 @@ function init(meta, bbuf, rbuf){
 
   /* ---------- schedule: the build planned day by day (lay a lift, rebar, grout it, go up), animated ---------- */
   // PLANNING ASSUMPTIONS, not field facts: every number is a default the user changes (kept on this device only)
-  var SDEF = { crew:4, r8:120, r4:150, r12:90, brick:500, grout:1, bb:0.5, area:3 };
-  var SKEYS = [['crew', 'Masons on the crew', 1, 1], ['r8', '8" CMU per mason-day (6", 20 cm too)', 1, 1], ['r4', '4" CMU per mason-day', 1, 1],
-    ['r12', '12" CMU per mason-day (10" too)', 1, 1], ['brick', 'Brick per mason-day', 1, 1], ['grout', 'Days per grout pour', 0.5, 0],
-    ['bb', 'Extra rebar days, lift with bond beams', 0.5, 0], ['area', 'Pour area = days of laying per lift', 0.5, 0.5]];
+  var SDEF = { crew:4, r8:120, r4:150, r12:90, brick:500, grout:1, bb:0.5, area:3, cure:1, after:1, mpt:2, maxm:6, revT:30, revA:5 };
+  // [key, label, step, min, max]  (after / revT / revA are drawn elsewhere)
+  var SKEYS = [['crew', 'Masons on the crew (forward mode)', 1, 1, 99], ['r8', '8" CMU per mason-day (6", 20 cm too)', 1, 1, 9999], ['r4', '4" CMU per mason-day', 1, 1, 9999],
+    ['r12', '12" CMU per mason-day (10" too)', 1, 1, 9999], ['brick', 'Brick per mason-day', 1, 1, 9999], ['grout', 'Days per grout pour', 0.5, 0, 10],
+    ['bb', 'Extra rebar days, lift with bond beams', 0.5, 0, 10], ['area', 'Pour area = days of laying per lift', 0.5, 0.5, 99],
+    ['cure', 'Cure before grout (nights, 0 to 3)', 1, 0, 3], ['mpt', 'Masons per tender (0 = no tenders)', 0.5, 0, 99], ['maxm', 'Max masons per wall / pour area', 1, 1, 99],
+    ['after', '', 1, 0, 2], ['revT', '', 1, 1, 999], ['revA', '', 1, 1, 99]];
   var SP = {}, schedOn = false, schedDay = 1, ghostOn = false, S = null, schedVer = 0, playT = null, setOpen = false;
-  function loadSP(){ var s = jget('tmm-sched', {}) || {}; SKEYS.forEach(function(k){ var v = parseFloat(s[k[0]]); SP[k[0]] = isFinite(v) && v >= k[3] ? v : SDEF[k[0]]; });
+  function loadSP(){ var s = jget('tmm-sched', {}) || {}; SKEYS.forEach(function(k){ var v = parseFloat(s[k[0]]); SP[k[0]] = isFinite(v) && v >= k[3] && v <= k[4] ? v : SDEF[k[0]]; });
+    SP.mode = s.mode === 'rev' ? 'rev' : 'fwd'; SP.kind = s.kind === 'area' ? 'area' : 'total';
     SP.start = LS.get('tmm-sched-start-' + JOB) || ''; }
-  function saveSP(){ var o = {}; SKEYS.forEach(function(k){ o[k[0]] = SP[k[0]]; }); LS.set('tmm-sched', JSON.stringify(o)); LS.set('tmm-sched-start-' + JOB, SP.start || null); }
+  function saveSP(){ var o = {}; SKEYS.forEach(function(k){ o[k[0]] = SP[k[0]]; }); o.mode = SP.mode; o.kind = SP.kind; LS.set('tmm-sched', JSON.stringify(o)); LS.set('tmm-sched-start-' + JOB, SP.start || null); }
   loadSP();
   function rateOf(w){                                              // units per mason-day from the wall type
     var t = String(w.type || ''); if (/brick/i.test(t)) return SP.brick;
@@ -1176,6 +1231,7 @@ function init(meta, bbuf, rbuf){
     for (i = 0; i < N; i++){ g = groupOf(i); if (g < 0) continue; var e = Math.hypot(F[i*7] - ax[g], F[i*7+1] - ay[g]); if (e > d2[g]){ d2[g] = e; bx[g] = F[i*7]; by[g] = F[i*7+1]; } }
     return gGeo = { n:n, ends:[[ax, ay], [bx, by]] };
   }
+  function areaName(a){ var s = ''; a++; while (a > 0){ var r = (a - 1) % 26; s = String.fromCharCode(65 + r) + s; a = Math.floor((a - 1)/26); } return s; }
   function buildPlan(){
     var gg = groupGeo(), todo = [], g;
     for (g = 0; g < selGroups.length; g++) if (gg.n[g]) todo.push(g);
@@ -1187,41 +1243,104 @@ function init(meta, bbuf, rbuf){
       var gb = todo.splice(best, 1)[0]; order.push(gb); px = gg.ends[1 - be][0][gb]; py = gg.ends[1 - be][1][gb]; first = false;
     }
     // SEAM (later): a wall order the user drags replaces `order` here
-    var perDay = function(g2){ return Math.max(1, SP.crew) * Math.max(1, rateOf(walls[bySide ? sides[g2].wall : g2])); };
-    var areas = [], cur = null, acc = null;
+    var rateG = function(g2){ return Math.max(1, rateOf(walls[bySide ? sides[g2].wall : g2])); };
+    var perDay = function(g2){ return Math.max(1, SP.crew) * rateG(g2); };
+    var areas = [], cur = null, acc = null;                          // pour areas (sized by the reference crew, as before)
     order.forEach(function(g2){
       if (!cur){ cur = []; acc = {}; } cur.push(g2); var mx = 0;
       liftNums.forEach(function(l){ var lst = glist[g2*1000 + l]; acc[l] = (acc[l] || 0) + (lst ? lst.length/perDay(g2) : 0); if (acc[l] > mx) mx = acc[l]; });
       if (mx >= SP.area){ areas.push(cur); cur = null; }
     });
     if (cur) areas.push(cur);
-    var day = new Int16Array(N), gd0 = new Int16Array(N), gd1 = new Int16Array(N), tasks = [], t = 0;
-    areas.forEach(function(ar, an){
+    var rev = SP.mode === 'rev', cure = Math.round(clamp(SP.cure, 0, 3)), gl = SP.grout > 0 ? Math.max(1, Math.ceil(SP.grout - 1e-9)) : 0, after = Math.round(clamp(SP.after, 0, 2));
+    var AL = areas.map(function(ar){                                // each area: its lifts, their blocks in laying order, the work in mason-days
+      var lifts = [], W = 0, bbd = 0, nb = 0;
       liftNums.forEach(function(l){
         var gs = ar.filter(function(g2){ return glist[g2*1000 + l]; }); if (!gs.length) return;
-        var bbLift = false, laid = [];
-        gs.forEach(function(g2){                                    // lay: course by course, block by block along the wall
+        var segs = [], bb = false;
+        gs.forEach(function(g2){
           var lst = glist[g2*1000 + l].slice().sort(function(a, b){ return F[a*7+2] - F[b*7+2] || runOf[a] - runOf[b] || along[a] - along[b]; });
-          var n = lst.length, dur = n/perDay(g2), tk = { k:'L', g:g2, l:l, a:an, n:n, t0:t, t1:t + dur, by:{} }, d0 = Math.floor(t + 1e-9) + 1;
-          lst.forEach(function(i, k){ var d = Math.max(d0, Math.ceil(t + (k + 1)/n*dur - 1e-6)); day[i] = d; tk.by[d] = (tk.by[d] || 0) + 1; if (bType[i] === 3 || bType[i] === 4) bbLift = true; });
-          tasks.push(tk); t += dur; laid.push(lst);
+          lst.forEach(function(i){ if (bType[i] === 3 || bType[i] === 4) bb = true; });
+          segs.push({ k:'L', g:g2, lst:lst, n:lst.length, r:rateG(g2), done:0, out:0 }); W += lst.length/rateG(g2); nb += lst.length;
         });
-        if (bbLift && SP.bb > 0){ tasks.push({ k:'R', l:l, a:an, gs:gs, t0:t, t1:t + SP.bb }); t += SP.bb; }   // rebar: in the lay days, + extra when the lift has bond beams
-        if (SP.grout > 0){                                          // one pour for the area's lift, on a fresh day; the next lift starts the day after
-          var s0 = Math.ceil(t - 1e-6), s1 = Math.ceil(s0 + SP.grout - 1e-6);
-          tasks.push({ k:'G', l:l, a:an, gs:gs, t0:s0, t1:s0 + SP.grout });
-          laid.forEach(function(lst){ lst.forEach(function(i){ gd0[i] = s0 + 1; gd1[i] = s1; }); }); t = s0 + SP.grout;
-        } else t = Math.ceil(t - 1e-6);
+        if (bb && SP.bb > 0){ segs.push({ k:'R', gs:gs, done:0 }); bbd += SP.bb; }
+        lifts.push({ l:l, gs:gs, segs:segs });
       });
+      return { lifts:lifts, W:W, bbd:bbd, nb:nb };
     });
-    var T = Math.max(1, Math.ceil(t - 1e-6)), days = [];
-    for (var d = 0; d <= T; d++) days.push([]);
-    tasks.forEach(function(tk){
-      if (tk.k === 'L'){ Object.keys(tk.by).forEach(function(d2){ days[+d2].push({ k:'L', l:tk.l, g:tk.g, n:tk.by[d2] }); }); return; }
-      for (var d3 = Math.floor(tk.t0 + 1e-9) + 1; d3 <= Math.ceil(tk.t1 - 1e-6); d3++) days[d3].push({ k:tk.k, l:tk.l, gs:tk.gs });
+    // reverse mode: size the crew from the days allowed (laying days = days allowed less the cure + grout gaps)
+    var gap = gl ? Math.max(0, cure + gl + after - 2) : 0, tail = gl ? Math.max(0, cure + gl - 1) : 0, totW = 0, shares = [];
+    AL.forEach(function(x){ totW += x.W; });
+    AL.forEach(function(x, n){ shares[n] = totW ? x.W/totW : 1/AL.length; });
+    var runSim = function(Da){
+    var mA = [], flags = [];
+    AL.forEach(function(x){ x.lifts.forEach(function(lf){ lf.segs.forEach(function(s3){ s3.done = 0; s3.out = 0; delete s3.tk; }); }); });
+    AL.forEach(function(x, n){
+      if (!rev){ mA[n] = Math.max(1, SP.crew); return; }
+      var lay = Da[n] - (x.lifts.length - 1)*gap - tail - x.bbd, need = lay > 0 ? Math.max(1, Math.ceil(x.W/lay - 1e-9)) : 0, nm = areaName(n);
+      if (lay <= 0){ mA[n] = SP.maxm; flags.push({ a:n, bad:1, txt:'Area ' + nm + ' cannot be done in ' + Da[n] + ' day' + (Da[n] === 1 ? '' : 's') + ': cure, grout and rebar alone take ' + (Da[n] - lay) }); }
+      else if (need > SP.maxm){ mA[n] = SP.maxm; flags.push({ a:n, bad:1, txt:'Area ' + nm + ' needs ' + need + ' masons in ' + Da[n] + ' days' }); }
+      else mA[n] = need;
     });
+    // simulate day by day: one crew, the first area that is ready; an area that sits to cure leaves the crew free to lay another (leapfrog)
+    var day = new Int16Array(N), gd0 = new Int16Array(N), gd1 = new Int16Array(N), tasks = [], days = [[]], crewM = [0], idle = [], li = [], si = [], ready = [], act = 0, lastLay = 0, lastG = 0, leaps = 0, prevA = -1, spans = [];
+    var DD = function(d){ while (days.length <= d) days.push([]); return days[d]; };
+    AL.forEach(function(x, n){ li[n] = 0; si[n] = 0; ready[n] = 1; spans[n] = { a:0, b:0 }; if (x.lifts.length) act++; });
+    var d = 0;
+    for (d = 1; act > 0 && d < 4000; d++){
+      var cap = 1, usedM = 0, row = DD(d), dayA = -1, guard = 0;
+      while (cap > 1e-9 && guard++ < 500){
+        var a = -1; for (var q = 0; q < AL.length; q++) if (li[q] < AL[q].lifts.length && ready[q] <= d){ a = q; break; }
+        if (a < 0) break;
+        var lf = AL[a].lifts[li[a]], sg = lf.segs[si[a]], tot = sg.k === 'L' ? sg.n/(mA[a]*sg.r) : SP.bb, take = Math.min(cap, tot - sg.done);
+        if (dayA < 0 && prevA >= 0 && prevA !== a && li[prevA] < AL[prevA].lifts.length) leaps++;
+        if (dayA < 0) dayA = a;
+        if (!spans[a].a) spans[a].a = d;
+        sg.done += take; cap -= take; usedM += take*mA[a]; lastLay = d;
+        var fin = sg.done >= tot - 1e-9;
+        if (sg.k === 'L'){
+          if (!sg.tk){ sg.tk = { k:'L', g:sg.g, l:lf.l, a:a, n:sg.n, by:{} }; tasks.push(sg.tk); }
+          var k1 = fin ? sg.n : Math.floor(sg.done/tot*sg.n + 1e-9), c = k1 - sg.out;
+          for (var kk = sg.out; kk < k1; kk++) day[sg.lst[kk]] = d;
+          sg.out = k1; if (c > 0){ sg.tk.by[d] = (sg.tk.by[d] || 0) + c; row.push({ k:'L', a:a, l:lf.l, g:sg.g, n:c }); }
+        } else if (!row.some(function(e){ return e.k === 'R' && e.a === a && e.l === lf.l; })){ row.push({ k:'R', a:a, l:lf.l, gs:lf.gs }); tasks.push({ k:'R', l:lf.l, a:a, gs:lf.gs }); }
+        if (fin){
+          si[a]++;
+          if (si[a] >= lf.segs.length){                             // lift laid: it sits `cure` nights, then one pour; the next lift follows `after` days later
+            var s0 = d + cure, s1 = s0 + gl - 1; spans[a].b = d;
+            if (gl){
+              tasks.push({ k:'G', l:lf.l, a:a, gs:lf.gs, d0:s0, d1:s1 });
+              for (var gd = s0; gd <= s1; gd++) DD(gd).push({ k:'G', a:a, l:lf.l, gs:lf.gs });
+              if (cure > 0) row.push({ k:'C', a:a, l:lf.l, d0:s0 });
+              lf.segs.forEach(function(s3){ if (s3.k === 'L') s3.lst.forEach(function(i){ gd0[i] = s0; gd1[i] = s1; }); });
+              ready[a] = s1 + after; if (s1 > lastG) lastG = s1; spans[a].b = s1;
+            } else ready[a] = d + 1;
+            li[a]++; si[a] = 0; if (li[a] >= AL[a].lifts.length) act--;
+          }
+        }
+      }
+      if (dayA >= 0) prevA = dayA;
+      crewM[d] = Math.ceil(usedM - 1e-6);
+    }
+    var T = Math.max(1, lastLay, lastG); DD(T);
+    for (d = 1; d <= T; d++){ if (crewM[d] === undefined) crewM[d] = 0; if (!crewM[d] && d < lastLay) idle[d] = 1; }
+    var tn = function(m){ return SP.mpt > 0 ? Math.ceil(m/SP.mpt - 1e-9) : 0; }, peakM = 0, peakT = 0, nIdle = 0;
+    for (d = 1; d <= T; d++){ if (crewM[d] > peakM) peakM = crewM[d]; if (tn(crewM[d]) > peakT) peakT = tn(crewM[d]); if (idle[d]) nIdle++; }
     // SEAM (later, plan vs actual): production marks (marks[]: m.t 'B'/'G', m.d date) will replace planned days for the blocks they cover, here
-    return { day:day, gd0:gd0, gd1:gd1, tasks:tasks, days:days, T:T, areas:areas, order:order, ver:++schedVer };
+    return { day:day, gd0:gd0, gd1:gd1, tasks:tasks, days:days, T:T, areas:areas, order:order, ver:++schedVer, rev:rev, mA:mA, Da:Da, flags:flags, crewM:crewM, tenders:crewM.map(tn), idle:idle, nIdle:nIdle,
+      leaps:leaps, peakM:peakM, peakT:peakT, spans:spans, cure:cure, AL:AL };
+    };
+    var P;
+    if (!rev) P = runSim([]);
+    else if (SP.kind === 'area') P = runSim(AL.map(function(){ return Math.round(SP.revA); }));
+    else {                                                          // whole-job days: the most days each area may take (the fewest masons) that still finishes inside the budget
+      var budget = Math.round(SP.revT), at = function(sc){ return runSim(shares.map(function(sh){ return Math.max(1, Math.round(budget*sh*sc)); })); };
+      P = at(1);
+      if (P.T <= budget){ var lo = 1, hi = 6, best = P; for (var it = 0; it < 12; it++){ var mid = (lo + hi)/2, Pm = at(mid); if (Pm.T <= budget){ lo = mid; best = Pm; } else hi = mid; } P = best; P.flags = []; }
+      else P.flags.push({ a:-1, bad:1, txt:'The whole job takes ' + P.T + ' days even with ' + SP.maxm + ' masons per area, over your ' + budget });
+    }
+    return P;
+
   }
   function segsTxt(segs){
     var L = segs.map(function(s){ var m = /^Side (\S+)$/.exec(s); return m ? m[1] : null; });
@@ -1239,12 +1358,18 @@ function init(meta, bbuf, rbuf){
   }
   function dayTxt(d){
     if (!S || !S.days[d]) return '';
-    var L = {}, lo = [], out = [];
-    S.days[d].forEach(function(e){ if (e.k !== 'L') return; if (!L[e.l]){ L[e.l] = { gs:[], n:0 }; lo.push(e.l); } L[e.l].gs.push(e.g); L[e.l].n += e.n; });
-    lo.forEach(function(l){ out.push('Lay L' + l + ' on ' + groupsTxt(L[l].gs) + ' (' + fmt(L[l].n) + ' blocks)'); });
-    S.days[d].forEach(function(e){ if (e.k === 'R') out.push('Rebar L' + e.l + ' bond beams on ' + groupsTxt(e.gs)); else if (e.k === 'G') out.push('Grout L' + e.l + ' on ' + groupsTxt(e.gs)); });
-    return out.join(', ');
+    var L = {}, lo = [], out = [], pre = function(a){ return S.areas.length > 1 ? 'Area ' + areaName(a) + ': ' : ''; };
+    S.days[d].forEach(function(e){ if (e.k !== 'L') return; var key = e.a + '|' + e.l; if (!L[key]){ L[key] = { a:e.a, l:e.l, gs:[], n:0 }; lo.push(key); } L[key].gs.push(e.g); L[key].n += e.n; });
+    lo.forEach(function(key){ var x = L[key]; out.push(pre(x.a) + 'lay L' + x.l + ' on ' + groupsTxt(x.gs) + ' (' + fmt(x.n) + ' blocks)'); });
+    S.days[d].forEach(function(e){
+      if (e.k === 'R') out.push(pre(e.a) + 'rebar L' + e.l + ' bond beams on ' + groupsTxt(e.gs));
+      else if (e.k === 'G') out.push(pre(e.a) + 'grout L' + e.l + ' on ' + groupsTxt(e.gs));
+      else if (e.k === 'C') out.push(pre(e.a) + 'L' + e.l + ' sits ' + plural(S.cure, 'night') + ', grouted Day ' + e.d0);
+    });
+    if (S.idle[d]) out.push('crew waits, nothing is ready to lay');
+    var t = out.join('; '); return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
   }
+  function crewTxt(d){ var m = S.crewM[d], t = S.tenders[d]; return m ? plural(m, 'mason') + (t ? ' + ' + plural(t, 'tender') : '') : 'no crew'; }
   function dateOf(d){
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(SP.start || ''); if (!m) return '';
     var dt = new Date(+m[1], +m[2] - 1, +m[3]), wk = function(){ var w = dt.getDay(); return w === 0 || w === 6; };
@@ -1257,27 +1382,48 @@ function init(meta, bbuf, rbuf){
     var g = selList[0], per = {};
     S.tasks.forEach(function(tk){ var on = tk.k === 'L' ? tk.g === g : tk.k === 'G' && tk.gs.indexOf(g) >= 0; if (!on) return;
       var e = per[tk.l] || (per[tk.l] = { a:1e9, b:0, gr:0 });
-      if (tk.k === 'L') Object.keys(tk.by).forEach(function(d){ d = +d; if (d < e.a) e.a = d; if (d > e.b) e.b = d; }); else e.gr = Math.floor(tk.t0 + 1e-9) + 1; });
+      if (tk.k === 'L') Object.keys(tk.by).forEach(function(d){ d = +d; if (d < e.a) e.a = d; if (d > e.b) e.b = d; }); else e.gr = tk.d0; });
     var ls = Object.keys(per).map(Number).sort(function(a, b){ return a - b; });
     if (!ls.length) return '';
     return '<p class="sub"><b>' + esc(glabel(g)) + ':</b> ' + ls.map(function(l){ var e = per[l]; return 'L' + l + ' laid Day ' + e.a + (e.b > e.a ? '–' + e.b : '') + (e.gr ? ', grouted Day ' + e.gr : ''); }).join('; ') + '.</p>';
   }
+  function crewBars(){
+    var mx = Math.max(1, S.peakM + S.peakT), h = '';
+    for (var d = 1; d <= S.T; d++){ var m = S.crewM[d], t = S.tenders[d];
+      h += '<span class="cb' + (d === schedDay ? ' on' : '') + '" data-cd="' + d + '" title="Day ' + d + ': ' + esc(crewTxt(d)) + '"><i class="t" style="height:' + (t/mx*100).toFixed(1) + '%"></i><i class="m" style="height:' + (m/mx*100).toFixed(1) + '%"></i></span>'; }
+    return h;
+  }
   function renderSched(){
     if (!S) S = buildPlan();
-    var h = '<div class="sbar"><button class="play" id="sPlay">' + (playT ? 'Pause' : 'Play') + '</button><input type="range" id="sDay" min="1" max="' + S.T + '" step="1" value="' + schedDay + '" aria-label="Day of the build"></div>';
+    var rev = SP.mode === 'rev';
+    var h = '<div class="smode" role="group" aria-label="Plan direction"><button id="sModeF" aria-pressed="' + !rev + '">I have this crew, how many days?</button><button id="sModeR" aria-pressed="' + rev + '">I have these days, what crew?</button></div>';
+    if (rev) h += '<div class="srevin"><label>Days allowed<select data-sk="kind"><option value="total"' + (SP.kind === 'total' ? ' selected' : '') + '>for the whole job</option><option value="area"' + (SP.kind === 'area' ? ' selected' : '') + '>per pour area</option></select></label>' +
+      '<label>Working days<input type="number" inputmode="numeric" min="1" max="' + (SP.kind === 'area' ? 99 : 999) + '" step="1" data-sk="' + (SP.kind === 'area' ? 'revA' : 'revT') + '" value="' + (SP.kind === 'area' ? SP.revA : SP.revT) + '"></label></div>';
+    h += '<div class="sbar"><button class="play" id="sPlay">' + (playT ? 'Pause' : 'Play') + '</button><input type="range" id="sDay" min="1" max="' + S.T + '" step="1" value="' + schedDay + '" aria-label="Day of the build"></div>';
+    h += '<div class="screw" id="sCrew" aria-hidden="true">' + crewBars() + '</div><p class="sleg" style="margin-top:2px"><span><i class="cm"></i>Masons</span><span><i class="ct"></i>Tenders</span><span id="sCrewNow"></span></p>';
     h += '<h2 id="sHead"></h2><p class="sub" id="sToday"></p>';
     h += '<p class="sleg"><span><i class="lay"></i>Laying today</span><span><i class="gr"></i>Grouting today</span><span>' + (ghostOn ? 'Pale = still to build' : 'Still to build is hidden') + '</span></p>';
     h += '<div class="acts"><button class="tbtn small" id="sGhost" aria-pressed="' + ghostOn + '"><span class="box"><span>✓</span></span>Show the rest pale</button></div>';
     h += selLine();
-    h += '<p class="sub" style="margin-top:10px"><b>' + plural(S.T, 'working day') + '</b>' + (SP.start ? ', ' + dateOf(1) + ' to ' + dateOf(S.T) : '') + '. ' + plural(S.areas.length, 'pour area') + ', worked in order around the building, a lift at a time.</p>';
-    h += '<p class="loud"><b>ASSUMED, NOT YOUR CREW\'S REAL PACE:</b> ' + SP.crew + ' masons · 8" CMU ' + SP.r8 + ', 4" ' + SP.r4 + ', 12" ' + SP.r12 + ', brick ' + SP.brick + ' per mason-day · ' +
-      SP.grout + ' day per grout pour · rebar in the lay days, +' + SP.bb + ' day for a lift with bond beams · pour areas of about ' + SP.area + ' days of laying per lift. Change them below.</p>';
+    h += '<p class="sub" style="margin-top:10px"><b>' + plural(S.T, 'working day') + '</b>' + (SP.start ? ', ' + dateOf(1) + ' to ' + dateOf(S.T) : '') + '. ' + plural(S.areas.length, 'pour area') + ', worked in order around the building, a lift at a time' +
+      (S.leaps ? '; the crew leapfrogs to another area ' + plural(S.leaps, 'time') + ' while a lift sits' : '') + (S.nIdle ? '; ' + plural(S.nIdle, 'day') + ' the crew waits on cure' : '') + '. Peak crew ' + plural(S.peakM, 'mason') + (S.peakT ? ' + ' + plural(S.peakT, 'tender') : '') + '.</p>';
+    if (rev){
+      h += '<h3>Crew needed</h3><ul class="srev">';
+      S.areas.forEach(function(ar, n){ var fl = S.flags.filter(function(f){ return f.a === n; })[0], sp = S.spans[n], tn = SP.mpt > 0 ? Math.ceil(S.mA[n]/SP.mpt - 1e-9) : 0, crew = plural(S.mA[n], 'mason') + (tn ? ' + ' + plural(tn, 'tender') : '');
+        h += '<li' + (fl ? ' class="bad"' : '') + '><b>Area ' + areaName(n) + '</b> ' + (fl ? esc(fl.txt) + ' (over the ' + SP.maxm + '-mason limit: ' + crew + ' take ' + plural(sp.b - sp.a + 1, 'day') + ')' : crew + (SP.kind === 'area' ? ' in ' + plural(S.Da[n], 'day') : ', Day ' + sp.a + ' to ' + sp.b)) + '</li>'; });
+      if (SP.kind === 'total' && !S.flags.length) h += '<li>The whole job fits in ' + plural(Math.round(SP.revT), 'day') + ' (plan: ' + plural(S.T, 'day') + ').</li>';
+      S.flags.forEach(function(f){ if (f.a < 0) h += '<li class="bad">' + esc(f.txt) + '</li>'; });
+      h += '</ul>';
+    }
+    h += '<p class="loud"><b>ASSUMED, NOT YOUR CREW\'S REAL PACE:</b> ' + (rev ? 'crew sized from your days, up to ' + SP.maxm + ' masons per area, 1 tender per ' + SP.mpt + ' masons' : SP.crew + ' masons') + ' · 8" CMU ' + SP.r8 + ', 4" ' + SP.r4 + ', 12" ' + SP.r12 + ', brick ' + SP.brick + ' per mason-day · cure before grout: ' + plural(S.cure, 'night') + ' · ' +
+      SP.grout + ' day per grout pour · next lift after grout: ' + (['the same day', 'next day', 'two days later'][Math.round(SP.after)] || 'next day') + ' · rebar in the lay days, +' + SP.bb + ' day for a lift with bond beams · pour areas of about ' + SP.area + ' days of laying per lift. Change them below.</p>';
     h += '<details class="sset" id="sSet"' + (setOpen ? ' open' : '') + '><summary>Planning assumptions</summary><div class="sgrid">' +
-      SKEYS.map(function(k){ return '<label>' + esc(k[1]) + '<input type="number" inputmode="decimal" min="' + k[3] + '" step="' + k[2] + '" data-sk="' + k[0] + '" value="' + SP[k[0]] + '"></label>'; }).join('') +
+      SKEYS.filter(function(k){ return k[1]; }).map(function(k){ return '<label>' + esc(k[1]) + '<input type="number" inputmode="decimal" min="' + k[3] + '" max="' + k[4] + '" step="' + k[2] + '" data-sk="' + k[0] + '" value="' + SP[k[0]] + '"></label>'; }).join('') +
+      '<label>Next lift after grout<select data-sk="after">' + ['Same day', 'Next day', 'Two days later'].map(function(t, n){ return '<option value="' + n + '"' + (Math.round(SP.after) === n ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>' +
       '<label>Start date (optional, skips weekends)<input type="date" data-sk="start" value="' + esc(SP.start || '') + '"></label>' +
       '<label>&nbsp;<button class="tbtn small" id="sReset" style="width:100%;min-height:42px;margin-top:2px">Reset to defaults</button></label></div></details>';
     h += '<h3>Day by day</h3><ol class="slist" id="sList">';
-    for (var d = 1; d <= S.T; d++){ var tx = dayTxt(d); h += '<li><button data-day="' + d + '" aria-current="false"><b>Day ' + d + '</b>' + (SP.start ? '<small>' + dateOf(d) + '</small>' : '') + esc(tx || 'No work planned') + '</button></li>'; }
+    for (var d = 1; d <= S.T; d++){ var tx = dayTxt(d); h += '<li><button data-day="' + d + '" aria-current="false"><b>Day ' + d + '</b>' + (SP.start ? '<small>' + dateOf(d) + '</small>' : '') + '<small>' + esc(crewTxt(d)) + '</small> ' + esc(tx || 'No work planned') + '</button></li>'; }
     return h + '</ol>';
   }
   function updDay(){
@@ -1285,6 +1431,9 @@ function init(meta, bbuf, rbuf){
     $('sDay').max = S.T; $('sDay').value = schedDay;
     $('sHead').textContent = 'Day ' + schedDay + ' of ' + S.T + (SP.start ? ' · ' + dateOf(schedDay) : '');
     $('sToday').textContent = dayTxt(schedDay) || 'No work planned this day.';
+    $('sCrewNow').textContent = 'Day ' + schedDay + ': ' + crewTxt(schedDay);
+    var oc = document.querySelector('#sCrew .cb.on'); if (oc) oc.className = 'cb';
+    var nc = document.querySelector('#sCrew .cb[data-cd="' + schedDay + '"]'); if (nc) nc.className = 'cb on';
     var on = document.querySelector('#sList button[aria-current="true"]'); if (on) on.setAttribute('aria-current', 'false');
     var nb = document.querySelector('#sList button[data-day="' + schedDay + '"]'); if (nb) nb.setAttribute('aria-current', 'true');
     $('sPlay').textContent = playT ? 'Pause' : 'Play';
@@ -1302,18 +1451,21 @@ function init(meta, bbuf, rbuf){
     if (on){ if (prodOn) setProd(false, true); selLift = null; if (!S) S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); $('hint').hidden = true; }
     if (!quiet){ paint(); renderPanel(); hash(); }
   }
+  function replan(){ saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash(); }
   function schedClick(b){
     if (b.id === 'sPlay'){ togglePlay(); return; }
     if (b.id === 'sGhost'){ ghostOn = !ghostOn; paint(); renderPanel(); hash(); return; }
-    if (b.id === 'sReset'){ SKEYS.forEach(function(k){ SP[k[0]] = SDEF[k[0]]; }); saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash(); return; }
+    if (b.id === 'sModeF' || b.id === 'sModeR'){ SP.mode = b.id === 'sModeR' ? 'rev' : 'fwd'; replan(); return; }
+    if (b.id === 'sReset'){ SKEYS.forEach(function(k){ SP[k[0]] = SDEF[k[0]]; }); SP.kind = 'total'; replan(); return; }
     if (b.dataset.day){ stopPlay(); setDay(+b.dataset.day); }
   }
   $('detail').addEventListener('input', function(e){ if (schedOn && e.target.id === 'sDay'){ stopPlay(); setDay(+e.target.value); } });
   $('detail').addEventListener('change', function(e){
     var k = e.target.dataset && e.target.dataset.sk; if (!schedOn || !k) return;
     if (k === 'start') SP.start = /^\d{4}-\d{2}-\d{2}$/.test(e.target.value) ? e.target.value : '';
-    else { var v = parseFloat(e.target.value), mn = 0; SKEYS.forEach(function(x){ if (x[0] === k) mn = x[3]; }); if (!isFinite(v) || v < mn) v = SDEF[k]; SP[k] = v; }
-    saveSP(); stopPlay(); S = buildPlan(); schedDay = clamp(schedDay, 1, S.T); paint(); renderPanel(); hash();
+    else if (k === 'kind') SP.kind = e.target.value === 'area' ? 'area' : 'total';
+    else { var v = parseFloat(e.target.value), mn = 0, mx = 1e9; SKEYS.forEach(function(x){ if (x[0] === k){ mn = x[3]; mx = x[4]; } }); if (!isFinite(v) || v < mn || v > mx) v = SDEF[k]; SP[k] = v; }
+    replan();
   });
   $('detail').addEventListener('toggle', function(e){ if (e.target.id === 'sSet') setOpen = e.target.open; }, true);
 
@@ -1336,13 +1488,21 @@ function init(meta, bbuf, rbuf){
     }).join('');
   }
   function rows(q, withRebar){
-    var h = '<dl>';
+    var h = '<dl>', cutList = q.cuts ? Object.keys(q.cuts).map(function(k){ return q.cuts[k]; }) : [], cutLeft = 0;
+    cutList.forEach(function(c){ cutLeft += c.n; });
     Object.keys(q.units).filter(function(l){ return q.units[l].n > 0; }).sort(labelOrder).forEach(function(l){
       var u = q.units[l], extra = [];
+      if (cutLeft && /Cut piece$/.test(l)){ var take = Math.min(cutLeft, u.n); cutLeft -= take; if (take >= u.n) return; u = { n:u.n - take, colours:{} }; extra.push('size not in the model'); }
       if (sizeOf[l]) extra.push(esc(sizeOf[l]));
       Object.keys(u.colours).sort().forEach(function(c){ extra.push(fmt(u.colours[c]) + ' ' + esc(c)); });
       h += '<dt>' + esc(l) + (extra.length ? '<small>' + extra.join(' · ') + '</small>' : '') + '</dt><dd>' + fmt(u.n) + '</dd>';
     });
+    if (cutList.length){
+      h += '<dt class="grp">Cuts<small>' + fmt(cutList.reduce(function(a, c){ return a + c.n; }, 0)) + ' cut pieces, longest first. Counted once in the total.</small></dt><dd class="grp"></dd>';
+      cutList.sort(function(a, b){ return (parseFloat(b.pre) || 0) - (parseFloat(a.pre) || 0) || b.len - a.len; }).forEach(function(c){
+        h += '<dt>' + esc((c.pre ? c.pre.trim() + ' ' : '') + 'cut · ' + cutText(c.len)) + '</dt><dd>×' + fmt(c.n) + '</dd>';
+      });
+    }
     h += '<dt class="tot">Total blocks</dt><dd class="tot">' + fmt(q.total) + '</dd>';
     var g = groutText(q); if (g) h += '<dt>Grout</dt><dd>' + g + '</dd>';
     if (q.mortar !== null) h += '<dt>Mortar</dt><dd>' + fmt(Math.ceil(q.mortar - 1e-9)) + ' bags</dd>';
@@ -1434,7 +1594,7 @@ function init(meta, bbuf, rbuf){
     (selGroups.length > 1 ? '<button class="chip add" id="multiBtn" aria-pressed="false" title="Tap more ' + (bySide ? 'sides' : 'walls') + ' to add or remove">+ Select more</button>' : '<span id="multiBtn" hidden></span>');
   $('chips').addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return;
     if (b.id === 'multiBtn'){ multiOn = !multiOn; $('hint').hidden = !multiOn; if (multiOn) $('hint').textContent = 'Tap ' + (bySide ? 'sides' : 'walls') + ' to add or remove'; renderPanel(); return; }
-    select(b.dataset.w === '' ? null : +b.dataset.w); });
+    dimSeed = null; dimOp = null; select(b.dataset.w === '' ? null : +b.dataset.w); });
   if (BIG) $('chips').classList.add('scroll');   // big job: one scrolling row
   $('lifts').innerHTML = '<button class="chip" data-l="" aria-pressed="true">All lifts</button>' +
     liftNums.map(function(n){ return '<button class="chip" data-l="' + n + '" aria-pressed="false">Lift ' + n + '</button>'; }).join('');
@@ -1457,13 +1617,282 @@ function init(meta, bbuf, rbuf){
   if (hp.lift && liftNums.indexOf(+hp.lift) >= 0) selLift = +hp.lift;
   if (hp.rebar === '1' && rebar){ rebar.visible = true; $('rebarBtn').setAttribute('aria-pressed', 'true'); }
 
+  /* ---------- dims: touch a wall -> drafted dimensions drawn on its face (Ryan 10-24: "simple arrows", "can't have floating tags everywhere") ---------- */
+  // one leg of the touched wall: overall length + a chain (ends, jambs) along the bottom, height at the end,
+  // and per opening one vertical line split into sill + height. Nothing shows until a wall is touched; off in Production / Schedule.
+  var dimAim = null;
+  var dimsReady = false, dimSeed = null, dimGroup = null, dimKey = null, dimSign = 0, dimLeg = null, dimLabels = [], dimHeads = [];
+  var dimOp = null, dimLayers = { cj:false, door:false, win:false, lift:false }, opLabels = [];
+  var dimRoot = new THREE.Group(); dimRoot.renderOrder = 6; scene.add(dimRoot);
+  var METRIC = /metric/i.test(String((meta.export || {})['Units'] || ''));
+  function dimTxt(m){
+    if (METRIC) return Math.round(m*1000) + ' mm';
+    var e = Math.round(m/0.0254*8), ft = Math.floor(e/96), r = e - ft*96, inch = Math.floor(r/8), f = r % 8;
+    var fr = f ? ' ' + ['', '1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'][f] : '';
+    return ft + "'-" + inch + fr + '"';
+  }
+  // "12'-0\"", "9'-11 3/4\"", "4'-8\"" or "1220 mm" -> metres (null if it isn't a length)
+  function parseFI(v){
+    var s = String(v == null ? '' : v), mm = /^\s*(-?[\d.]+)\s*mm/.exec(s); if (mm) return +mm[1]/1000;
+    var m = /^\s*(-?\d+)'\s*-?\s*(\d+)?(?:\s+(\d+)\/(\d+))?/.exec(s); if (!m) return null;
+    var inch = +m[1]*12 + (m[2] ? +m[2] : 0) + (m[3] ? +m[3]/+m[4] : 0); return inch*0.0254;
+  }
+  function dimInk(){ return dark() ? ['#ffffff', 'rgba(20,22,23,0.92)'] : ['#15191b', 'rgba(255,255,255,0.95)']; }
+  function legOf(g, seed){
+    // blocks of the group; the leg = the seed block's straight line (or the group's most common line)
+    var idx = []; for (var i = 0; i < N; i++) if (groupOf(i) === g) idx.push(i);
+    if (!idx.length) return null;
+    var lineKey = function(j){ var b = j*7, r = F[b+6] % Math.PI; if (r < 0) r += Math.PI; if (r > Math.PI - 1e-3) r -= Math.PI;
+      return { r:r, t:-F[b]*Math.sin(r) + F[b+1]*Math.cos(r) }; };
+    var pickLine = null;
+    if (seed !== null && seed !== undefined && groupOf(seed) === g) pickLine = lineKey(seed);
+    else { var votes = {}; idx.forEach(function(j){ if (polySet[j]) return; var k = lineKey(j), key = Math.round(k.r*100) + '|' + Math.round(k.t*20); var v = votes[key] || (votes[key] = { n:0, k:k }); v.n++; });
+      var best = null; Object.keys(votes).forEach(function(key){ if (!best || votes[key].n > best.n) best = votes[key]; }); pickLine = best.k; }
+    var r = pickLine.r, cs = Math.cos(r), sn = Math.sin(r), t0 = pickLine.t, wl = bWall[idx[0]];
+    var lo = 1e9, hi = -1e9, base = 1e9, mbase = 1e9, top = -1e9, wd = 0, nw = 0, mine = [];
+    var bx3 = new THREE.Box3(), cn = new THREE.Vector3();
+    function addShape(mesh, isConc){        // a clipped piece / curb: its real extents, from the drawn mesh
+      if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+      bx3.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrix);
+      var xs = [bx3.min.x, bx3.max.x], zs = [bx3.min.z, bx3.max.z], sl = 1e9, sh = -1e9, tl = 1e9, th = -1e9;
+      xs.forEach(function(X){ zs.forEach(function(Z){ var x = X + ctr[0], y = -Z + ctr[1], s = x*cs + y*sn, t = -x*sn + y*cs;
+        sl = Math.min(sl, s); sh = Math.max(sh, s); tl = Math.min(tl, t); th = Math.max(th, t); }); });
+      if (Math.abs((tl + th)/2 - t0) > 0.16 && !isConc) return; if (isConc && (th < t0 - 0.16 || tl > t0 + 0.16)) return;
+      var zb = bx3.min.y + ctr[2], zt = bx3.max.y + ctr[2];
+      if (zb < base) base = zb;
+      if (isConc) return;
+      if (zb < mbase) mbase = zb;
+      if (sl < lo) lo = sl; if (sh > hi) hi = sh; if (zt > top) top = zt;
+      mine.push({ s:(sl + sh)/2, ea:(sh - sl)/2, zt:zt });
+    }
+    polys.forEach(function(m){ if (bWall[m.userData.gi] === wl) addShape(m, false); });
+    concMeshes.forEach(function(m){ if (m.userData.wall === wl) addShape(m, true); });
+    for (var jj = 0; jj < N; jj++) if (bWall[jj] === wl && !polySet[jj] && idx.indexOf(jj) < 0) idx.push(jj);
+    idx.forEach(function(j){
+      if (polySet[j]) return;
+      var b = j*7, t = -F[b]*sn + F[b+1]*cs; if (Math.abs(t - t0) > 0.16) return;
+      var dr = F[b+6] - r, ea = Math.abs(Math.cos(dr))*F[b+3]/2 + Math.abs(Math.sin(dr))*F[b+4]/2, s = F[b]*cs + F[b+1]*sn;
+      if (s - ea < lo) lo = s - ea; if (s + ea > hi) hi = s + ea;
+      var zb = F[b+2] - F[b+5]/2, zt = F[b+2] + F[b+5]/2; if (zb < base) base = zb; if (zb < mbase) mbase = zb; if (zt > top) top = zt;
+      if (Math.abs(Math.sin(dr)) < 0.1){ wd += F[b+4]; nw++; }
+      mine.push({ s:s, ea:ea, zt:zt });
+    });
+    if (hi <= lo) return null;
+    var endTop = function(at){ var t = -1e9; mine.forEach(function(o){ if (Math.abs(o.s - at) < o.ea + 0.01) t = Math.max(t, o.zt); }); return t > -1e8 ? t : top; };
+    var ops = [];
+    meta.openings.forEach(function(o, n){
+      if (openMeshes[n] && openMeshes[n].userData.g !== g) return;
+      var t = -o.c[0]*sn + o.c[1]*cs, s = o.c[0]*cs + o.c[1]*sn; if (Math.abs(t - t0) > 0.4) return;
+      var w = o.s[0], h = o.s[2]; if (s + w/2 < lo || s - w/2 > hi) return;
+      var op = get(pmap(o)['TMM Opening'], 'Width'), oh = get(pmap(o)['TMM Opening'], 'Height'), os = get(pmap(o)['TMM Opening'], 'Sill above wall base');
+      ops.push({ n:n, a:s - w/2, b:s + w/2, sill:o.c[2] - h/2, head:o.c[2] + h/2, wTxt:op, hTxt:oh, sTxt:os, kind:String(get(pmap(o)['TMM Opening'], 'Type') || 'Opening') });
+    });
+    ops.sort(function(x, y){ return x.a - y.a; });
+    if (mbase > 1e8) mbase = base;
+    // the model's numbers, not the drawn blocks: wall height + each lift top above the masonry base (TMM Wall / TMM Lift n psets)
+    var wObj = walls[wl] || {}, lifts = [];
+    // the touched side's own height from the model (TMM Side n: Height), else the wall line's
+    var sIx = -1; if (seed !== null && seed !== undefined && bSide[seed] >= 0) sIx = bSide[seed]; else { var sc = {}; idx.forEach(function(j){ if (bSide[j] >= 0) sc[bSide[j]] = (sc[bSide[j]] || 0) + 1; }); Object.keys(sc).forEach(function(k2){ if (sIx < 0 || sc[k2] > sc[sIx]) sIx = +k2; }); }
+    var sideH = null; if (sIx >= 0 && sides[sIx]) (meta.sides || []).forEach(function(ms){ var pr = ms.props || []; if (String(get(pr, 'Segment id')) === String(sides[sIx].seg)) sideH = get(pr, 'Height'); });
+    Object.keys(wObj.lifts || {}).forEach(function(n){ var z = parseFI(wObj.lifts[n].hi); if (z !== null) lifts.push(z); });
+    lifts.sort(function(a, b){ return a - b; });
+    var topAt = function(at){ var t = -1e9; mine.forEach(function(o){ if (Math.abs(o.s - at) < o.ea + 0.01) t = Math.max(t, o.zt); }); return t > -1e8 ? t : top; };
+    return { r:r, cs:cs, sn:sn, t0:t0, half:(nw ? wd/nw : 0.2)/2, lo:lo, hi:hi, base:base, mbase:mbase, top:top, hLo:endTop(lo), hHi:endTop(hi), ops:ops,
+      hTxt:sideH || wObj.h, lifts:lifts, topAt:topAt };
+  }
+  // a point on the leg's near face: s along, z up (IFC metres) -> three
+  function dimPt(L, s, z, out){
+    var t = L.t0 + dimSign*(L.half + 0.03), x = s*L.cs - t*L.sn, y = s*L.sn + t*L.cs;
+    return (out || new THREE.Vector3()).set(x - ctr[0], z - ctr[2], -(y - ctr[1]));
+  }
+  function faceSign(L){
+    var mid = (L.lo + L.hi)/2, x = mid*L.cs - L.t0*L.sn, y = mid*L.sn + L.t0*L.cs, nx = -L.sn, ny = L.cs;
+    var cx = camera.position.x + ctr[0], cy = -camera.position.z + ctr[1];
+    return (cx - x)*nx + (cy - y)*ny >= 0 ? 1 : -1;
+  }
+  function textSprite(txt, faint, inOpening){
+    var ink = dimInk(), c = document.createElement('canvas'), x = c.getContext('2d'), fs = 44, wt = inOpening ? '600 ' : '700 ';
+    if (faint) ink = [ink[0].replace(/^#ffffff$/, 'rgba(255,255,255,0.55)').replace(/^#15191b$/, 'rgba(21,25,27,0.5)'), dark() ? 'rgba(20,22,23,0.35)' : 'rgba(255,255,255,0.6)'];
+    x.font = wt + fs + 'px system-ui, -apple-system, Segoe UI, sans-serif'; var w = Math.ceil(x.measureText(txt).width) + 24;
+    c.width = w; c.height = fs + 22; x.font = wt + fs + 'px system-ui, -apple-system, Segoe UI, sans-serif';
+    x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineJoin = 'round';
+    x.lineWidth = inOpening ? 9 : 12; x.strokeStyle = ink[1]; x.strokeText(txt, w/2, c.height/2 + 2);
+    x.fillStyle = ink[0]; x.fillText(txt, w/2, c.height/2 + 2);
+    var tx = new THREE.CanvasTexture(c); tx.minFilter = THREE.LinearFilter;
+    // a size inside an opening is hidden by the walls in front of it; a dimension is always on top
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tx, depthTest:!!inOpening, depthWrite:false, transparent:true }));
+    sp.renderOrder = 8; sp.userData.aspect = w/c.height; return sp;
+  }
+  function clearDims(){
+    dimRoot.children.slice().forEach(function(o){ dimRoot.remove(o); if (o.geometry) o.geometry.dispose(); if (o.material){ if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+    dimLabels = []; dimHeads = [];
+  }
+  function buildDims(L){
+    clearDims(); var ink = dimInk(), segs = [];
+    var lineMat = new THREE.LineBasicMaterial({ color:ink[0], depthTest:false, transparent:true });
+    var headMat = new THREE.MeshBasicMaterial({ color:ink[0], depthTest:false, transparent:true, side:THREE.DoubleSide });
+    var A = new THREE.Vector3(), B = new THREE.Vector3();
+    // one dimension: line a->b (+ short extension ticks across it), arrowheads both ends, text in the middle
+    function dim(p, q, txt, tick, pri){
+      segs.push(p.x, p.y, p.z, q.x, q.y, q.z);
+      if (tick){ var d = tick; [p, q].forEach(function(e){ segs.push(e.x - d.x, e.y - d.y, e.z - d.z, e.x + d.x, e.y + d.y, e.z + d.z); }); }
+      [[p, q], [q, p]].forEach(function(pr){ var h = new THREE.Mesh(new THREE.BufferGeometry(), headMat); h.renderOrder = 7;
+        h.userData = { at:pr[0].clone(), dir:pr[1].clone().sub(pr[0]).normalize(), len:pr[0].distanceTo(pr[1]) }; dimHeads.push(h); dimRoot.add(h); });
+      if (txt){ var sp = textSprite(txt); sp.position.copy(p).add(q).multiplyScalar(0.5); sp.userData.span = p.distanceTo(q); sp.userData.vertical = Math.abs(q.y - p.y) > Math.abs(q.x - p.x) + Math.abs(q.z - p.z);
+        sp.userData.pri = pri || 0; dimLabels.push(sp); dimRoot.add(sp); }
+    }
+    var up = new THREE.Vector3(0, 1, 0), alongV = dimPt(L, 1, 0).sub(dimPt(L, 0, 0)).normalize();
+    var tk = function(len){ return up.clone().multiplyScalar(len); };
+    var gap = dimGap(L), mb = L.mbase, inside = function(s){ return s > L.lo + 0.003 && s < L.hi - 0.003; };
+    var wit = function(s, z){ var a = dimPt(L, s, mb - 0.04), b = dimPt(L, s, z - 0.1); segs.push(a.x, a.y, a.z, b.x, b.y, b.z); };
+    // v3 (Ryan 10-24: "Way to busy ... Length height. Touch it get the dimensions ... Or layers. Doors, widows, Cj"):
+    // touched OPENING -> only that opening: one line along the base to the nearest jamb / wall end, and its sill. Nothing else.
+    var op = dimOp === null ? null : L.ops.filter(function(o){ return o.n === dimOp; })[0];
+    if (op){
+      var lft = L.lo, rgt = L.hi;
+      L.ops.forEach(function(o){ if (o === op) return; if (o.b <= op.a + 0.003 && o.b > lft) lft = o.b; if (o.a >= op.b - 0.003 && o.a < rgt) rgt = o.a; });
+      // the way it's laid out: from the corner (or the opening before it in the chain) to this opening's jamb (Ryan 10-24)
+      var z0 = mb - gap, useL = true, p0 = lft, p1 = op.a;
+      if (p1 - p0 > 0.01){ dim(dimPt(L, p0, z0, A).clone(), dimPt(L, p1, z0, B).clone(), dimTxt(p1 - p0), tk(0.1), 0); wit(p0, z0); wit(p1, z0); }
+      if (op.sill - mb > 0.02){ var xs = useL ? op.a + Math.min(gap*0.7, (op.b - op.a)*0.25) : op.b - Math.min(gap*0.7, (op.b - op.a)*0.25);
+        dim(dimPt(L, xs, mb, A).clone(), dimPt(L, xs, op.sill, B).clone(), op.sTxt || dimTxt(op.sill - mb), alongV.clone().multiplyScalar(0.08), 0); }
+    } else {
+      // touched WALL -> its length along the base and its height at one end; layers (all off) add one thin string each, in layout order
+      var z1 = mb - gap;
+      dim(dimPt(L, L.lo, z1, A).clone(), dimPt(L, L.hi, z1, B).clone(), dimTxt(L.hi - L.lo), tk(0.12), 0); wit(L.lo, z1); wit(L.hi, z1);
+      var hx = L.hi + gap*0.8, hHiTxt = Math.abs(L.hLo - L.hHi) <= 0.02 && L.hTxt && parseFI(L.hTxt) !== null ? L.hTxt : dimTxt(L.hHi - mb);
+      dim(dimPt(L, hx, mb, A).clone(), dimPt(L, hx, L.hHi, B).clone(), hHiTxt, alongV.clone().multiplyScalar(0.12), 0);
+      var mod = 0.2032, cj = L.lo + Math.round(((L.lo + L.hi)/2 - L.lo)/mod)*mod, inOp = function(s){ return L.ops.some(function(o){ return s > o.a - 0.1 && s < o.b + 0.1; }); };
+      for (var tries = 0; tries < 40 && inOp(cj); tries++) cj += (tries % 2 ? 1 : -1)*mod*(tries + 1);
+      var cjs = dimLayers.cj && inside(cj) && !inOp(cj) ? [cj] : [];      // CJ: a mock one near the middle (Ryan: "Just mock it up")
+      var isDoor = function(o){ return /door/i.test(o.kind); };
+      var rows = [];
+      if (cjs.length) rows.push({ stops:cjs, spans:[] });
+      if (dimLayers.door){ var ds = L.ops.filter(isDoor); if (ds.length) rows.push({ stops:[], spans:ds }); }
+      if (dimLayers.win){ var wsx = L.ops.filter(function(o){ return !isDoor(o); }); if (wsx.length) rows.push({ stops:[], spans:wsx }); }
+      rows.forEach(function(row, k){
+        var z = mb - gap*(2.1 + k*1.05), st = [L.lo, L.hi].concat(row.stops), quiet = [];
+        row.spans.forEach(function(o){ [o.a, o.b].forEach(function(s){ if (inside(s)) st.push(s); }); quiet.push(o); });
+        st = st.sort(function(a, b){ return a - b; }).filter(function(s, n, arr){ return !n || s - arr[n-1] > 0.003; });
+        for (var n = 1; n < st.length; n++){
+          var a = st[n-1], b = st[n], isSpan = quiet.some(function(o){ return Math.abs(o.a - a) < 0.004 && Math.abs(o.b - b) < 0.004; });
+          // the opening's own width is already written inside it: here only the locations (the spaces between) get numbers
+          dim(dimPt(L, a, z, A).clone(), dimPt(L, b, z, B).clone(), isSpan ? null : dimTxt(b - a), tk(0.08), 3 + k);
+        }
+        st.forEach(function(s){ wit(s, z); });
+      });
+      cjs.forEach(function(s){ var a = dimPt(L, s, mb), b = dimPt(L, s, L.topAt(s)); segs.push(a.x, a.y, a.z, b.x, b.y, b.z); });
+    }
+    // lift heights: a layer (off by default) -- faint dotted lines across the wall, a small faint label at the end
+    var liftSegs = [];
+    if (!op && dimLayers.lift) L.lifts.forEach(function(lz){ var z = mb + lz; if (lz < 0.05 || z > L.top - 0.05) return;
+      var a = dimPt(L, L.lo, z), b = dimPt(L, L.hi, z); liftSegs.push(a.x, a.y, a.z, b.x, b.y, b.z);
+      var sp = textSprite(dimTxt(lz) + ' LIFT', true); sp.position.copy(dimPt(L, L.lo - gap*0.2, z)); sp.userData.span = 1e9; sp.userData.pri = 9; sp.userData.faint = true; sp.center.set(1, 0.5); dimLabels.push(sp); dimRoot.add(sp); });
+    if (liftSegs.length){ var lgl = new THREE.BufferGeometry(); lgl.setAttribute('position', new THREE.Float32BufferAttribute(liftSegs, 3));
+      var ll = new THREE.LineSegments(lgl, new THREE.LineDashedMaterial({ color:ink[0], dashSize:0.12, gapSize:0.1, transparent:true, opacity:0.35, depthTest:false }));
+      ll.computeLineDistances(); ll.renderOrder = 6; dimRoot.add(ll); }
+    var lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(segs, 3));
+    var ls = new THREE.LineSegments(lg, lineMat); ls.renderOrder = 7; dimRoot.add(ls);
+    dimsFrame(true);
+  }
+  // per frame: text + arrowheads keep a constant size on screen (readable on a phone, never huge), flip to the face you look at
+  // the space between the wall and its dimension lines: about 26 px on screen at the zoom it was built, 0.3 m at least
+  var dimBuiltD = 0;
+  function camDist(L){ var p = dimPt(L, (L.lo + L.hi)/2, (L.base + L.top)/2); return camera.position.distanceTo(p); }
+  function dimGap(L){ dimBuiltD = camDist(L); var k = 2*Math.tan(camera.fov*Math.PI/360)/(stage.clientHeight || 600); return Math.min(2.5, Math.max(0.3, dimBuiltD*k*26)); }
+  // every opening carries its size, written small inside it (Ryan: "simple length height if openings all the time");
+  // it shows only when the opening is big enough on screen to hold it, never on top of a dimension, and not in Production / Schedule
+  function opText(o){
+    var p = pmap(o)['TMM Opening'], w = get(p, 'Width'), h = get(p, 'Height');
+    var cut = function(s){ return String(s).replace(/"\s*$/, ''); };
+    return w && h ? cut(w) + ' x ' + cut(h) : dimTxt(o.s[0]).replace(/"$/, '') + ' x ' + dimTxt(o.s[2]).replace(/"$/, '');
+  }
+  function buildOpLabels(){
+    opLabels.forEach(function(sp){ scene.remove(sp); if (sp.material.map) sp.material.map.dispose(); sp.material.dispose(); }); opLabels = [];
+    meta.openings.forEach(function(o, n){ var om = openMeshes[n]; if (!om) return;
+      var sp = textSprite(opText(o), false, true); sp.position.copy(om.position); sp.userData.n = n; sp.renderOrder = 3; opLabels.push(sp); scene.add(sp); });
+  }
+  var opA = new THREE.Vector3(), opB = new THREE.Vector3();
+  function opLabelsFrame(placed, txtPx, k){
+    var quiet = prodOn || schedOn, r = canvas.getBoundingClientRect(), cam = camera.position;
+    opLabels.forEach(function(sp){
+      var o = meta.openings[sp.userData.n], om = openMeshes[sp.userData.n];
+      if (quiet || !om.visible || om.userData.plane.constant < om.position.y){ sp.visible = false; return; }
+      var px = txtPx*0.95, d = cam.distanceTo(sp.position), hgt = d*k*px; sp.scale.set(hgt*sp.userData.aspect, hgt, 1);
+      // on-screen size of the opening: jamb to jamb and sill to head, through its centre
+      var ax = new THREE.Vector3(Math.cos(o.r), 0, -Math.sin(o.r)).multiplyScalar(o.s[0]/2);
+      opA.copy(om.position).add(ax).project(camera); opB.copy(om.position).sub(ax).project(camera);
+      if (opA.z > 1 || opB.z > 1){ sp.visible = false; return; }
+      var wpx = Math.hypot((opA.x - opB.x)/2*r.width, (opA.y - opB.y)/2*r.height);
+      opA.copy(om.position); opA.y += o.s[2]/2; opA.project(camera); opB.copy(om.position); opB.y -= o.s[2]/2; opB.project(camera);
+      var hpx2 = Math.abs((opA.y - opB.y)/2*r.height), tw = px*sp.userData.aspect;
+      if (wpx < tw*1.08 || hpx2 < px*1.8){ sp.visible = false; return; }
+      var v = sp.position.clone().project(camera), cx = (v.x + 1)/2*r.width, cy = (1 - v.y)/2*r.height, w = tw/2 + 2, h = px/2 + 1;
+      var hit = placed.some(function(q){ return Math.abs(q.x - cx) < q.w + w && Math.abs(q.y - cy) < q.h + h; });
+      sp.visible = !hit; if (!hit) placed.push({ x:cx, y:cy, w:w, h:h });
+    });
+  }
+  function dimsFrame(force){
+    if (!dimsReady) return;
+    var hpx = stage.clientHeight || 600, k = 2*Math.tan(camera.fov*Math.PI/360)/hpx, cam = camera.position, phone = (stage.clientWidth || 800) < 520;
+    var txtPx = phone ? 17 : 15, headPx = phone ? 11 : 9;
+    if (!dimLeg){ opLabelsFrame([], txtPx, k); return; }
+    var sg = faceSign(dimLeg); if (sg !== dimSign && !force){ dimSign = sg; buildDims(dimLeg); return; }
+    if (!force && dimBuiltD){ var rz = camDist(dimLeg)/dimBuiltD; if (rz > 1.7 || rz < 0.6){ buildDims(dimLeg); return; } }
+    dimLabels.forEach(function(sp){ var d = cam.distanceTo(sp.position), hgt = d*k*txtPx*(sp.userData.faint ? 0.72 : 1); sp.scale.set(hgt*sp.userData.aspect, hgt, 1);
+      sp.visible = sp.userData.span > hgt*0.9; });           // a piece too short to letter on screen keeps its arrows only
+    // no two numbers on top of each other: overall + heights win, then openings, then the chain; the loser keeps its arrows
+    var r = canvas.getBoundingClientRect(), placed = [], v = new THREE.Vector3();
+    dimLabels.slice().sort(function(a, b){ return a.userData.pri - b.userData.pri; }).forEach(function(sp){
+      if (!sp.visible) return; v.copy(sp.position).project(camera);
+      var cx = (v.x + 1)/2*r.width, cy = (1 - v.y)/2*r.height, w = txtPx*sp.userData.aspect/2 + 2, h = txtPx/2 + 1;
+      var hit = placed.some(function(q){ return Math.abs(q.x - cx) < q.w + w && Math.abs(q.y - cy) < q.h + h; });
+      if (hit) sp.visible = false; else placed.push({ x:cx, y:cy, w:w, h:h });
+    });
+    opLabelsFrame(placed, txtPx, k);
+    dimHeads.forEach(function(h){ var u = h.userData, d = cam.distanceTo(u.at), len = Math.min(d*k*headPx, u.len*0.3), wdt = len*0.38;
+      var ax = u.dir, toCam = cam.clone().sub(u.at).normalize(), side = new THREE.Vector3().crossVectors(ax, toCam).normalize().multiplyScalar(wdt);
+      var tip = u.at, bse = u.at.clone().addScaledVector(ax, len);
+      h.geometry.setAttribute('position', new THREE.Float32BufferAttribute([tip.x, tip.y, tip.z, bse.x + side.x, bse.y + side.y, bse.z + side.z, bse.x - side.x, bse.y - side.y, bse.z - side.z], 3));
+      h.geometry.attributes.position.needsUpdate = true; });
+  }
+  function updateDims(){
+    if (!dimsReady) return;
+    var g = !prodOn && !schedOn && selList.length === 1 ? selList[0] : null;
+    if (g === null || (dimOp !== null && openMeshes[dimOp] && openMeshes[dimOp].userData.g !== g)) dimOp = null;
+    var th = dark() ? 'd' : 'l'; if (th !== opTheme){ opTheme = th; buildOpLabels(); }
+    var key = g === null ? null : g + '|' + dimSeed + '|' + th + '|' + dimOp + '|' + JSON.stringify(dimLayers);
+    $('dimLayers').hidden = g === null || dimOp !== null;
+    if (key === dimKey) return; dimKey = key;
+    if (g === null){ dimLeg = null; dimAim = null; clearDims(); return; }
+    dimLeg = legOf(g, dimSeed); if (!dimLeg){ dimAim = null; clearDims(); return; }
+    var mx = (dimLeg.lo + dimLeg.hi)/2, bcx = (bb[0] + bb[3])/2, bcy = (bb[1] + bb[4])/2, tc = -bcx*dimLeg.sn + bcy*dimLeg.cs;
+    dimSign = Math.abs(tc - dimLeg.t0) < 0.05 ? faceSign(dimLeg) : (tc > dimLeg.t0 ? -1 : 1);
+    // turn to face the touched side (about 20 deg off square, a little above) and frame just that leg + its dims
+    var L = dimLeg, nx = -L.sn*dimSign, nz = -L.cs*dimSign, pad = 1.2, lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9], v = new THREE.Vector3();
+    [L.lo - pad, L.hi + pad].forEach(function(s){ [L.base - pad*3.2, L.top + 0.3].forEach(function(z){ dimPt(L, s, z, v); for (var a = 0; a < 3; a++){ var c = [v.x, v.y, v.z][a]; if (c < lo[a]) lo[a] = c; if (c > hi[a]) hi[a] = c; } }); });
+    dimAim = { theta:Math.atan2(nx, nz) + 0.35, phi:1.22, box:[lo, hi] };
+    buildDims(dimLeg);
+  }
+  function touchOpening(n){
+    var om = openMeshes[n]; if (!om) return;
+    var o = meta.openings[n], best = null, bd = 1e18;                // the leg = the line of the nearest block on its wall/side
+    for (var i = 0; i < N; i++){ if (groupOf(i) !== om.userData.g) continue; var dx = F[i*7] - o.c[0], dy = F[i*7+1] - o.c[1], d = dx*dx + dy*dy; if (d < bd){ bd = d; best = i; } }
+    dimOp = n; dimSeed = best; select(om.userData.g >= 0 ? om.userData.g : null);
+  }
+  var opTheme = dark() ? 'd' : 'l';
+  buildOpLabels();
+  // layers: Doors / Windows / CJs / Lifts, all off; shown only while a wall is touched
+  Array.prototype.forEach.call(document.querySelectorAll('#dimLayers [data-dl]'), function(b){
+    b.addEventListener('click', function(){ var k = b.dataset.dl; dimLayers[k] = !dimLayers[k]; b.setAttribute('aria-pressed', String(dimLayers[k])); dimKey = null; updateDims(); schedule(); }); });
+  dimsReady = true;
   $('status').hidden = true;
   themeScene(); resize(); renderPanel();
-  window.__field = { ready:true, nBars:nB, laps:function(){ return barLap ? Array.prototype.slice.call(barLap) : null; }, bar:function(){ return selBar === null ? null : { i:selBar, mark:BARS.mark[selBar] >= 0 ? BARS.marks[BARS.mark[selBar]] : null, text:$('barcard').innerText }; }, selectBar:selectBar,
+  window.__field = { ready:true, touchOpening:touchOpening, pickOp:function(g){ var best = -1, bw = 0; openMeshes.forEach(function(om, n){ if (om.userData.g === g && meta.openings[n].s[0] > bw){ bw = meta.openings[n].s[0]; best = n; } }); return best; }, dimLayer:function(k, on){ var bt = document.querySelector('#dimLayers [data-dl="' + k + '"]'); if (!!dimLayers[k] !== !!on) bt.click(); }, opLabelsShown:function(){ return opLabels.filter(function(sp){ return sp.visible; }).map(function(sp){ return meta.openings[sp.userData.n] ? sp.userData.n : null; }); }, nBars:nB, laps:function(){ return barLap ? Array.prototype.slice.call(barLap) : null; }, bar:function(){ return selBar === null ? null : { i:selBar, mark:BARS.mark[selBar] >= 0 ? BARS.marks[BARS.mark[selBar]] : null, text:$('barcard').innerText }; }, selectBar:selectBar,
     barScreen:function(b){ var r = canvas.getBoundingClientRect(), best = null, bl = -1; camera.updateMatrixWorld();
       for (var s3 = BARS.seg0[b]; s3 < BARS.seg0[b+1]; s3++){ pa.set(rebarPos[s3*6], rebarPos[s3*6+1], rebarPos[s3*6+2]); pb.set(rebarPos[s3*6+3], rebarPos[s3*6+4], rebarPos[s3*6+5]);
         var A = toScreen(pa.clone(), r), B = toScreen(pb.clone(), r), l = Math.hypot(B.x - A.x, B.y - A.y); if (l > bl){ bl = l; best = { x:r.left + (A.x + B.x)/2, y:r.top + (A.y + B.y)/2, px:l }; } }
-      return best; }, blocks:N, concrete:concMeshes.length, sides:sides.map(function(sd){ return sd.seg + ':' + sd.whole.total; }), walls:walls.length, lifts:liftNums.slice(), select:select, setLift:setLift,
+      return best; }, blocks:N, concrete:concMeshes.length, sides:sides.map(function(sd){ return sd.seg + ':' + sd.whole.total; }), walls:walls.length, lifts:liftNums.slice(), select:function(k, add, still){ dimOp = null; select(k, add, still); }, setLift:setLift,
     prod:function(on){ setProd(on !== false); }, sched:function(on){ setSched(on !== false); }, setDay:function(d){ setDay(d); },
     schedInfo:function(){ if (!S) S = buildPlan(); return { days:S.T, day:schedDay, areas:S.areas.length, tasks:S.tasks.length, shown:(function(){ var c = 0; for (var i = 0; i < N; i++) if (shownBlock(i)) c++; return c; })(), text:dayTxt(schedDay) }; }, marks:function(){ return marks.slice(); }, queue:function(){ return queue.slice(); }, sync:function(){ return syncMsg; },
     pct:function(){ var o = stat(null, null); return { n:o.n, B:pctOf(o, 'B'), R:pctOf(o, 'R'), G:pctOf(o, 'G') }; }, selList:function(){ return selList.slice(); }, multi:function(on){ multiOn = !!on; renderPanel(); },
