@@ -5,6 +5,8 @@
 const PRIVATE = {
   '716c78d5b6ad': ['702c32093e9534bca3b17be53144e0ea33a0962551c36cb77b6e3af702ef1a5b',
                    'f8b832c8aca758fe5b9612e936676d59224d9292acde6d9acf38d93e6fe1ebbd'],
+  'd374f36ef6bd': ['f0081ba01b41256631d38017c22ef65af0809bf49d23a51b4a4ef6aabed825b2',
+                   '0ad46100930e90f557dfc44c9125f2fd3b379b2a0e46e2476890b5d2615fc96d'],
 };
 const MAX_AGE = 30 * 24 * 3600;
 

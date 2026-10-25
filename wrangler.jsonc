@@ -22,7 +22,7 @@
     // HTML page paths run the Worker first so the private visit counter (worker/stats.js) sees
     // them; every other file (blocks/rebar/meta/usdz, _astro, images) is served by assets directly.
     // Passcode-locked jobs (worker/private.js) route every file under the job through the Worker.
-    "run_worker_first": ["/", "/*/", "/*.html", "/view/716c78d5b6ad/*"]
+    "run_worker_first": ["/", "/*/", "/*.html", "/view/716c78d5b6ad/*", "/view/d374f36ef6bd/*"]
   },
   "d1_databases": [
     { "binding": "PROGRESS", "database_name": "tmm-progress", "database_id": "949cd138-7ec7-4075-96b7-9fedd4bd2989", "migrations_dir": "migrations" }
