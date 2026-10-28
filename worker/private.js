@@ -2,6 +2,9 @@
 // PRIVATE maps slug -> [sha256("<slug>:<passcode>"), sha256(cookie value)]; the cookie value is
 // sha256("ck:<slug>:<passcode>"), so neither the passcode nor a working cookie can be read from the repo.
 // A right code (form POST or ?code=) sets an HttpOnly cookie for that job's path, 30 days.
+// Jobs sent from the TMM app ("Send to The Lead", worker/lead.js) use the same two hashes, kept in D1
+// instead of this map, and the same check (passCheck) so the page, the cookie and the iPhone app's
+// passcode POST behave exactly alike.
 const PRIVATE = {
   '716c78d5b6ad': ['702c32093e9534bca3b17be53144e0ea33a0962551c36cb77b6e3af702ef1a5b',
                    'f8b832c8aca758fe5b9612e936676d59224d9292acde6d9acf38d93e6fe1ebbd'],
@@ -14,11 +17,11 @@ const PRIVATE = {
 };
 const MAX_AGE = 30 * 24 * 3600;
 
-async function sha256(s) {
+export async function sha256(s) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
-function same(a, b) {
+export function same(a, b) {
   a = String(a); b = String(b); let d = a.length ^ b.length;
   for (let i = 0; i < Math.max(a.length, b.length); i++) d |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   return d === 0;
@@ -49,11 +52,12 @@ ${wrong ? '<div class="err">That passcode didn\'t match.</div>' : ''}<button typ
   return new Response(html, { status: 401, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
 }
 
-// Returns a Response when the request is for a locked job and not let through; null otherwise.
-export async function gate(req, url) {
-  const m = /^\/view\/([a-z0-9]{6,40})(\/|$)/.exec(url.pathname);
-  if (!m || !Object.prototype.hasOwnProperty.call(PRIVATE, m[1])) return null;
-  const slug = m[1], [wantCode, wantCookie] = PRIVATE[slug], name = 'pv_' + slug, base = `/view/${slug}/`;
+// The passcode check for one locked job. Returns null when the request may go through (a good cookie),
+// else the Response to send (303 + cookie for a right code, the form, the form saying it didn't match,
+// or a bare 404 for a job file without the cookie). `tries` (optional) limits wrong codes:
+// { locked(): Promise<bool>, failed(): Promise, cleared(): Promise }.
+export async function passCheck(req, url, slug, wantCode, wantCookie, tries) {
+  const name = 'pv_' + slug, base = `/view/${slug}/`;
   const have = cookie(req, name);
   if (have && same(await sha256(have), wantCookie)) return null;
 
@@ -62,15 +66,32 @@ export async function gate(req, url) {
     try { code = (await req.formData()).get('code'); } catch (e) { code = ''; }
   }
   if (code !== null) {
+    if (tries && await tries.locked()) {
+      return new Response('Too many tries. Wait 15 minutes, then try again.', { status: 429,
+        headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex', 'retry-after': '900' } });
+    }
     const n = norm(code), typed = n.length === 8 ? n.slice(0, 4) + '-' + n.slice(4) : '';
     if (typed && same(await sha256(slug + ':' + typed), wantCode)) {
+      if (tries) await tries.cleared();
       const value = await sha256('ck:' + slug + ':' + typed);
       return new Response(null, { status: 303, headers: {
         location: base, 'cache-control': 'no-store',
         'set-cookie': `${name}=${value}; Path=${base}; Max-Age=${MAX_AGE}; HttpOnly; Secure; SameSite=Lax` } });
     }
+    if (tries) await tries.failed();
     return form(slug, true);
   }
   if (url.pathname === base || url.pathname === base + 'index.html') return form(slug, false);
   return new Response('Not found', { status: 404, headers: { 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
 }
+
+// Returns a Response when the request is for a hand-made locked job and not let through; null otherwise.
+export async function gate(req, url) {
+  const m = /^\/view\/([a-z0-9]{6,40})(\/|$)/.exec(url.pathname);
+  if (!m || !isHandMade(m[1])) return null;
+  const [wantCode, wantCookie] = PRIVATE[m[1]];
+  return passCheck(req, url, m[1], wantCode, wantCookie, null);
+}
+
+// A slug taken by a hand-made locked job (never given to an app-published job).
+export function isHandMade(slug) { return Object.prototype.hasOwnProperty.call(PRIVATE, slug); }

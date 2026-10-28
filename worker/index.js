@@ -3,8 +3,12 @@
 //   POST /api/progress/<job>  { pin, ops:[{add:[mark]},{del:[id]}] } -> { job, marks }
 // Crew PINs live in the CREW_PINS secret ({"job":"pin"}), never in the page.
 //   GET  /stats?key=<STATS_KEY>  private visit counter (worker/stats.js); wrong/missing key = 404
+//   /api/lead/publish...  jobs a company sends from its TMM app ("Send to The Lead", worker/lead.js)
+//   /view/<slug>/...  hand-made locked jobs (private.js), app-published jobs (lead.js, R2 + D1, always
+//                     behind a passcode), else the public static job folders exactly as before
 import { shouldCount, countView, stats } from './stats.js';
 import { gate } from './private.js';
+import { leadApi, serveLead } from './lead.js';
 const MAX_BODY = 65536, MAX_OPS = 100, MAX_ITEMS = 400, MAX_MARKS = 5000, LOCK_N = 10, LOCK_MS = 15 * 60 * 1000;
 
 function json(o, status = 200) {
@@ -91,6 +95,9 @@ async function progress(req, env, job) {
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
+    if (url.pathname.startsWith('/api/lead/')) {
+      try { const r = await leadApi(req, env, url, ctx); if (r) return r; } catch (e) { return json({ error: 'server' }, 500); }
+    }
     if (url.pathname.startsWith('/api/')) {
       const m = /^\/api\/progress\/([a-z0-9-]{1,40})\/?$/.exec(url.pathname);
       if (!m) return json({ error: 'not found' }, 404);
@@ -99,9 +106,12 @@ export default {
     if (url.pathname === '/stats' || url.pathname === '/stats/') return stats(req, env, url);
     const locked = await gate(req, url);
     if (locked) return locked;
-    const res = await env.ASSETS.fetch(req);
-    // Page views: wrangler.jsonc run_worker_first routes only HTML page paths here; data files
-    // (blocks/rebar/meta/usdz) never reach the Worker.
+    let res = null;
+    // a D1 / R2 hiccup must never take the public job folders down: fall through to the static files
+    if (url.pathname.startsWith('/view/')) { try { res = await serveLead(req, env, url); } catch (e) { res = null; } }
+    if (!res) res = await env.ASSETS.fetch(req);
+    // Page views: only GET 200 text/html counts (stats.js shouldCount); /view/* data files reach the
+    // Worker too now (wrangler.jsonc run_worker_first) but are never counted.
     try { if (shouldCount(req, res)) ctx.waitUntil(countView(req, env, url)); } catch (e) { /* never break a page */ }
     return res;
   }
