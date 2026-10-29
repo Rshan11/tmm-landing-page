@@ -104,7 +104,7 @@ export default {
       try { return await progress(req, env, m[1]); } catch (e) { return json({ error: 'server' }, 500); }
     }
     if (url.pathname === '/stats' || url.pathname === '/stats/') return stats(req, env, url);
-    const locked = await gate(req, url);
+    const locked = await gate(req, url, env);
     if (locked) return locked;
     let res = null;
     // a D1 / R2 hiccup must never take the public job folders down: fall through to the static files

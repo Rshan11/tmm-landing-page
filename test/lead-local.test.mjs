@@ -49,8 +49,9 @@ function wrangler(args, opts = {}) {
   return execFileSync(isWin ? 'wrangler.cmd' : 'wrangler', args, { cwd: SITE, stdio: ['ignore', 'pipe', 'pipe'], shell: isWin, ...opts }).toString();
 }
 
-function start(cfg, port, persist) {
-  const p = spawn(isWin ? 'wrangler.cmd' : 'wrangler', ['dev', '-c', cfg, '--local', '--ip', '127.0.0.1', '--port', String(port),
+const SECRET = randomBytes(32).toString('hex');
+function start(cfg, port, persist, vars = []) {
+  const p = spawn(isWin ? 'wrangler.cmd' : 'wrangler', ['dev', '-c', cfg, '--local', '--ip', '127.0.0.1', '--port', String(port), ...vars.flatMap(v => ['--var', v]),
     '--inspector-port', String(port + 1000), '--persist-to', persist, '--show-interactive-dev-session=false', '--log-level', 'warn'],
     { cwd: SITE, stdio: ['ignore', 'pipe', 'pipe'], shell: isWin });
   let log = ''; p.stdout.on('data', d => log += d); p.stderr.on('data', d => log += d);
@@ -117,7 +118,7 @@ async function main() {
 `);
   wrangler(['d1', 'execute', 'tmm-progress', '--local', '-c', newCfg, '--persist-to', persist, '--file', keysSql]);
 
-  const pNew = start(newCfg, NEW_PORT, persist);
+  const pNew = start(newCfg, NEW_PORT, persist, [`LEAD_COOKIE_SECRET:${SECRET}`, 'LEAD_DAILY_BYTES:300000']);
   const pOld = SERVE ? null : start(oldCfg, OLD_PORT, join(WORK, 'state-old'));
   try {
     await up(NEW_PORT, pNew);
@@ -147,7 +148,7 @@ async function main() {
 
     console.log('publish');
     const slug = randomBytes(6).toString('hex'), code = 'TEST-4821';
-    const codeHash = sh(`${slug}:${code}`), cookieHash = sh(sh(`ck:${slug}:${code}`));
+    const salt = randomBytes(16).toString('hex'), hashFor = s => sh(`${salt}:${s}:${code}`);
     const files = {
       'meta.json': Buffer.from(JSON.stringify({ project: { name: 'Lead local test' }, nBlocks: 1, nRebarSegs: 0, walls: [] })),
       'blocks.b64.txt': Buffer.from(Buffer.alloc(38, 7).toString('base64')),
@@ -156,7 +157,7 @@ async function main() {
     const put = (key, s, ver, name, body, sum) => fetch(`${N}/api/lead/publish/${s}/${ver}/${name}`, { method: 'PUT', body,
       headers: { authorization: 'Bearer ' + key, 'x-tmm-sha256': sum || sh(body), 'content-type': 'application/octet-stream' } });
     const fin = (key, s, ver, fl, extra = {}) => fetch(`${N}/api/lead/publish`, { method: 'POST', headers: { authorization: 'Bearer ' + key, 'content-type': 'application/json' },
-      body: JSON.stringify({ slug: s, ver, title: 'Lead local test', code_hash: codeHash, cookie_hash: cookieHash,
+      body: JSON.stringify({ slug: s, ver, title: 'Lead local test', code_salt: salt, code_hash: hashFor(s),
         files: Object.fromEntries(Object.entries(fl).map(([n, b]) => [n, { size: b.length, sha256: sh(b) }])), ...extra }) });
     ok((await put('', slug, 'v00000001', 'meta.json', files['meta.json'])).status === 401, 'no key: 401');
     ok((await put('tmmlp_' + 'x'.repeat(40), slug, 'v00000001', 'meta.json', files['meta.json'])).status === 401, 'wrong key: 401');
@@ -196,6 +197,38 @@ async function main() {
     ok(r.status === 404, 'model.usdz not sent: 404 (the app treats it as optional)');
     r = await fetch(`${N}/view/${slug}/`, { method: 'POST', redirect: 'manual', headers: { cookie: ck } });
     ok(r.status === 405, 'POST with a good cookie: 405 (as the static jobs answer)');
+    r = await fetch(`${N}/view/${slug}/meta.json`, { headers: { cookie: `pv_${slug}=` + sh(`ck:${slug}:${code}`) } });
+    ok(r.status === 404, "the old offline cookie formula sha256('ck:slug:CODE') does not open a published job");
+    ok(ck.split('=')[1] !== sh(`ck:${slug}:${code}`) && /^[0-9a-f]{64}$/.test(ck.split('=')[1]), 'the cookie is an HMAC with the server secret');
+
+    console.log('wrong cookies are counted (audit S2-1), on a second job');
+    const slug2 = randomBytes(6).toString('hex');
+    for (const [n, b] of Object.entries(files)) await put(keyA, slug2, 'v00000001', n, b);
+    ok((await fin(keyA, slug2, 'v00000001', files)).status === 200, 'second job published');
+    const ipH = ip => ({ 'cf-connecting-ip': ip });
+    const getAs = (ip, c) => fetch(`${N}/view/${slug2}/meta.json`, { headers: { ...ipH(ip), ...(c ? { cookie: c } : {}) } });
+    ok((await getAs('203.0.113.7')).status === 404, 'meta.json with no cookie: 404');
+    let codes = [];
+    for (let i = 0; i < 11; i++) codes.push((await getAs('203.0.113.7', `pv_${slug2}=${randomBytes(32).toString('hex')}`)).status);
+    ok(codes.slice(0, 10).every(c => c === 404) && codes[10] === 429, `a wrong-cookie loop reaches 429 on the 11th (${codes.join(',')})`);
+    const r2 = await fetch(`${N}/view/${slug2}/`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', ...ipH('203.0.113.7') }, body: 'code=' + code });
+    ok(r2.status === 429, 'locked address: even the right code is refused (429)');
+    const ck2 = ((await fetch(`${N}/view/${slug2}/`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', ...ipH('198.51.100.20') }, body: 'code=' + code })).headers.get('set-cookie') || '').split(';')[0];
+    ok((await getAs('203.0.113.7', ck2)).status === 200, 'a right (HMAC) cookie still opens the job from a locked address: an attack never locks the crew out');
+    codes = [];
+    for (let i = 0; i < 6; i++) codes.push((await getAs('2001:db8:1:2::5', `pv_${slug2}=bad${i}`)).status);
+    for (let i = 0; i < 5; i++) codes.push((await getAs('2001:db8:1:2:ffff::9', `pv_${slug2}=bad${i}`)).status);
+    ok(codes[10] === 429, `IPv6 is counted by /64: two addresses in one /64 share the limit (${codes.join(',')})`);
+    codes = [];
+    for (let i = 0; i < 40; i++) codes.push((await getAs(`192.0.2.${i + 1}`, `pv_${slug2}=bad`)).status);
+    const firstLock = codes.indexOf(429);
+    ok(firstLock > 0 && codes.slice(firstLock).every(c => c === 429), `every address together: 50 wrong tries an hour per job, then 429 for a fresh address (locked after ${firstLock} more)`);
+    ok((await getAs('192.0.2.200', ck2)).status === 200, 'the right cookie still works while the job is locked');
+
+    console.log('hand-made locked job: wrong cookies are counted too');
+    codes = [];
+    for (let i = 0; i < 11; i++) codes.push((await fetch(`${N}/view/716c78d5b6ad/meta.json`, { headers: { ...ipH('203.0.113.99'), cookie: 'pv_716c78d5b6ad=' + randomBytes(32).toString('hex') } })).status);
+    ok(codes.slice(0, 10).every(c => c === 404) && codes[10] === 429, `hand-made job: wrong-cookie loop reaches 429 (${codes.join(',')})`);
 
     console.log('update the Lead (same slug, same passcode)');
     const files2 = { ...files, 'meta.json': Buffer.from(JSON.stringify({ project: { name: 'Lead local test' }, nBlocks: 2, nRebarSegs: 0, walls: [] })), 'blocks.b64.txt': Buffer.from(Buffer.alloc(76, 9).toString('base64')) };
@@ -223,6 +256,18 @@ async function main() {
     ok(r.status === 404, 'taken down: the files are gone (404)');
     r = await fetch(`${N}/view/${slug}/`, { redirect: 'manual' });
     ok(r.status === 404, 'taken down: the page is gone (404)');
+    for (const [n, b] of Object.entries(files2)) await put(keyA, slug, 'v00000004', n, b);
+    ok((await fin(keyA, slug, 'v00000004', files2)).status === 200, 'send again after the take-down');
+    await new Promise(res => setTimeout(res, 1500));   // the take-down's background delete has run
+    r = await fetch(`${N}/view/${slug}/blocks.b64.txt`, { headers: { cookie: ck } });
+    ok(r.status === 200 && Buffer.from(await r.arrayBuffer()).equals(files2['blocks.b64.txt']), 'the fresh send is not wiped by the take-down sweep (audit S3-3)');
+
+    console.log('daily byte cap per company');
+    const big = Buffer.alloc(320000, 1);
+    r = await put(keyA, slug, 'v00000005', 'blocks.b64.txt', big);
+    ok(r.status === 429 && (await r.json()).error === 'daily limit', "over the day's bytes: 429 daily limit, nothing written");
+    r = await put(keyB, randomBytes(6).toString('hex'), 'v00000001', 'meta.json', files['meta.json']);
+    ok(r.status === 200, "another company's cap is its own");
 
     // Last: a POST to a public job (the iPhone app's "is it locked?" answer is 405). wrangler dev leaves the
     // next request on that Worker hanging after a POST whose body was never read, so these go at the end.

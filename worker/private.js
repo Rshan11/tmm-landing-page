@@ -2,9 +2,10 @@
 // PRIVATE maps slug -> [sha256("<slug>:<passcode>"), sha256(cookie value)]; the cookie value is
 // sha256("ck:<slug>:<passcode>"), so neither the passcode nor a working cookie can be read from the repo.
 // A right code (form POST or ?code=) sets an HttpOnly cookie for that job's path, 30 days.
-// Jobs sent from the TMM app ("Send to The Lead", worker/lead.js) use the same two hashes, kept in D1
-// instead of this map, and the same check (passCheck) so the page, the cookie and the iPhone app's
-// passcode POST behave exactly alike.
+// Jobs sent from the TMM app ("Send to The Lead", worker/lead.js) go through the same check (passCheck),
+// so the page, the cookie and the iPhone app's passcode POST behave exactly alike; their passcode hash is
+// salted per job and their cookie is an HMAC with a server secret (not computable offline).
+// Wrong passcodes AND wrong cookies are counted for every locked job (tries(): per address and per job).
 const PRIVATE = {
   '716c78d5b6ad': ['702c32093e9534bca3b17be53144e0ea33a0962551c36cb77b6e3af702ef1a5b',
                    'f8b832c8aca758fe5b9612e936676d59224d9292acde6d9acf38d93e6fe1ebbd'],
@@ -52,33 +53,88 @@ ${wrong ? '<div class="err">That passcode didn\'t match.</div>' : ''}<button typ
   return new Response(html, { status: 401, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
 }
 
+// Wrong tries (passcodes AND passcode cookies) per job, in D1 lead_tries:
+//   per address (IPv6 by its /64): 10 in 15 minutes; per job, every address together: 50 in an hour.
+// Each count is one atomic UPSERT ... RETURNING. Old rows are swept now and then (1 in 20 writes).
+// A D1 error never takes a page down: the check then lets the request through to the passcode test.
+const ADDR_N = 10, ADDR_MS = 15 * 60 * 1000, JOB_N = 50, JOB_MS = 60 * 60 * 1000, DAY_MS = 24 * 3600 * 1000;
+
+export function addrKey(ip) {
+  ip = String(ip || '').trim().toLowerCase();
+  if (!ip.includes(':')) return ip || 'x';
+  // IPv6: the /64 (first four groups), '::' expanded
+  const [head, tail] = ip.split('::');
+  const h = head ? head.split(':') : [], t = tail !== undefined && tail ? tail.split(':') : [];
+  const groups = tail === undefined ? h : [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill('0'), ...t];
+  return groups.slice(0, 4).map(g => (g || '0').replace(/^0+(?=.)/, '')).join(':') + '::/64';
+}
+
+export function tries(env, scope, slug, req) {
+  if (!env || !env.PROGRESS) return null;
+  const db = env.PROGRESS;
+  const ka = `${scope}|${slug}|${addrKey(req.headers.get('cf-connecting-ip'))}`, kj = `${scope}|${slug}|*`;
+  const bump = (k, win, now) => db.prepare(
+    `INSERT INTO lead_tries (k, n, ts) VALUES (?1, 1, ?2)
+     ON CONFLICT(k) DO UPDATE SET n = CASE WHEN ?2 - lead_tries.ts < ?3 THEN lead_tries.n + 1 ELSE 1 END,
+                                  ts = CASE WHEN ?2 - lead_tries.ts < ?3 THEN lead_tries.ts ELSE ?2 END
+     RETURNING n`).bind(k, now, win);
+  return {
+    async locked() {
+      try {
+        const now = Date.now();
+        const r = await db.prepare('SELECT k, n, ts FROM lead_tries WHERE k IN (?1, ?2)').bind(ka, kj).all();
+        return (r.results || []).some(x => x.k === ka ? x.n >= ADDR_N && now - x.ts < ADDR_MS : x.n >= JOB_N && now - x.ts < JOB_MS);
+      } catch (e) { return false; }
+    },
+    async failed() {
+      try {
+        const now = Date.now(), stmts = [bump(ka, ADDR_MS, now), bump(kj, JOB_MS, now)];
+        if (Math.random() < 0.05) stmts.push(db.prepare('DELETE FROM lead_tries WHERE ts < ?').bind(now - DAY_MS));
+        await db.batch(stmts);
+      } catch (e) { /* counting never takes a page down */ }
+    },
+    // a right passcode clears this address's count, never the job-wide one
+    async cleared() { try { await db.prepare('DELETE FROM lead_tries WHERE k = ?').bind(ka).run(); } catch (e) { /* ignore */ } },
+  };
+}
+
+function tooMany() {
+  return new Response('Too many tries. Wait a while, then try again.', { status: 429,
+    headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex', 'retry-after': '900' } });
+}
+
 // The passcode check for one locked job. Returns null when the request may go through (a good cookie),
 // else the Response to send (303 + cookie for a right code, the form, the form saying it didn't match,
-// or a bare 404 for a job file without the cookie). `tries` (optional) limits wrong codes:
-// { locked(): Promise<bool>, failed(): Promise, cleared(): Promise }.
-export async function passCheck(req, url, slug, wantCode, wantCookie, tries) {
+// 429 after too many wrong tries, or a bare 404 for a job file without the cookie).
+// `job`: { codeOk(typed), cookieOk(value), cookieFor(typed), guessable } (all async but guessable).
+// guessable = the cookie can be worked out offline (the hand-made jobs' sha256 cookie): while the job is
+// locked out even a right cookie is refused. An app-published job's cookie is an HMAC with a server
+// secret: a right one always goes through, so an attack never locks the crew out.
+export async function passCheck(req, url, slug, job, t) {
   const name = 'pv_' + slug, base = `/view/${slug}/`;
   const have = cookie(req, name);
-  if (have && same(await sha256(have), wantCookie)) return null;
+  if (have) {
+    if (job.guessable && t && await t.locked()) return tooMany();
+    if (await job.cookieOk(have)) return null;
+    // a wrong cookie is a wrong try
+    if (t) { if (await t.locked()) return tooMany(); await t.failed(); }
+  }
 
   let code = url.searchParams.get('code');
   if (code === null && req.method === 'POST' && url.pathname === base) {
     try { code = (await req.formData()).get('code'); } catch (e) { code = ''; }
   }
   if (code !== null) {
-    if (tries && await tries.locked()) {
-      return new Response('Too many tries. Wait 15 minutes, then try again.', { status: 429,
-        headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex', 'retry-after': '900' } });
-    }
+    if (t && await t.locked()) return tooMany();
     const n = norm(code), typed = n.length === 8 ? n.slice(0, 4) + '-' + n.slice(4) : '';
-    if (typed && same(await sha256(slug + ':' + typed), wantCode)) {
-      if (tries) await tries.cleared();
-      const value = await sha256('ck:' + slug + ':' + typed);
+    if (typed && await job.codeOk(typed)) {
+      if (t) await t.cleared();
+      const value = await job.cookieFor(typed);
       return new Response(null, { status: 303, headers: {
         location: base, 'cache-control': 'no-store',
         'set-cookie': `${name}=${value}; Path=${base}; Max-Age=${MAX_AGE}; HttpOnly; Secure; SameSite=Lax` } });
     }
-    if (tries) await tries.failed();
+    if (t) await t.failed();
     return form(slug, true);
   }
   if (url.pathname === base || url.pathname === base + 'index.html') return form(slug, false);
@@ -86,11 +142,16 @@ export async function passCheck(req, url, slug, wantCode, wantCookie, tries) {
 }
 
 // Returns a Response when the request is for a hand-made locked job and not let through; null otherwise.
-export async function gate(req, url) {
+export async function gate(req, url, env) {
   const m = /^\/view\/([a-z0-9]{6,40})(\/|$)/.exec(url.pathname);
   if (!m || !isHandMade(m[1])) return null;
-  const [wantCode, wantCookie] = PRIVATE[m[1]];
-  return passCheck(req, url, m[1], wantCode, wantCookie, null);
+  const slug = m[1], [wantCode, wantCookie] = PRIVATE[slug];
+  return passCheck(req, url, slug, {
+    guessable: true,
+    codeOk: async typed => same(await sha256(slug + ':' + typed), wantCode),
+    cookieOk: async v => same(await sha256(v), wantCookie),
+    cookieFor: typed => sha256('ck:' + slug + ':' + typed),
+  }, tries(env, 'hm', slug, req));
 }
 
 // A slug taken by a hand-made locked job (never given to an app-published job).
