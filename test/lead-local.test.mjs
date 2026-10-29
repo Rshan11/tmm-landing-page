@@ -9,6 +9,7 @@
 // (port 8792, from `git show master:...`), and checks the public job folders answer byte for byte the same.
 import { spawn, execFileSync } from 'node:child_process';
 import http from 'node:http';
+import { handMadeCookie } from '../worker/private.js';
 import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { createHash, randomBytes } from 'node:crypto';
 import { join, dirname } from 'node:path';
@@ -106,6 +107,9 @@ async function main() {
   }
   const oldCfg = config(execFileSync('git', ['show', 'master:wrangler.jsonc'], { cwd: SITE }).toString(), join(oldDir, 'worker', 'index.js'), oldDir);
 
+  // a stand-in data file for one hand-made locked job, so "the right cookie opens" has a file to open
+  const hmDir = join(SITE, 'dist', 'view', '716c78d5b6ad');
+  if (!existsSync(join(hmDir, 'meta.json'))) { mkdirSync(hmDir, { recursive: true }); writeFileSync(join(hmDir, 'meta.json'), '{"stand_in":true}'); }
   const persist = join(WORK, 'state');
   for (const f of ['worker/schema.sql']) wrangler(['d1', 'execute', 'tmm-progress', '--local', '-c', newCfg, '--persist-to', persist, '--file', join(SITE, f)]);
   wrangler(['d1', 'migrations', 'apply', 'tmm-progress', '--local', '-c', newCfg, '--persist-to', persist]);
@@ -229,6 +233,17 @@ async function main() {
     codes = [];
     for (let i = 0; i < 11; i++) codes.push((await fetch(`${N}/view/716c78d5b6ad/meta.json`, { headers: { ...ipH('203.0.113.99'), cookie: 'pv_716c78d5b6ad=' + randomBytes(32).toString('hex') } })).status);
     ok(codes.slice(0, 10).every(c => c === 404) && codes[10] === 429, `hand-made job: wrong-cookie loop reaches 429 (${codes.join(',')})`);
+    // delta audit S2: 50 wrong tries an hour across all addresses must not lock the crew out of a hand-made job
+    for (let i = 0; i < 45; i++) {
+      await fetch(`${N}/view/716c78d5b6ad/`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', ...ipH(`198.18.0.${i + 1}`) }, body: 'code=WRNG-' + (1000 + i) });
+    }
+    r = await fetch(`${N}/view/716c78d5b6ad/`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', ...ipH('198.18.1.1') }, body: 'code=WRNG-9999' });
+    ok(r.status === 429, 'hand-made job locked job-wide after 50 wrong tries from many addresses');
+    const goodHm = 'pv_716c78d5b6ad=' + await handMadeCookie(SECRET, '716c78d5b6ad');
+    r = await fetch(`${N}/view/716c78d5b6ad/meta.json`, { headers: { ...ipH('198.18.1.2'), cookie: goodHm } });
+    ok(r.status === 200, `hand-made job: the crew's valid (HMAC) cookie still opens while it is locked (${r.status})`);
+    r = await fetch(`${N}/view/716c78d5b6ad/meta.json`, { headers: { ...ipH('198.18.1.3'), cookie: 'pv_716c78d5b6ad=' + sh('ck:716c78d5b6ad:ABCD-1234') } });
+    ok(r.status === 429, 'hand-made job: an old-style sha256 cookie guess is just a wrong try (429 while locked)');
 
     console.log('update the Lead (same slug, same passcode)');
     const files2 = { ...files, 'meta.json': Buffer.from(JSON.stringify({ project: { name: 'Lead local test' }, nBlocks: 2, nRebarSegs: 0, walls: [] })), 'blocks.b64.txt': Buffer.from(Buffer.alloc(76, 9).toString('base64')) };

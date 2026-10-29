@@ -19,7 +19,7 @@
 // HMAC-SHA256(LEAD_COOKIE_SECRET, "ck:<slug>:<code_hash>"): it can't be worked out offline. Wrong codes
 // and wrong cookies are counted (private.js tries). The page is the Lead page bundled with this Worker
 // (worker/lead_page.html); the data files come from R2. Published jobs are never listed anywhere.
-import { passCheck, tries, sha256, same, isHandMade } from './private.js';
+import { passCheck, tries, sha256, same, isHandMade, hmac } from './private.js';
 import PAGE from './lead_page.html';
 
 export const FILES = {
@@ -39,10 +39,6 @@ function json(o, status = 200) {
 }
 const hex = buf => buf ? [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('') : '';
 
-async function hmac(secret, msg) {
-  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  return hex(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg)));
-}
 
 // The company a publish key belongs to, or null. Only sha256(key) is stored.
 async function companyOf(req, env) {

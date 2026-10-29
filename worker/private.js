@@ -1,6 +1,9 @@
 // Passcode-locked job pages: /view/<slug>/ and every file under it (page, meta, blocks, rebar, usdz).
-// PRIVATE maps slug -> [sha256("<slug>:<passcode>"), sha256(cookie value)]; the cookie value is
-// sha256("ck:<slug>:<passcode>"), so neither the passcode nor a working cookie can be read from the repo.
+// PRIVATE maps slug -> [sha256("<slug>:<passcode>"), sha256(legacy cookie value), cookie salt].
+// The cookie (option a, delta audit 10-28) is HMAC-SHA256(LEAD_COOKIE_SECRET, "ck:<slug>:<salt>:<code hash>"):
+// it can't be worked out offline, so a right cookie always opens and a guessing attack can't lock the
+// crew out. Same passcodes; phones that hold the old sha256("ck:<slug>:<passcode>") cookie type the
+// passcode once more. Without the secret (not set yet) the old cookie scheme is used, with lock-outs.
 // A right code (form POST or ?code=) sets an HttpOnly cookie for that job's path, 30 days.
 // Jobs sent from the TMM app ("Send to The Lead", worker/lead.js) go through the same check (passCheck),
 // so the page, the cookie and the iPhone app's passcode POST behave exactly alike; their passcode hash is
@@ -8,15 +11,30 @@
 // Wrong passcodes AND wrong cookies are counted for every locked job (tries(): per address and per job).
 const PRIVATE = {
   '716c78d5b6ad': ['702c32093e9534bca3b17be53144e0ea33a0962551c36cb77b6e3af702ef1a5b',
-                   'f8b832c8aca758fe5b9612e936676d59224d9292acde6d9acf38d93e6fe1ebbd'],
+                   'f8b832c8aca758fe5b9612e936676d59224d9292acde6d9acf38d93e6fe1ebbd',
+                   'bee0203b3a8d48e7ff0d17f212c6613b'],
   'd374f36ef6bd': ['f0081ba01b41256631d38017c22ef65af0809bf49d23a51b4a4ef6aabed825b2',
-                   '0ad46100930e90f557dfc44c9125f2fd3b379b2a0e46e2476890b5d2615fc96d'],
+                   '0ad46100930e90f557dfc44c9125f2fd3b379b2a0e46e2476890b5d2615fc96d',
+                   'a360526d7c02c2407fe50e5952b8f1c0'],
   'e35f3337c9db': ['f2437842dd5709042f5964f83fc6f26f924f5dfa8f81a1d96aa51126b88b82a4',
-                   'b6693580d73b44aaa332ace4a5a64cf61d7cb2b12b8e55e4f5e19e3c213bda56'],
+                   'b6693580d73b44aaa332ace4a5a64cf61d7cb2b12b8e55e4f5e19e3c213bda56',
+                   '90205940c00b14ace5b4817a5c28c97e'],
   '36adef0c42ef': ['b1f1daa2278d1dbdf4a1284cfd10aa7cd80b4ea7d468c9bcb3fd16c187a86cec',
-                   '6eeca40a124e73a33595b8ca8e4fbd6140fea2c9cc790471207bd64e3d80af00'],
+                   '6eeca40a124e73a33595b8ca8e4fbd6140fea2c9cc790471207bd64e3d80af00',
+                   '3690a17c1b3c739a9418e3fc9ee16453'],
 };
 const MAX_AGE = 30 * 24 * 3600;
+
+export async function hmac(secret, msg) {
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return [...new Uint8Array(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg)))].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// The cookie a hand-made job sets and accepts when LEAD_COOKIE_SECRET is set (exported for the tests).
+export function handMadeCookie(secret, slug) {
+  const [wantCode, , salt] = PRIVATE[slug];
+  return hmac(secret, `ck:${slug}:${salt}:${wantCode}`);
+}
 
 export async function sha256(s) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -146,6 +164,16 @@ export async function gate(req, url, env) {
   const m = /^\/view\/([a-z0-9]{6,40})(\/|$)/.exec(url.pathname);
   if (!m || !isHandMade(m[1])) return null;
   const slug = m[1], [wantCode, wantCookie] = PRIVATE[slug];
+  const secret = env && env.LEAD_COOKIE_SECRET;
+  if (secret && secret.length >= 32) {
+    const want = await handMadeCookie(secret, slug);
+    return passCheck(req, url, slug, {
+      guessable: false,
+      codeOk: async typed => same(await sha256(slug + ':' + typed), wantCode),
+      cookieOk: async v => same(v, want),
+      cookieFor: async () => want,
+    }, tries(env, 'hm', slug, req));
+  }
   return passCheck(req, url, slug, {
     guessable: true,
     codeOk: async typed => same(await sha256(slug + ':' + typed), wantCode),
