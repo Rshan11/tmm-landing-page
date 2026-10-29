@@ -122,12 +122,15 @@ async function finish(req, env, url, ctx, company) {
     if (o.size !== f.size || hex(o.checksums && o.checksums.sha256) !== String(f.sha256 || '').toLowerCase()) return json({ error: 'mismatch', file: n }, 409);
     kept[n] = { size: o.size, sha256: hex(o.checksums.sha256) };
   }
-  // staged -> served (R2 has no copy: each file is read and written again, checksum checked again;
-  // a known length is needed for the write, and a file is at most 95 MB)
+  // staged -> served (R2 has no copy: each file is streamed across, never held in memory, through a
+  // FixedLengthStream so the write knows its length; R2 checks the checksum again)
   for (const n of names) {
     const o = await env.LEAD.get(`stage/${slug}/${ver}/${n}`);
     if (!o) return json({ error: 'missing', file: n }, 409);
-    await env.LEAD.put(`view/${slug}/${ver}/${n}`, await o.arrayBuffer(), { httpMetadata: { contentType: FILES[n] }, sha256: kept[n].sha256, customMetadata: { company } });
+    const { readable, writable } = new FixedLengthStream(o.size);
+    const piped = o.body.pipeTo(writable);
+    await env.LEAD.put(`view/${slug}/${ver}/${n}`, readable, { httpMetadata: { contentType: FILES[n] }, sha256: kept[n].sha256, customMetadata: { company } });
+    await piped;
   }
   await env.LEAD.delete(names.map(n => `stage/${slug}/${ver}/${n}`));
   const prev = await jobRow(env, slug);
