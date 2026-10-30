@@ -1,0 +1,54 @@
+---
+// The Lead — the crew's copy of the model, on a phone or tablet.
+// Clips: Georgeville Arsenic Pump Station Lead + the AR layout walk.
+import LoopVideo from './LoopVideo.astro';
+import leadPoster from '../assets/media/lead-georgeville-poster.png';
+import arPoster from '../assets/media/lead-ar-layout-walk-poster.png';
+
+interface Props {
+  sectionNum?: string;
+}
+const { sectionNum = '03' } = Astro.props;
+---
+
+<section class="page-section page-section-dark lead-section" id="the-lead">
+  <div class="page-section-inner section-wide">
+    <div class="section-num" data-num={sectionNum}>The Lead</div>
+    <h2>The model goes to the job. <span class="accent">Not a stack of paper.</span></h2>
+    <p class="section-lede">The Lead gives your foreman the building in 3-D on a phone or tablet:
+      every course, corner and bond beam, by side and by lift, with the block count for each.</p>
+
+    <div class="lead-clips">
+      <LoopVideo
+        name="lead-georgeville"
+        poster={leadPoster}
+        width={680}
+        height={426}
+        label="The Lead for the Georgeville Arsenic Pump Station: whole job, then sides and lifts, with block counts by size and color, grout and mortar"
+      >
+        <strong>Georgeville Arsenic Pump Station.</strong> Whole job or one side, one lift.
+        Block by size and color, grout and mortar.
+      </LoopVideo>
+      <LoopVideo
+        name="lead-ar-layout-walk"
+        poster={arPoster}
+        width={220}
+        height={480}
+        class="loop-clip-phone"
+        label="The Lead AR layout walk on a phone: aim at the corner on the footing, set it, and read the distance against the plan dimension"
+      >
+        <strong>AR layout walk.</strong> Set the corners on the footing. It tells you how far you
+        are from the plan.
+      </LoopVideo>
+    </div>
+
+    <ul class="does-list on-dark">
+      <li><strong>Sides A–D, lift by lift.</strong> Tap a side or a lift and the list follows.</li>
+      <li><strong>Color it four ways.</strong> By type, rebar, production or schedule.</li>
+      <li><strong>Same model as the bid.</strong> Nobody re-draws it for the field.</li>
+    </ul>
+
+    <p class="lead-link"><a href="/view/georgeville/">Open the Georgeville model →</a>
+      <span>No sign-in.</span></p>
+  </div>
+</section>

@@ -1,10 +1,27 @@
 # The Masonry Modeler
 
-> Masonry estimating software that counts fulls, halves, and corners from the first click as you draw your walls. The model renders the pieces and carries their counts into the material list, estimate, and shop drawings. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Demos are available by request. Founder pricing is $300 per seat per month for the first 10 companies; contact Ryan for current availability.
+> Masonry estimating software that counts fulls, halves, and corners from the first click as you draw your walls. The model renders the pieces and carries their counts into the material list, estimate, and shop drawings. Walls are edited in 3-D (openings, wall heights, rakes, colors) and the bond, cuts, counts, and price update as you edit. The Lead gives the crew the same model on a phone or tablet. Built by a mason because existing tools count masonry walls like carpet (length × height × factor) instead of modeling them as bonded units. Demos are available by request. Founder pricing is $300 per seat per month for the first 10 companies; contact Ryan for current availability.
 
 ## Background
 
 The Masonry Modeler (TMM) is built by Ryan Shanley of Powder River Masonry. The thesis: a masonry wall is not a rectangular field of units to be divided and multiplied. It is a bonded assembly where corners interlock, bond beams wrap, lintels land on specific courses, and non-modular heights produce half-high courses that need their own SKU. Every existing tool treats masonry as a rectangle-counting problem. TMM models the bond first and counts the bond's consequences.
+
+## What it does today
+
+- Bonds from the first wall laid out; everything is global — change a wall and the bond, cuts, counts, and price update in real time
+- Full editing in 3-D: add openings, raise walls, slope rakes, change colors
+- CMU, brick veneer, and stone; straight and round (radius) walls
+- Takeoff to bid: block by size and color, bond beams, lintels, rebar, grout, mortar, labor and crews, price per color; the material order comes from the model
+- Shop drawings: coursed elevations and rebar sets from the same model
+- Print sets: bring in a whole set; sheet numbers and titles are read, scale is taken off the sheet, and plans are lined up by the grid
+- The Lead: the crew's 3-D model on a phone or tablet — every course, corner, and bond beam by side and lift, with block counts by size and color, grout, and mortar; colored by type, rebar, production, or schedule. Public example (no sign-in): https://themasonrymodeler.com/view/georgeville/
+- The Lead AR layout walk: aim at the corner on the footing, set the corners, and read the measured distance against the plan dimension
+
+## Coming (not live yet)
+
+- Models built from the drawings with AI plus the engine
+- Set Check: finds what is missing or conflicting in a print set before you bid
+- Weather barrier systems (for example Tyvek and window wraps)
 
 ## Core technical rules the engine enforces
 
@@ -22,10 +39,16 @@ The Masonry Modeler (TMM) is built by Ryan Shanley of Powder River Masonry. The 
 
 A three-minute screen recording of the 88th Avenue pump station being traced and taken off in The Masonry Modeler is embedded on the homepage, the CMU Block Count page, and the Masonry Takeoff Accuracy page. Hosted on YouTube: https://youtu.be/m-fSK2uB924
 
+Short silent clips on the homepage (MP4):
+- Raising walls and sloping a rake: https://themasonrymodeler.com/assets/video/raise-wall-rake.mp4
+- A stone radius wall with a rake: https://themasonrymodeler.com/assets/video/stone-radius-rake.mp4
+- The Lead, Georgeville Arsenic Pump Station: https://themasonrymodeler.com/assets/video/lead-georgeville.mp4
+- The Lead AR layout walk: https://themasonrymodeler.com/assets/video/lead-ar-layout-walk.mp4
+
 ## Pages
 
 ### Architectural (product / topic pages)
-- [Home](https://themasonrymodeler.com/): Masonry estimating software overview, material and crew pricing workflow, worked estimate summary, demo request
+- [Home](https://themasonrymodeler.com/): Masonry estimating software overview, short clips of 3-D editing (raise walls, rakes, a stone radius wall), The Lead and its AR layout walk, what is coming, worked estimate summary, demo request
 - [CMU Block Count](https://themasonrymodeler.com/cmu-block-count/): CMU quantity review and a worked estimate with explicit sample material, labor, equipment, overhead, and profit inputs
 - [Bond Beam Estimating](https://themasonrymodeler.com/bond-beam-estimating/): Rebar-driven bond beam scheduling with continuous corner wraps and rebar weight in pounds
 - [Masonry Takeoff Accuracy](https://themasonrymodeler.com/masonry-takeoff-accuracy/): The three repeating sources of takeoff error — lintels, corners, half-block courses — and how to eliminate them

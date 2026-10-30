@@ -1,0 +1,104 @@
+---
+// Short silent product clip that plays like a GIF: muted, looped, inline.
+// - preload="none" and the poster is set by script only when the clip nears
+//   the viewport, so nothing here competes with the hero (LCP).
+// - Plays only while on screen; pauses when scrolled away.
+// - prefers-reduced-motion: never autoplays — poster + a play button.
+// - Without JS the native controls stay, so the clip is still watchable.
+// Clips live in public/assets/video/<name>.webm|.mp4; posters in
+// src/assets/media/ (Astro converts them to WebP).
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  poster: ImageMetadata;
+  width: number;
+  height: number;
+  label: string;
+  posterWidth?: number;
+  class?: string;
+}
+
+const { name, poster, width, height, label, posterWidth, class: extraClass = '' } = Astro.props;
+const posterImg = await getImage({
+  src: poster,
+  format: 'webp',
+  width: Math.min(posterWidth ?? poster.width, poster.width),
+  quality: 72,
+});
+---
+
+<figure class={`loop-clip ${extraClass}`}>
+  <div class="loop-clip-frame" style={`aspect-ratio: ${width} / ${height};`}>
+    <video
+      class="loop-video"
+      data-poster={posterImg.src}
+      width={width}
+      height={height}
+      muted
+      loop
+      playsinline
+      controls
+      preload="none"
+      aria-label={label}
+    >
+      <source src={`/assets/video/${name}.webm`} type="video/webm" />
+      <source src={`/assets/video/${name}.mp4`} type="video/mp4" />
+      <a href={`/assets/video/${name}.mp4`}>Watch the clip.</a>
+    </video>
+    <button type="button" class="loop-play" hidden aria-label={`Play: ${label}`}>
+      <span aria-hidden="true">▶</span> Play
+    </button>
+  </div>
+  <figcaption><slot /></figcaption>
+</figure>
+
+<script>
+  const clips = document.querySelectorAll<HTMLVideoElement>('video.loop-video');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const showPlay = (v: HTMLVideoElement) => {
+    const btn = v.parentElement?.querySelector<HTMLButtonElement>('.loop-play');
+    if (btn) btn.hidden = false;
+  };
+
+  clips.forEach((v) => {
+    const btn = v.parentElement?.querySelector<HTMLButtonElement>('.loop-play');
+    btn?.addEventListener('click', () => {
+      btn.hidden = true;
+      v.dataset.userPlay = '1';
+      v.controls = true;
+      v.play().catch(() => { btn.hidden = false; });
+    });
+    // With JS the clip plays like a GIF; native controls return once tapped.
+    v.controls = false;
+    // Reduced motion: no autoplay, just the poster and one clear play button.
+    if (reduce.matches) showPlay(v);
+  });
+
+  // Poster: fetched shortly before the clip scrolls into view.
+  const posterIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const v = entry.target as HTMLVideoElement;
+      if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster;
+      posterIO.unobserve(v);
+    });
+  }, { rootMargin: '600px 0px' });
+
+  // Playback: only while at least a quarter of the clip is on screen.
+  const playIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const v = entry.target as HTMLVideoElement;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+        if (reduce.matches && !v.dataset.userPlay) return;
+        if (v.paused) v.play().catch(() => showPlay(v));
+      } else if (!v.paused) {
+        v.pause();
+      }
+    });
+  }, { threshold: [0, 0.25] });
+
+  clips.forEach((v) => { posterIO.observe(v); playIO.observe(v); });
+</script>

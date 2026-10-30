@@ -1,0 +1,60 @@
+---
+// "See it work" — two short silent clips straight from the program, then
+// what it does, one line each. Estimator voice, facts only (Ryan 10-30).
+import LoopVideo from './LoopVideo.astro';
+import rakePoster from '../assets/media/raise-wall-rake-poster.png';
+import stonePoster from '../assets/media/stone-radius-rake-poster.png';
+
+interface Props {
+  sectionNum?: string;
+}
+const { sectionNum = '02' } = Astro.props;
+
+const doesList = [
+  ['Bond from the first wall.', 'Fulls, halves, corners and cuts counted as you draw.'],
+  ['Change a wall, the rest follows.', 'Bond, cuts, counts and price update while you work.'],
+  ['Edit in 3-D.', 'Add openings, raise walls, slope rakes, change colors.'],
+  ['CMU, brick veneer and stone.', 'Straight walls or round.'],
+  ['Takeoff to bid.', 'Block by size and color, bond beams, lintels, rebar, grout, mortar, crews, price per color.'],
+  ['The order comes off the model.', 'No second count for the supplier.'],
+  ['Shop drawings from the same model.', 'Coursed elevations and rebar sets.'],
+  ['Bring in the whole print set.', 'Sheets read by number and title, scale taken off the sheet, plans lined up on the grid.'],
+];
+---
+
+<section class="page-section see-work-section" id="see-it-work">
+  <div class="page-section-inner section-wide">
+    <div class="section-num" data-num={sectionNum}>See it work</div>
+    <h2>Addendum moved a wall? <span class="accent">Drag it.</span></h2>
+    <p class="section-lede">No recount. Raise the wall, slope the rake into the next one, and the
+      bond and the counts change while you drag.</p>
+
+    <div class="see-work-clips">
+      <LoopVideo
+        name="raise-wall-rake"
+        poster={rakePoster}
+        width={460}
+        height={436}
+        label="Raising CMU walls in 3-D and sloping a rake into the next wall in The Masonry Modeler"
+      >
+        <strong>Raise walls, slope a rake.</strong> Bond and counts follow the drag.
+      </LoopVideo>
+      <LoopVideo
+        name="stone-radius-rake"
+        poster={stonePoster}
+        width={1280}
+        height={774}
+        posterWidth={960}
+        label="A stone radius wall with a rake, edited in 3-D over the floor plan in The Masonry Modeler"
+      >
+        <strong>Stone, round wall, rake.</strong> Same tools on a radius.
+      </LoopVideo>
+    </div>
+
+    <ul class="does-list">
+      {doesList.map(([lead, rest]) => (
+        <li><strong>{lead}</strong> {rest}</li>
+      ))}
+    </ul>
+  </div>
+</section>

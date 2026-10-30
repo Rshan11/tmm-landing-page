@@ -1,0 +1,19 @@
+---
+// What's coming — clearly labeled as not shipped yet. Keep it short.
+const items = [
+  ['Models from the drawings', 'AI reads the set, the engine lays the wall. Coming fast.'],
+  ['Set Check', 'Finds what’s missing or conflicting in a set before you bid. Coming soon.'],
+  ['Weather barrier systems', 'Tyvek, window wraps. Being added.'],
+];
+---
+
+<aside class="coming-strip" aria-labelledby="coming-title">
+  <div class="coming-inner">
+    <h2 class="coming-title" id="coming-title">Coming <span>· not live yet</span></h2>
+    <ul class="coming-list">
+      {items.map(([name, line]) => (
+        <li><strong>{name}.</strong> {line}</li>
+      ))}
+    </ul>
+  </div>
+</aside>

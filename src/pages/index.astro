@@ -7,6 +7,15 @@ import EstimateExample from '../components/EstimateExample.astro';
 import ProofStrip from '../components/ProofStrip.astro';
 import SectionDivider from '../components/SectionDivider.astro';
 import SeeItSection from '../components/SeeItSection.astro';
+import SeeItWorkSection from '../components/SeeItWorkSection.astro';
+import LeadSection from '../components/LeadSection.astro';
+import ComingStrip from '../components/ComingStrip.astro';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import rakeClipPoster from '../assets/media/raise-wall-rake-poster.png';
+import stoneClipPoster from '../assets/media/stone-radius-rake-poster.png';
+import leadClipPoster from '../assets/media/lead-georgeville-poster.png';
+import arClipPoster from '../assets/media/lead-ar-layout-walk-poster.png';
 import PillarsSection from '../components/PillarsSection.astro';
 import SheetMoment from '../components/SheetMoment.astro';
 import DifferenceTable from '../components/DifferenceTable.astro';
@@ -15,7 +24,7 @@ import FAQSection from '../components/FAQSection.astro';
 import FinalCTA from '../components/FinalCTA.astro';
 
 const title = 'Masonry Estimating Software & Shop Drawings | The Masonry Modeler';
-const description = 'Masonry estimating software that counts fulls, halves, and corners from the first click. Turn your walls into material lists, bids, and shop drawings.';
+const description = 'Masonry estimating software built by a mason. Edit walls in 3-D and the bond, counts and bid follow. Shop drawings, and The Lead for the crew.';
 const canonical = 'https://themasonrymodeler.com/';
 
 const faqItems = [
@@ -105,6 +114,29 @@ const rakeVideoSchema = {
   "duration": "PT15.766S",
 };
 
+// Short silent clips in "See it work" and "The Lead" (added 2026-10-30).
+const site = 'https://themasonrymodeler.com';
+const clip = async (name: string, title: string, desc: string, poster: ImageMetadata, duration: string) => ({
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": title,
+  "description": desc,
+  "thumbnailUrl": [site + (await getImage({ src: poster, format: 'webp', width: Math.min(960, poster.width), quality: 72 })).src],
+  "contentUrl": `${site}/assets/video/${name}.mp4`,
+  "uploadDate": "2026-10-30",
+  "duration": duration,
+});
+const clipSchemas = await Promise.all([
+  clip('raise-wall-rake', 'Raising walls and sloping a rake in The Masonry Modeler',
+    'Silent clip: CMU walls raised in 3-D and a rake sloped into the next wall; the bond and counts update during the drag.', rakeClipPoster, 'PT6S'),
+  clip('stone-radius-rake', 'A stone radius wall with a rake in The Masonry Modeler',
+    'Silent clip: a round stone wall edited in 3-D over the floor plan, with a rake sloped between neighboring walls.', stoneClipPoster, 'PT15S'),
+  clip('lead-georgeville', 'The Lead: Georgeville Arsenic Pump Station',
+    'Silent clip of The Lead, the crew view of the model: whole job, sides A to D and lifts, colored by type, rebar, production or schedule, with block counts by size and color, grout and mortar.', leadClipPoster, 'PT9S'),
+  clip('lead-ar-layout-walk', 'The Lead AR layout walk',
+    'Silent phone recording of the AR layout walk in The Lead: aim at the corner on the footing, set the corners, and read the measured distance against the plan dimension.', arClipPoster, 'PT12S'),
+]);
+
 const videoSchema = {
   "@context": "https://schema.org",
   "@type": "VideoObject",
@@ -130,6 +162,7 @@ const videoSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(shortVideoSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
+    {clipSchemas.map((c) => <script type="application/ld+json" set:html={JSON.stringify(c)} />)}
   </Fragment>
 
   <MasonXMonogram />
@@ -138,32 +171,39 @@ const videoSchema = {
   <Hero />
   <ProofStrip />
 
-  <SectionDivider number="02" label="From Takeoff to Bid" />
-  <EstimateExample compact sectionNum="02" />
+  <SectionDivider number="02" label="See It Work" />
+  <SeeItWorkSection sectionNum="02" />
 
-  <SectionDivider number="03" label="See It Work" />
-  <SeeItSection sectionNum="03" />
+  <SectionDivider number="03" label="The Lead" />
+  <LeadSection sectionNum="03" />
+  <ComingStrip />
 
-  <SectionDivider number="04" label="Why The Number Is Right" />
-  <PillarsSection sectionNum="04" />
+  <SectionDivider number="04" label="From Takeoff to Bid" />
+  <EstimateExample compact sectionNum="04" />
 
-  <SectionDivider number="05" label="The Shop Drawing" />
-  <SheetMoment sectionNum="05" />
+  <SectionDivider number="05" label="On The Print" />
+  <SeeItSection sectionNum="05" />
 
-  <SectionDivider number="06" label="The Difference" />
+  <SectionDivider number="06" label="Why The Number Is Right" />
+  <PillarsSection sectionNum="06" />
+
+  <SectionDivider number="07" label="The Shop Drawing" />
+  <SheetMoment sectionNum="07" />
+
+  <SectionDivider number="08" label="The Difference" />
   <!-- PM4Subs cross-sell strip removed 2026-07-27: TMM is positioned as a
        standalone specialized product, so the homepage doesn't pitch a second
        one ahead of pricing. SuiteStrip.astro and its CSS are retained — drop
        <SuiteStrip /> back here to restore. Footer link to PM4Subs stays. -->
-  <DifferenceTable sectionNum="06" />
+  <DifferenceTable sectionNum="08" />
 
-  <SectionDivider number="07" label="Founder Pricing" />
-  <PricingSection sectionNum="07" />
+  <SectionDivider number="09" label="Founder Pricing" />
+  <PricingSection sectionNum="09" />
 
-  <SectionDivider number="08" label="Common Questions" />
+  <SectionDivider number="10" label="Common Questions" />
   <FAQSection
     items={faqItems}
-    sectionNum="08"
+    sectionNum="10"
     headline="What the job site asks about masonry estimating."
   />
 
